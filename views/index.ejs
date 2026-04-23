@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= content.hero.titleLine1 %> <%= content.hero.titleLine2 %> – <%= content.hero.school %></title>
+  <meta name="description" content="<%= content.hero.description %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" type="image/x-icon" href="../public/images/icon.gif">
+  <% if (previewMode) { %>
+  <style>
+    body.admin-preview-mode [data-admin-editable="true"] {
+      position: relative;
+      cursor: pointer !important;
+      outline: 2px dashed rgba(214, 170, 87, 0);
+      outline-offset: 8px;
+      transition: outline-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    body.admin-preview-mode [data-admin-editable="true"]:hover,
+    body.admin-preview-mode [data-admin-editable="true"].is-admin-selected {
+      outline-color: rgba(214, 170, 87, 0.95);
+      box-shadow: 0 0 0 6px rgba(214, 170, 87, 0.12);
+    }
+    body.admin-preview-mode [data-admin-editable="true"]::after {
+      content: attr(data-admin-label);
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 20;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(16, 24, 40, 0.92);
+      color: #fff;
+      font: 700 11px/1 Inter, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+    body.admin-preview-mode [data-admin-editable="true"]:hover::after,
+    body.admin-preview-mode [data-admin-editable="true"].is-admin-selected::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  <% } %>
+</head>
+<body<% if (previewMode) { %> class="admin-preview-mode"<% } %>>
+
+<!-- ══ STICKY NAV ═══════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="navbar-brand js-scroll" data-target="hero">
+    <img src="<%= content.hero.logo %>" alt="Logo" onerror="this.style.display='none'">
+    <span>HẸN ƯỚC THANH XUÂN</span>
+  </a>
+  <button class="navbar-toggle" id="navbar-toggle" type="button" aria-label="Mở điều hướng" aria-expanded="false" aria-controls="navbar-mobile">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="navbar-links">
+    <li><a href="#gioi-thieu">GIỚI THIỆU</a></li>
+    <li><a href="#lich-trinh">LỊCH TRÌNH</a></li>
+    <li><a href="#da-dang-ky">ĐÃ ĐĂNG KÝ</a></li>
+    <li><a href="#thu-vien-anh">THƯ VIỆN ẢNH</a></li>
+    <li><a href="#luu-but">LƯU BÚT</a></li>
+    <li><a href="#lien-he">LIÊN HỆ</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <a href="#lien-he" class="btn-outline-gold">ỦNG HỘ</a>
+    <a href="#dang-ky" class="btn-gold" data-register-open>ĐĂNG KÝ</a>
+  </div>
+</nav>
+<div class="navbar-mobile" id="navbar-mobile" hidden>
+  <a href="#gioi-thieu">GIỚI THIỆU</a>
+  <a href="#lich-trinh">LỊCH TRÌNH</a>
+  <a href="#da-dang-ky">ĐÃ ĐĂNG KÝ</a>
+  <a href="#thu-vien-anh">THƯ VIỆN ẢNH</a>
+  <a href="#luu-but">LƯU BÚT</a>
+  <a href="#lien-he">LIÊN HỆ</a>
+  <div class="navbar-mobile-actions">
+    <a href="#lien-he" class="btn-outline-gold">ỦNG HỘ</a>
+    <a href="#dang-ky" class="btn-gold" data-register-open>ĐĂNG KÝ</a>
+  </div>
+</div>
+
+<!-- ══ FIXED CTA ════════════════════════════════════════ -->
+<a href="#dang-ky" class="fixed-cta" data-register-open>ĐĂNG KÝ NGAY</a>
+
+<!-- ══ SECTION 1 — HERO ══════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-content"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="hero" data-admin-label="Hero"<% } %>>
+
+    <div class="hero-logo-wrap">
+      <img src="<%= content.hero.logo %>" alt="Logo" class="hero-logo" onerror="this.style.display='none'">
+    </div>
+
+    <p class="hero-label"><%= content.hero.label || 'HẸN ƯỚC THANH XUÂN' %></p>
+
+    <h1 class="hero-title">
+      <span class="hero-title-line1"><%= content.hero.titleLine1 || 'Kỷ Niệm 20 Năm' %></span>
+      <span class="hero-title-line2"><%= content.hero.titleLine2 || 'Ngày Ra Trường' %></span>
+    </h1>
+
+    <p class="hero-school"><%= content.hero.school || '' %></p>
+    <p class="hero-tagline"><%= content.hero.tagline || '' %></p>
+    <p class="hero-desc"><%= content.hero.description || '' %></p>
+
+    <div class="hero-buttons">
+      <a href="#dang-ky" class="btn-hero-primary" data-register-open>
+        <%= content.hero.ctaPrimaryText || 'Đăng Ký Tham Gia' %>
+      </a>
+      <a href="<%= content.hero.ctaSecondaryUrl || '#lich-trinh' %>" class="btn-hero-secondary">
+        <%= content.hero.ctaSecondaryText || 'Xem Lịch Trình →' %>
+      </a>
+    </div>
+
+    <div class="hero-btn-dots" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="countdown" id="countdown">
+      <div class="cd-item">
+        <span class="cd-num" id="cd-days">--</span>
+        <span class="cd-label">Ngày</span>
+      </div>
+      <span class="cd-sep">·</span>
+      <div class="cd-item">
+        <span class="cd-num" id="cd-hours">--</span>
+        <span class="cd-label">Giờ</span>
+      </div>
+      <span class="cd-sep">·</span>
+      <div class="cd-item">
+        <span class="cd-num" id="cd-minutes">--</span>
+        <span class="cd-label">Phút</span>
+      </div>
+      <span class="cd-sep">·</span>
+      <div class="cd-item">
+        <span class="cd-num" id="cd-seconds">--</span>
+        <span class="cd-label">Giây</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ SECTION 2 — THƯ NGỎ (Giới thiệu) ════════════════ -->
+<section class="section intro-section" id="gioi-thieu">
+  <div class="section-inner section-inner--narrow">
+
+    <div class="section-header reveal"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="about" data-admin-label="Gioi thieu"<% } %>>
+      <p class="section-label"><%= content.about.label || 'THƯ NGỎ' %></p>
+      <h2 class="section-title"><%= content.about.title || 'Lời Mời Từ Trái Tim' %></h2>
+      <div class="title-underline"></div>
+      <p class="section-subtitle"><%= content.about.subtitle || '' %></p>
+    </div>
+
+    <% if (content.about && content.about.content) { %>
+    <div class="intro-letter reveal"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="about" data-admin-label="Gioi thieu"<% } %>>
+      <p><%= content.about.content %></p>
+      <p class="intro-signature"><%= content.about.signature || '– Ban Tổ Chức –' %></p>
+    </div>
+    <% } %>
+
+    <div class="info-cards reveal"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="event" data-admin-label="Su kien"<% } %>>
+      <div class="info-card">
+        <div class="info-card-icon">📅</div>
+        <div class="info-card-label">THỜI GIAN</div>
+        <div class="info-card-value"><%= eventDateFormatted %></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">📍</div>
+        <div class="info-card-label">ĐỊA ĐIỂM</div>
+        <div class="info-card-value"><%= content.event.venue %></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">👥</div>
+        <div class="info-card-label">ĐỐI TƯỢNG</div>
+        <div class="info-card-value"><%= content.event.target || 'Cựu HS niên khóa 03-06' %></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">📞</div>
+        <div class="info-card-label">LIÊN HỆ</div>
+        <div class="info-card-value"><%= content.event.contact || '' %></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ SECTION 3 — LỊCH TRÌNH ════════════════════════════ -->
+<% if (content.schedule) { %>
+<section class="section schedule-section" id="lich-trinh"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="schedule" data-admin-label="Lich trinh"<% } %>>
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <p class="section-label"><%= content.schedule.label || 'LỊCH TRÌNH' %></p>
+      <h2 class="section-title"><%= content.schedule.title || 'Chương Trình Sự Kiện' %></h2>
+      <div class="title-underline"></div>
+      <p class="section-subtitle"><%= content.schedule.subtitle || '' %></p>
+    </div>
+
+    <% if (content.schedule.activities && content.schedule.activities.length > 0) { %>
+    <div class="activity-icons reveal">
+      <% content.schedule.activities.forEach(function(act) {
+           var parts = act.split(' ')
+           var emoji = parts[0]
+           var label = parts.slice(1).join(' ')
+      %>
+      <div class="activity-icon">
+        <span class="activity-icon-emoji"><%= emoji %></span>
+        <span class="activity-icon-label"><%= label %></span>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <% if (content.schedule.days && content.schedule.days.length > 0) { %>
+    <div class="timeline reveal">
+      <% content.schedule.days.forEach(function(day) { %>
+      <div class="timeline-day">
+        <div class="timeline-day-header">
+          <span class="timeline-day-badge"><%= day.label %></span>
+          <span class="timeline-day-date"><%= day.date %></span>
+          <div class="timeline-day-divider"></div>
+        </div>
+        <% day.items.forEach(function(item) { %>
+        <div class="timeline-item">
+          <div class="timeline-time"><%= item.time %><% if (item.endTime) { %>–<%= item.endTime %><% } %></div>
+          <div class="timeline-dot"></div>
+          <div>
+            <div class="timeline-title"><%= item.title %></div>
+            <% if (item.desc) { %><div class="timeline-desc"><%= item.desc %></div><% } %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+
+  </div>
+</section>
+<% } %>
+
+<!-- ══ SECTION 4 — ĐÃ ĐĂNG KÝ ════════════════════════════ -->
+<% if (content.registered) { %>
+<section class="section registered-section" id="da-dang-ky"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="registered" data-admin-label="Dang ky"<% } %>>
+  <div class="section-inner section-inner--narrow">
+    <% var registeredClasses = registeredSummary.classes || [] %>
+    <% var registeredAttendees = registeredSummary.attendees || [] %>
+
+    <div class="section-header reveal">
+      <p class="section-label"><%= registeredSummary.label || 'DANH SÁCH' %></p>
+      <h2 class="section-title"><%= registeredSummary.title || 'Đã Đăng Ký Tham Gia' %></h2>
+      <div class="title-underline"></div>
+      <p class="section-subtitle"><%= registeredSummary.subtitle || '' %> <button class="registered-refresh" type="button" id="registered-refresh">♻ Tải lại</button></p>
+    </div>
+
+    <div class="registered-tabs reveal">
+      <button class="registered-tab active" type="button" data-registered-tab="stats">THỐNG KÊ</button>
+      <button class="registered-tab" type="button" data-registered-tab="list">DANH SÁCH CHI TIẾT</button>
+    </div>
+
+    <div class="registered-panels reveal">
+      <div class="registered-panel active" data-registered-panel="stats">
+        <div class="registered-stat">
+          <div class="registered-number"><%= registeredSummary.total || 0 %></div>
+          <p class="registered-sub">người đã đăng ký</p>
+          <% if (registeredSummary.classCount) { %>
+          <p class="registered-sub-gold"><%= registeredSummary.classCount %></p>
+          <% } %>
+        </div>
+
+        <% if (registeredSummary.classes && registeredSummary.classes.length > 0 && registeredSummary.total > 0) {
+             var maxCount = Math.max.apply(null, registeredSummary.classes.map(function(c) { return c.count || 0 }))
+        %>
+        <div class="bar-chart">
+          <% registeredClasses.forEach(function(cls) { %>
+          <% var barWidth = maxCount > 0 ? Math.round((cls.count / maxCount) * 100) : 0 %>
+          <div class="bar-row">
+            <button class="bar-label bar-label-button" type="button" data-registered-jump="<%= cls.name %>"><%= cls.name %></button>
+            <div class="bar-track">
+              <div class="bar-fill" data-bar-width="<%= barWidth %>"></div>
+            </div>
+            <div class="bar-count"><%= cls.count %></div>
+          </div>
+          <% }) %>
+        </div>
+        <p class="registered-hint">Bấm vào tên lớp để xem danh sách chi tiết.</p>
+        <% } else { %>
+        <div class="registered-empty">
+          <p>Chưa có dữ liệu đăng ký để hiển thị thống kê.</p>
+        </div>
+        <% } %>
+      </div>
+
+      <div class="registered-panel" data-registered-panel="list">
+        <% if (registeredClasses.length > 0) { %>
+        <div class="registered-class-filters" id="registered-class-filters">
+          <% registeredClasses.forEach(function(cls) { %>
+          <button
+            class="registered-class-chip"
+            type="button"
+            data-class-filter="<%= cls.name %>">
+            <%= cls.name %> (<%= cls.count %>)
+          </button>
+          <% }) %>
+          <button class="registered-class-chip active registered-class-chip-all" type="button" data-class-filter="all">
+            TẤT CẢ (<%= registeredSummary.total || 0 %>)
+          </button>
+        </div>
+        <% } %>
+
+        <% if (registeredAttendees.length > 0) { %>
+        <div class="registered-list">
+          <div class="registered-list-head">
+            <span>STT</span>
+            <span>Họ và tên</span>
+            <span>Lớp</span>
+            <span>Ghi chú</span>
+            <span>Trạng thái</span>
+          </div>
+          <% registeredAttendees.forEach(function(item, index) { %>
+          <div class="registered-list-row" data-registered-row data-class-name="<%= item.className || 'Khác' %>">
+            <span class="registered-cell-index" data-row-index><%= index + 1 %></span>
+            <span><%= item.name %></span>
+            <span><%= item.className || 'Đang cập nhật' %></span>
+            <span><%= item.note || '–' %></span>
+            <span><span class="registered-status"><%= item.status || 'Chờ xác nhận' %></span></span>
+          </div>
+          <% }) %>
+        </div>
+        <div class="registered-pagination" id="registered-pagination"></div>
+        <% } else { %>
+        <div class="registered-empty">
+          <p>Danh sách chi tiết sẽ hiển thị ngay khi BTC cập nhật người tham gia.</p>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+  </div>
+</section>
+<% } %>
+
+<!-- Registration Modal -->
+<%
+  var registerClassOptions = []
+  if (content.registered && Array.isArray(content.registered.classOptions) && content.registered.classOptions.length > 0) {
+    registerClassOptions = content.registered.classOptions
+  } else if (content.registered && Array.isArray(content.registered.classes)) {
+    registerClassOptions = content.registered.classes
+      .map(function(item) { return item && item.name ? item.name : '' })
+      .filter(Boolean)
+  }
+%>
+<div class="register-modal" id="register-modal" aria-hidden="true" aria-modal="true" role="dialog">
+  <div class="modal-bg" id="register-modal-bg"></div>
+  <div class="register-modal-box">
+    <button class="register-modal-close" id="close-register-modal" aria-label="Đóng">×</button>
+    <div class="register-modal-header">
+      <p class="register-modal-label">ĐĂNG KÝ</p>
+      <h3 class="register-modal-title">Đăng Ký Tham Gia</h3>
+      <p class="register-modal-subtitle">Điền thông tin để xác nhận tham dự</p>
+    </div>
+
+    <form id="register-form" novalidate>
+      <div class="register-form-group">
+        <label class="register-form-label" for="register-name">HỌ VÀ TÊN *</label>
+        <input class="register-form-input" type="text" id="register-name" name="name" placeholder="Nhập họ và tên đầy đủ" maxlength="80" required>
+      </div>
+
+      <div class="register-form-row">
+        <div class="register-form-group">
+          <label class="register-form-label" for="register-class">LỚP *</label>
+          <select class="register-form-input" id="register-class" name="className" required>
+            <option value="">-- Chọn lớp --</option>
+            <% registerClassOptions.forEach(function(className) { %>
+            <option value="<%= className %>"><%= className %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="register-form-group">
+          <label class="register-form-label" for="register-phone">SỐ ĐIỆN THOẠI *</label>
+          <input class="register-form-input" type="text" id="register-phone" name="phone" placeholder="0912 345 678" maxlength="20" required>
+        </div>
+      </div>
+
+      <div class="register-form-group">
+        <label class="register-form-label" for="register-note">GHI CHÚ</label>
+        <textarea class="register-form-input register-form-textarea" id="register-note" name="note" placeholder="Lời nhắn cho ban tổ chức..." maxlength="300" rows="4"></textarea>
+      </div>
+
+      <div class="register-form-message" id="register-form-message" hidden></div>
+      <button type="submit" class="register-submit" id="register-submit">GỬI ĐĂNG KÝ</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══ SECTION 5 — THƯ VIỆN ẢNH ══════════════════════════ -->
+<section class="section gallery-section" id="thu-vien-anh"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="gallery" data-admin-label="Thu vien anh"<% } %>>
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <p class="section-label"><%= content.gallery.label || 'ALBUM ẢNH' %></p>
+      <h2 class="section-title"><%= content.gallery.title || 'Thư Viện Kỷ Niệm' %></h2>
+      <div class="title-underline"></div>
+      <p class="section-subtitle"><%= content.gallery.subtitle || 'Ngày Ấy – Bây Giờ' %></p>
+    </div>
+
+    <% if (galleryImages && galleryImages.length > 0) { %>
+    <div class="gallery-carousel reveal">
+      <div class="carousel-track" id="carousel-track">
+        <% galleryImages.forEach(function(img, i) { %>
+        <div class="carousel-slide">
+          <img src="<%= img.src %>" alt="Ảnh kỷ niệm <%= i + 1 %>" loading="<%= i === 0 ? 'eager' : 'lazy' %>">
+          <div class="carousel-caption">
+            <div class="carousel-caption-title"><%= img.captionTitle %></div>
+            <% if (img.captionSubtitle) { %><div class="carousel-caption-subtitle"><%= img.captionSubtitle %></div><% } %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Ảnh trước">‹</button>
+      <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Ảnh tiếp">›</button>
+      <div class="carousel-counter" id="slide-counter">1 / <%= galleryImages.length %></div>
+    </div>
+
+    <% if (galleryImages.length <= 12) { %>
+    <div class="carousel-dots reveal" id="carousel-dots">
+      <% galleryImages.forEach(function(img, i) { %>
+      <button class="carousel-dot<%= i === 0 ? ' active' : '' %>" data-idx="<%= i %>" aria-label="Ảnh <%= i+1 %>"></button>
+      <% }) %>
+    </div>
+    <% } %>
+    <% } %>
+
+    <a class="gallery-upload-cta" aria-label="Gửi ảnh kỷ niệm">← GỬI ẢNH KỶ NIỆM CỦA BẠN →</a>
+
+  </div>
+</section>
+
+<!-- ══ SECTION 6 — SỔ LƯU BÚT ════════════════════════════ -->
+<section class="section guestbook-section" id="luu-but"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="guestbook" data-admin-label="Luu but"<% } %>>
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <p class="section-label"><%= (content.guestbook && content.guestbook.label) || 'LƯU BÚT' %></p>
+      <h2 class="section-title"><%= (content.guestbook && content.guestbook.title) || 'Sổ Lưu Bút Online' %></h2>
+      <div class="title-underline"></div>
+      <p class="section-subtitle"><%= (content.guestbook && content.guestbook.subtitle) || '' %></p>
+    </div>
+
+    <div class="guestbook-cta-wrap reveal">
+      <button class="btn-dark" id="open-guestbook-modal">GỬI LỜI NHẮN</button>
+    </div>
+
+    <% var messages = (content.guestbook && content.guestbook.messages) || [] %>
+    <% if (messages.length > 0) { %>
+    <div class="guestbook-grid reveal">
+      <% messages.forEach(function(msg, i) { %>
+      <div class="guestbook-card<%= i === 0 ? ' highlighted' : '' %>">
+        <p class="guestbook-quote">"<%= msg.message %>"</p>
+        <span class="guestbook-sep">——</span>
+        <div class="guestbook-name"><%= msg.name %></div>
+        <% if (msg.className) { %><div class="guestbook-class"><%= msg.className %></div><% } %>
+        <% if (msg.createdAt) { %><div class="guestbook-date"><%= new Date(msg.createdAt).toLocaleDateString('vi-VN') %></div><% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="section-subtitle reveal guestbook-empty" style="text-align:center;margin-top:8px">Chưa có lời nhắn nào. Hãy là người đầu tiên! 💌</p>
+    <% } %>
+
+  </div>
+</section>
+
+<!-- Guestbook Modal -->
+<div class="guestbook-modal" id="guestbook-modal" aria-hidden="true" aria-modal="true" role="dialog">
+  <div class="modal-bg" id="guestbook-modal-bg"></div>
+  <div class="modal-box">
+    <button class="modal-close" id="close-guestbook-modal" aria-label="Đóng">✕</button>
+    <h3 class="modal-title">Gửi Lời Nhắn</h3>
+    <form id="guestbook-form" novalidate>
+      <div class="modal-form-group">
+        <label class="modal-label" for="gb-name">Họ tên *</label>
+        <input class="modal-input" type="text" id="gb-name" name="name" placeholder="Nguyễn Văn A" required maxlength="60" autocomplete="name">
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label" for="gb-class">Lớp</label>
+        <input class="modal-input" type="text" id="gb-class" name="className" placeholder="VD: A4" maxlength="20">
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label" for="gb-message">Lời nhắn *</label>
+        <textarea class="modal-input" id="gb-message" name="message" placeholder="Nhớ mãi những năm tháng..." required maxlength="500" rows="4"></textarea>
+      </div>
+      <button type="submit" class="btn-dark" id="gb-submit" style="width:100%">GỬI LỜI NHẮN</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══ SECTION 7 — THÔNG BÁO ══════════════════════════════ -->
+<% if (content.announcements && content.announcements.items && content.announcements.items.length > 0) { %>
+<section class="section announcements-section" id="thong-bao"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="announcements" data-admin-label="Thong bao"<% } %>>
+  <div class="section-inner section-inner--narrow">
+
+    <div class="section-header reveal">
+      <p class="section-label"><%= content.announcements.label || 'THÔNG BÁO' %></p>
+      <h2 class="section-title"><%= content.announcements.title || 'Tin Từ Ban Tổ Chức' %></h2>
+      <div class="title-underline"></div>
+    </div>
+
+    <div class="announcements-list reveal">
+      <% content.announcements.items.forEach(function(item, index) { %>
+      <div class="announcement-item<%= index % 2 === 1 ? ' announcement-item-highlight' : '' %>">
+        <div class="announcement-bullet">•</div>
+        <div class="announcement-content">
+          <% if (item.url) { %>
+          <a class="announcement-title announcement-title-link" href="<%= item.url %>" target="_blank" rel="noopener"><%= item.title %></a>
+          <% } else { %>
+          <div class="announcement-title"><%= item.title %></div>
+          <% } %>
+          <% if (item.desc) { %><div class="announcement-desc"><%= item.desc %></div><% } %>
+          <% if (item.date) { %><div class="announcement-date"><%= item.date %></div><% } %>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+
+  </div>
+</section>
+<% } %>
+
+<!-- ══ SECTION 8 — ĐỊA ĐIỂM & LIÊN HỆ ══════════════════ -->
+<% if (content.contact) { %>
+<section class="section contact-section" id="lien-he"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="contact" data-admin-label="Lien he"<% } %>>
+  <div class="section-inner">
+
+    <div class="section-header reveal">
+      <p class="section-label"><%= content.contact.label || 'ĐỊA ĐIỂM' %></p>
+      <h2 class="section-title" style="font-style:italic"><%= content.contact.title || 'Địa Điểm & Liên Hệ' %></h2>
+      <div class="title-underline"></div>
+    </div>
+
+    <div class="contact-grid reveal">
+      <div>
+        <div class="map-header">
+          <a href="<%= content.contact.mapUrl || '#' %>" target="_blank" rel="noopener" class="map-link">Mở trong Maps ↗</a>
+        </div>
+        <div class="map-wrap">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3717.3012845210324!2d106.05398117500712!3d21.299108278438688!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135118f6ac1f44d%3A0x43412dc4e58ae6fa!2zVHLGsOG7nW5nIFRIUFQgVmnhu4d0IFnDqm4gU-G7kSAy!5e0!3m2!1svi!2sus!4v1776938279628!5m2!1svi!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <a href="<%= content.contact.mapUrl || '#' %>" target="_blank" rel="noopener" class="btn-directions">CHỈ ĐƯỜNG →</a>
+      </div>
+
+      <div class="contact-info">
+        <div class="contact-row">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">ĐỊA CHỈ</div>
+            <div class="contact-value"><%= content.contact.address %></div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-label">ĐIỆN THOẠI</div>
+            <div class="contact-value"><%= content.contact.phone %></div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">💬</div>
+          <div>
+            <div class="contact-label">NHÓM ZALO</div>
+            <div class="contact-value"><%= content.contact.zalo %></div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">🚗</div>
+          <div>
+            <div class="contact-label">GỬI XE</div>
+            <div class="contact-value"><%= content.contact.parking %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<% } %>
+
+<!-- ══ SECTION 9 — FOOTER ══════════════════════════════════ -->
+<footer class="footer"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="footer" data-admin-label="Footer"<% } %>>
+  <img src="<%= content.hero.logo %>" alt="Logo" class="footer-logo" onerror="this.style.display='none'">
+  <p class="footer-brand">Hẹn Ước Thanh Xuân</p>
+  <div class="footer-divider"></div>
+  <nav class="footer-nav" aria-label="Điều hướng footer">
+    <a href="#gioi-thieu">Giới Thiệu</a>
+    <a href="#lich-trinh">Lịch Trình</a>
+    <a href="#da-dang-ky">Đã Đăng Ký</a>
+    <a href="#thu-vien-anh">Thư Viện Ảnh</a>
+    <a href="#luu-but">Lưu Bút</a>
+    <a href="#lien-he">Liên Hệ</a>
+  </nav>
+  <p class="footer-copy"><%= content.footer.text %></p>
+  <a href="/admin" class="admin-link" aria-label="Quản trị">⚙</a>
+</footer>
+
+<!-- ══ SCRIPTS ══════════════════════════════════════════════ -->
+<script>
+;(function () {
+  'use strict'
+
+  // ── Countdown ──────────────────────────────────────────
+  var eventDateTime = new Date('<%= content.event.date %>T<%= content.event.time || "13:00" %>:00')
+  var cdDays    = document.getElementById('cd-days')
+  var cdHours   = document.getElementById('cd-hours')
+  var cdMinutes = document.getElementById('cd-minutes')
+  var cdSeconds = document.getElementById('cd-seconds')
+  var cdBox     = document.getElementById('countdown')
+
+  function pad(n) { return String(n).padStart(2, '0') }
+
+  function tick() {
+    var diff = eventDateTime - Date.now()
+    if (diff <= 0) {
+      cdBox.innerHTML = '<div class="cd-done">🎉 Sự kiện đã diễn ra!</div>'
+      return
+    }
+    cdDays.textContent    = pad(Math.floor(diff / 86400000))
+    cdHours.textContent   = pad(Math.floor((diff % 86400000) / 3600000))
+    cdMinutes.textContent = pad(Math.floor((diff % 3600000) / 60000))
+    cdSeconds.textContent = pad(Math.floor((diff % 60000) / 1000))
+  }
+  tick()
+  setInterval(tick, 1000)
+
+  // ── Registration modal ───────────────────────────────
+  var registerModal = document.getElementById('register-modal')
+  var registerForm = document.getElementById('register-form')
+  var registerSubmit = document.getElementById('register-submit')
+  var registerMessage = document.getElementById('register-form-message')
+  var registerModalBg = document.getElementById('register-modal-bg')
+  var closeRegisterModalBtn = document.getElementById('close-register-modal')
+
+  function setRegisterMessage(message, type) {
+    if (!registerMessage) return
+    if (!message) {
+      registerMessage.hidden = true
+      registerMessage.textContent = ''
+      registerMessage.className = 'register-form-message'
+      return
+    }
+    registerMessage.hidden = false
+    registerMessage.textContent = message
+    registerMessage.className = 'register-form-message ' + (type || 'info')
+  }
+
+  function openRegisterModal() {
+    if (!registerModal) return
+    registerModal.classList.add('active')
+    registerModal.setAttribute('aria-hidden', 'false')
+    document.body.style.overflow = 'hidden'
+    setRegisterMessage('')
+  }
+
+  function closeRegisterModal() {
+    if (!registerModal) return
+    registerModal.classList.remove('active')
+    registerModal.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = ''
+  }
+
+  document.querySelectorAll('[data-register-open]').forEach(function(trigger) {
+    trigger.addEventListener('click', function(e) {
+      e.preventDefault()
+      openRegisterModal()
+    })
+  })
+
+  if (closeRegisterModalBtn) closeRegisterModalBtn.addEventListener('click', closeRegisterModal)
+  if (registerModalBg) registerModalBg.addEventListener('click', closeRegisterModal)
+
+  // ── Smooth scroll for nav links ────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      if (a.hasAttribute('data-register-open')) return
+      var href = a.getAttribute('href')
+      if (href === '#') return
+      var target = document.querySelector(href)
+      if (target) {
+        e.preventDefault()
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    })
+  })
+
+  // ── Mobile nav toggle ─────────────────────────────────
+  var navToggle = document.getElementById('navbar-toggle')
+  var mobileNav = document.getElementById('navbar-mobile')
+
+  function closeMobileNav() {
+    if (!navToggle || !mobileNav) return
+    navToggle.classList.remove('active')
+    navToggle.setAttribute('aria-expanded', 'false')
+    mobileNav.hidden = true
+  }
+
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', function() {
+      var isOpen = navToggle.classList.toggle('active')
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+      mobileNav.hidden = !isOpen
+    })
+
+    mobileNav.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', closeMobileNav)
+    })
+  }
+
+  // ── Active nav highlight on scroll ────────────────────
+  var navAnchors = Array.from(document.querySelectorAll('.navbar-links a'))
+  var sectionIds = navAnchors.map(function(a) { return a.getAttribute('href').replace('#', '') })
+  var sections   = sectionIds.map(function(id) { return document.getElementById(id) }).filter(Boolean)
+
+  function updateActiveNav() {
+    var scrollY = window.scrollY + 80
+    var activeIdx = 0
+    sections.forEach(function(sec, i) {
+      if (sec && sec.offsetTop <= scrollY) activeIdx = i
+    })
+    navAnchors.forEach(function(a, i) { a.classList.toggle('active', i === activeIdx) })
+  }
+  window.addEventListener('scroll', updateActiveNav, { passive: true })
+  updateActiveNav()
+
+  // ── Registered tabs ───────────────────────────────────
+  var registeredTabs = Array.from(document.querySelectorAll('[data-registered-tab]'))
+  var registeredPanels = Array.from(document.querySelectorAll('[data-registered-panel]'))
+  var classFilterButtons = Array.from(document.querySelectorAll('[data-class-filter]'))
+  var detailRows = Array.from(document.querySelectorAll('[data-registered-row]'))
+  var pagination = document.getElementById('registered-pagination')
+  var selectedClassFilter = 'all'
+  var currentRegisteredPage = 1
+  var registeredPageSize = 10
+
+  function activateRegisteredTab(key) {
+    registeredTabs.forEach(function(tab) {
+      tab.classList.toggle('active', tab.dataset.registeredTab === key)
+    })
+    registeredPanels.forEach(function(panel) {
+      panel.classList.toggle('active', panel.dataset.registeredPanel === key)
+    })
+  }
+
+  registeredTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      activateRegisteredTab(tab.dataset.registeredTab)
+    })
+  })
+
+  function getFilteredRegisteredRows() {
+    return detailRows.filter(function(row) {
+      return selectedClassFilter === 'all' || row.dataset.className === selectedClassFilter
+    })
+  }
+
+  function renderRegisteredPagination(totalPages) {
+    if (!pagination) return
+    pagination.innerHTML = ''
+    if (totalPages <= 1) return
+
+    for (var i = 1; i <= totalPages; i += 1) {
+      var btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'registered-page-btn' + (i === currentRegisteredPage ? ' active' : '')
+      btn.textContent = i
+      btn.dataset.page = String(i)
+      btn.addEventListener('click', function() {
+        currentRegisteredPage = parseInt(this.dataset.page, 10)
+        renderRegisteredList()
+      })
+      pagination.appendChild(btn)
+    }
+  }
+
+  function renderRegisteredList() {
+    if (detailRows.length === 0) return
+    var filteredRows = getFilteredRegisteredRows()
+    var totalPages = Math.max(1, Math.ceil(filteredRows.length / registeredPageSize))
+    if (currentRegisteredPage > totalPages) currentRegisteredPage = totalPages
+    var start = (currentRegisteredPage - 1) * registeredPageSize
+    var end = start + registeredPageSize
+
+    detailRows.forEach(function(row) { row.hidden = true })
+    filteredRows.slice(start, end).forEach(function(row, index) {
+      row.hidden = false
+      var indexCell = row.querySelector('[data-row-index]')
+      if (indexCell) indexCell.textContent = String(start + index + 1)
+    })
+
+    renderRegisteredPagination(totalPages)
+  }
+
+  classFilterButtons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      selectedClassFilter = btn.dataset.classFilter
+      currentRegisteredPage = 1
+      classFilterButtons.forEach(function(item) {
+        item.classList.toggle('active', item === btn)
+      })
+      renderRegisteredList()
+    })
+  })
+
+  document.querySelectorAll('[data-registered-jump]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var className = btn.dataset.registeredJump
+      activateRegisteredTab('list')
+      currentRegisteredPage = 1
+      selectedClassFilter = className
+      classFilterButtons.forEach(function(item) {
+        item.classList.toggle('active', item.dataset.classFilter === className)
+      })
+      renderRegisteredList()
+    })
+  })
+
+  renderRegisteredList()
+  document.querySelectorAll('.bar-fill[data-bar-width]').forEach(function(bar) {
+    var barWidth = Number(bar.getAttribute('data-bar-width'))
+    if (!isFinite(barWidth)) barWidth = 0
+    barWidth = Math.max(0, Math.min(100, barWidth))
+    bar.style.width = barWidth + '%'
+  })
+
+  var registeredRefresh = document.getElementById('registered-refresh')
+  if (registeredRefresh) {
+    registeredRefresh.addEventListener('click', function() {
+      window.location.reload()
+    })
+  }
+
+  // ── Scroll reveal ──────────────────────────────────────
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible')
+          obs.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.1 })
+    document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el) })
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible') })
+  }
+
+  // ── Gallery carousel ───────────────────────────────────
+  var track = document.getElementById('carousel-track')
+  if (track) {
+    var slides  = Array.from(track.querySelectorAll('.carousel-slide'))
+    var dots    = Array.from(document.querySelectorAll('.carousel-dot'))
+    var counter = document.getElementById('slide-counter')
+    var total   = slides.length
+    var current = 0
+    var autoSlideTimer = null
+    var autoSlideDelay = 1800
+
+    function stopAutoSlide() {
+      if (autoSlideTimer) {
+        window.clearInterval(autoSlideTimer)
+        autoSlideTimer = null
+      }
+    }
+
+    function startAutoSlide() {
+      if (total <= 1 || autoSlideTimer || document.hidden) return
+      autoSlideTimer = window.setInterval(function() {
+        goTo(current + 1)
+      }, autoSlideDelay)
+    }
+
+    function resetAutoSlide() {
+      stopAutoSlide()
+      startAutoSlide()
+    }
+
+    function goTo(idx) {
+      if (total === 0) return
+      if (idx < 0) idx = total - 1
+      if (idx >= total) idx = 0
+      current = idx
+      track.style.transform = 'translateX(-' + (100 * current) + '%)'
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === current) })
+      if (counter) counter.textContent = (current + 1) + ' / ' + total
+    }
+
+    var prevBtn = document.getElementById('carousel-prev')
+    var nextBtn = document.getElementById('carousel-next')
+    if (prevBtn) prevBtn.addEventListener('click', function() {
+      goTo(current - 1)
+      resetAutoSlide()
+    })
+    if (nextBtn) nextBtn.addEventListener('click', function() {
+      goTo(current + 1)
+      resetAutoSlide()
+    })
+
+    dots.forEach(function(d) {
+      d.addEventListener('click', function() {
+        goTo(parseInt(d.dataset.idx, 10))
+        resetAutoSlide()
+      })
+    })
+
+    // Touch swipe
+    var touchStartX = 0
+    track.addEventListener('touchstart', function(e) {
+      stopAutoSlide()
+      touchStartX = e.touches[0].clientX
+    }, { passive: true })
+    track.addEventListener('touchend', function(e) {
+      var dx = e.changedTouches[0].clientX - touchStartX
+      if (Math.abs(dx) > 50) goTo(dx < 0 ? current + 1 : current - 1)
+      startAutoSlide()
+    }, { passive: true })
+
+    var carouselRoot = track.closest('.gallery-carousel')
+    if (carouselRoot) {
+      carouselRoot.addEventListener('mouseenter', stopAutoSlide)
+      carouselRoot.addEventListener('mouseleave', startAutoSlide)
+      carouselRoot.addEventListener('focusin', stopAutoSlide)
+      carouselRoot.addEventListener('focusout', startAutoSlide)
+    }
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) stopAutoSlide()
+      else startAutoSlide()
+    })
+
+    goTo(0)
+    startAutoSlide()
+  }
+
+  // ── Guestbook modal ────────────────────────────────────
+  var modal    = document.getElementById('guestbook-modal')
+  var openBtn  = document.getElementById('open-guestbook-modal')
+  var closeBtn = document.getElementById('close-guestbook-modal')
+  var modalBg  = document.getElementById('guestbook-modal-bg')
+
+  function openModal() {
+    if (!modal) return
+    modal.classList.add('active')
+    modal.setAttribute('aria-hidden', 'false')
+    document.body.style.overflow = 'hidden'
+  }
+  function closeModal() {
+    if (!modal) return
+    modal.classList.remove('active')
+    modal.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = ''
+  }
+
+  if (openBtn)  openBtn.addEventListener('click', openModal)
+  if (closeBtn) closeBtn.addEventListener('click', closeModal)
+  if (modalBg)  modalBg.addEventListener('click', closeModal)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && registerModal && registerModal.classList.contains('active')) closeRegisterModal()
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeModal()
+  })
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault()
+      var formData = {
+        name: registerForm.querySelector('[name="name"]').value.trim(),
+        className: registerForm.querySelector('[name="className"]').value.trim(),
+        phone: registerForm.querySelector('[name="phone"]').value.trim(),
+        note: registerForm.querySelector('[name="note"]').value.trim()
+      }
+
+      if (!formData.name || !formData.className || !formData.phone) {
+        setRegisterMessage('Vui lòng nhập đủ họ tên, lớp và số điện thoại.', 'error')
+        return
+      }
+
+      registerSubmit.disabled = true
+      registerSubmit.textContent = 'ĐANG GỬI...'
+      setRegisterMessage('')
+
+      fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      .then(function(r) { return r.json() })
+      .then(function(result) {
+        if (!result.ok) {
+          setRegisterMessage(result.message || 'Không thể đăng ký lúc này.', 'error')
+          return
+        }
+
+        setRegisterMessage('Đăng ký thành công. Đang cập nhật danh sách...', 'success')
+        registerForm.reset()
+        window.location.hash = 'da-dang-ky'
+        window.setTimeout(function() { window.location.reload() }, 700)
+      })
+      .catch(function() {
+        setRegisterMessage('Lỗi kết nối. Vui lòng thử lại.', 'error')
+      })
+      .finally(function() {
+        registerSubmit.disabled = false
+        registerSubmit.textContent = 'GỬI ĐĂNG KÝ'
+      })
+    })
+  }
+
+  // Guestbook form submit
+  var gbForm   = document.getElementById('guestbook-form')
+  var gbSubmit = document.getElementById('gb-submit')
+  if (gbForm) {
+    gbForm.addEventListener('submit', function(e) {
+      e.preventDefault()
+      var name    = gbForm.querySelector('[name="name"]').value.trim()
+      var cls     = gbForm.querySelector('[name="className"]').value.trim()
+      var message = gbForm.querySelector('[name="message"]').value.trim()
+      if (!name || !message) return
+
+      gbSubmit.disabled = true
+      gbSubmit.textContent = 'Đang gửi...'
+
+      fetch('/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, className: cls, message: message })
+      })
+      .then(function(r) { return r.json() })
+      .then(function(result) {
+        if (result.ok) {
+          closeModal()
+          gbForm.reset()
+          var emptyState = document.querySelector('.guestbook-empty')
+          if (emptyState) emptyState.remove()
+
+          var grid = document.querySelector('.guestbook-grid')
+          if (!grid) {
+            grid = document.createElement('div')
+            grid.className = 'guestbook-grid reveal visible'
+            var guestbookSection = document.querySelector('.guestbook-section .section-inner')
+            if (guestbookSection) guestbookSection.appendChild(grid)
+          }
+
+          var card = document.createElement('div')
+          card.className = 'guestbook-card highlighted'
+          card.innerHTML =
+            '<p class="guestbook-quote">"' + message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"</p>' +
+            '<span class="guestbook-sep">——</span>' +
+            '<div class="guestbook-name">' + name.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' +
+            (cls ? '<div class="guestbook-class">' + cls.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : '') +
+            '<div class="guestbook-date">' + (result.item && result.item.createdAtLabel ? result.item.createdAtLabel : '') + '</div>'
+          grid.insertBefore(card, grid.firstChild)
+          alert('Cảm ơn bạn đã gửi lời nhắn! 🎉')
+        } else {
+          alert('Lỗi: ' + (result.message || 'Vui lòng thử lại'))
+        }
+        gbSubmit.disabled = false
+        gbSubmit.textContent = 'GỬI LỜI NHẮN'
+      })
+      .catch(function() {
+        alert('Lỗi kết nối, thử lại nhé')
+        gbSubmit.disabled = false
+        gbSubmit.textContent = 'GỬI LỜI NHẮN'
+      })
+    })
+  }
+
+})()
+</script>
+<% if (previewMode) { %>
+<script>
+;(function () {
+  'use strict'
+
+  function getEditableTarget(element) {
+    return element ? element.closest('[data-admin-editable="true"]') : null
+  }
+
+  function selectTarget(targetName) {
+    document.querySelectorAll('[data-admin-editable="true"]').forEach(function (el) {
+      el.classList.toggle('is-admin-selected', el.getAttribute('data-admin-target') === targetName)
+    })
+
+    var active = document.querySelector('[data-admin-editable="true"][data-admin-target="' + targetName + '"]')
+    if (active) {
+      active.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
+  document.addEventListener('click', function (event) {
+    var target = getEditableTarget(event.target)
+    if (!target) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    window.parent.postMessage({
+      type: 'admin-preview-select',
+      target: target.getAttribute('data-admin-target')
+    }, '*')
+  }, true)
+
+  document.addEventListener('submit', function (event) {
+    if (getEditableTarget(event.target)) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }, true)
+
+  window.addEventListener('message', function (event) {
+    if (!event.data || typeof event.data !== 'object') return
+    if (event.data.type === 'admin-preview-highlight' && event.data.target) {
+      selectTarget(event.data.target)
+    }
+  })
+
+  window.parent.postMessage({ type: 'admin-preview-ready' }, '*')
+})()
+</script>
+<% } %>
+</body>
+</html>

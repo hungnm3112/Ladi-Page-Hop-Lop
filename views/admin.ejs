@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Trị - Ladi Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-logo">A</span>
+    <span class="topbar-title">Trang Quản Trị</span>
+  </div>
+  <div class="topbar-right">
+    <a href="/" target="_blank" class="btn btn-ghost btn-sm">Xem trang</a>
+    <a href="/admin/logout" class="btn btn-ghost btn-sm">Đăng xuất</a>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<div class="admin-wrap">
+  <nav class="tab-nav" id="tab-nav">
+    <a class="tab-item active" data-panel="hero">Hero</a>
+    <a class="tab-item" data-panel="event">Sự kiện</a>
+    <a class="tab-item" data-panel="about">Giới thiệu</a>
+    <a class="tab-item" data-panel="registered">Đăng ký</a>
+    <a class="tab-item" data-panel="gallery">Gallery</a>
+    <a class="tab-item" data-panel="cta">Nút đăng ký</a>
+    <a class="tab-item" data-panel="footer">Footer</a>
+    <a class="tab-item" data-panel="content">Tất cả nội dung</a>
+  </nav>
+
+  <div class="panel active" id="panel-hero">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">H</div>
+        <h2>Phần Hero (Màn hình chính)</h2>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Logo</label>
+        <div class="logo-row">
+          <img src="<%= content.hero.logo %>?t=<%= Date.now() %>" id="logo-preview" class="logo-preview" alt="Logo hiện tại">
+          <div>
+            <div class="upload-zone" id="logo-zone">
+              <input type="file" id="logo-file" accept="image/*">
+              <div class="upload-zone-text">Nhấn hoặc kéo thả ảnh logo vào đây</div>
+              <div class="upload-zone-hint">PNG, JPG - tối đa 5MB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form id="form-hero">
+        <div class="form-group">
+          <label class="form-label">Tiêu đề chính</label>
+          <input type="text" class="form-control" name="title" value="<%= content.hero.title %>" placeholder="VD: Kỷ Niệm 20 Năm Ngày Ra Trường">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phụ đề</label>
+          <input type="text" class="form-control" name="subtitle" value="<%= content.hero.subtitle %>" placeholder="VD: Hẹn Ước Thanh Xuân">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dòng nhỏ bên dưới</label>
+          <input type="text" class="form-control" name="tagline" value="<%= content.hero.tagline %>" placeholder="VD: Niên khóa 2003 - 2006">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên trường (`hero.school`)</label>
+          <input type="text" class="form-control" name="school" value="<%= content.hero.school || '' %>" placeholder="VD: Trường THPT Việt Yên Số 2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Màu nền Hero</label>
+          <div class="color-row">
+            <input type="color" name="bgColor" value="<%= content.hero.bgColor || '#0D47A1' %>" id="bg-color">
+            <span class="color-hint">Màu nền của phần đầu trang</span>
+          </div>
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="hero" data-save-form="form-hero">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-event">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">S</div>
+        <h2>Thông Tin Sự Kiện</h2>
+      </div>
+      <form id="form-event">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ngày diễn ra</label>
+            <input type="date" class="form-control" name="date" value="<%= content.event.date %>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giờ bắt đầu</label>
+            <input type="time" class="form-control" name="time" value="<%= content.event.time %>">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên địa điểm</label>
+          <input type="text" class="form-control" name="venue" value="<%= content.event.venue %>" placeholder="VD: Nhà hàng ABC">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Địa chỉ chi tiết</label>
+          <input type="text" class="form-control" name="address" value="<%= content.event.address %>" placeholder="VD: 123 Đường XYZ">
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="event" data-save-form="form-event">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-about">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">G</div>
+        <h2>Lời Giới Thiệu</h2>
+      </div>
+      <form id="form-about">
+        <div class="form-group">
+          <label class="form-label">Tiêu đề section</label>
+          <input type="text" class="form-control" name="title" value="<%= content.about.title %>" placeholder="VD: Về Buổi Gặp Mặt">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nội dung</label>
+          <textarea class="form-control" name="content" rows="8" placeholder="Nhập lời giới thiệu..."><%= content.about.content %></textarea>
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="about" data-save-form="form-about">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-registered">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">D</div>
+        <h2>Cấu Hình Form Đăng Ký và Danh Sách Lớp</h2>
+      </div>
+      <form id="form-registered">
+        <div class="form-group">
+          <label class="form-label">Nhãn section</label>
+          <input type="text" class="form-control" name="label" value="<%= content.registered.label %>" placeholder="VD: DANH SACH">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tiêu đề section</label>
+          <input type="text" class="form-control" name="title" value="<%= content.registered.title %>" placeholder="VD: Đã Đăng Ký Tham Gia">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả section</label>
+          <textarea class="form-control" name="subtitle" rows="3" placeholder="VD: Xem ai đã đăng ký và rủ thêm bạn bè nhé!"><%= content.registered.subtitle %></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Danh sách lớp</label>
+          <textarea class="form-control" name="classOptionsText" rows="8" placeholder="Mỗi dòng một lớp, ví dụ: A1"><%= registeredClassText %></textarea>
+          <div class="form-hint">Các lựa chọn trong popup đăng ký sẽ lấy từ danh sách này. Nhập mỗi lớp trên một dòng.</div>
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-handler="registered">Lưu danh sách lớp</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px">
+      <div class="card-head">
+        <div class="card-icon">N</div>
+        <h2>Đăng Ký Hiện Có (<%= (content.registered.attendees || []).length %> người)</h2>
+      </div>
+      <% if ((content.registered.attendees || []).length > 0) { %>
+      <div class="admin-registered-table">
+        <div class="admin-registered-head">
+          <span>Họ tên</span>
+          <span>Lớp</span>
+          <span>SDT</span>
+          <span>Trạng thái</span>
+        </div>
+        <% content.registered.attendees.slice(0, 20).forEach(function(item) { %>
+        <div class="admin-registered-row">
+          <span><%= item.name %></span>
+          <span><%= item.className %></span>
+          <span><%= item.phone || '' %></span>
+          <span><%= item.status || 'Chờ xác nhận' %></span>
+        </div>
+        <% }) %>
+      </div>
+      <% } else { %>
+      <p class="form-hint">Chưa có người đăng ký nào.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-gallery">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">A</div>
+        <h2>Quản Lý Ảnh Gallery (<span id="gallery-count"><%= galleryFiles.length %></span> ảnh)</h2>
+      </div>
+
+      <div class="gallery-hint">
+        Kéo thả các ảnh để sắp xếp lại thứ tự hiển thị. Di chuột vào ảnh để xóa.
+      </div>
+
+      <div class="upload-zone" id="gallery-zone">
+        <input type="file" id="gallery-file" accept="image/*" multiple>
+        <div class="upload-zone-text">Nhấn hoặc kéo thả ảnh vào đây để thêm vào gallery</div>
+        <div class="upload-zone-hint">PNG, JPG, JPEG - có thể chọn nhiều ảnh cùng lúc - tối đa 15MB/ảnh</div>
+      </div>
+
+      <div class="gallery-grid-admin" id="gallery-grid">
+        <% galleryFiles.forEach(function(f) { %>
+        <div class="gallery-thumb" draggable="true" data-filename="<%= f.filename %>">
+          <img src="<%= f.url %>" alt="<%= f.filename %>" loading="lazy">
+          <button class="thumb-delete" data-filename="<%= f.filename %>" title="Xóa ảnh này">x</button>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px">
+      <div class="card-head">
+        <div class="card-icon">T</div>
+        <h2>Tiêu Đề Section Gallery</h2>
+      </div>
+      <form id="form-gallery">
+        <div class="form-group">
+          <label class="form-label">Tiêu đề</label>
+          <input type="text" class="form-control" name="title" value="<%= content.gallery.title %>" placeholder="VD: Khoảnh Khắc Đáng Nhớ">
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="gallery" data-save-form="form-gallery">Lưu tiêu đề</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-cta">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">C</div>
+        <h2>Nút Đăng Ký / CTA</h2>
+      </div>
+      <form id="form-cta">
+        <div class="form-group">
+          <label class="form-label">Tiêu đề lớn</label>
+          <input type="text" class="form-control" name="title" value="<%= content.cta.title %>" placeholder="VD: Đừng Bỏ Lỡ Khoảnh Khắc Này!">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả nhỏ phía dưới</label>
+          <textarea class="form-control" name="subtitle" rows="3"><%= content.cta.subtitle %></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Chữ trên nút bấm</label>
+            <input type="text" class="form-control" name="buttonText" value="<%= content.cta.buttonText %>" placeholder="VD: Xác Nhận Tham Dự">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Link khi bấm nút (URL)</label>
+            <input type="text" class="form-control" name="buttonUrl" value="<%= content.cta.buttonUrl %>" placeholder="VD: https://forms.google.com/...">
+          </div>
+        </div>
+        <div class="form-hint">Link nút có thể là Google Form, Facebook Event, hoặc bất kỳ URL nào.</div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="cta" data-save-form="form-cta">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-footer">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">F</div>
+        <h2>Footer</h2>
+      </div>
+      <form id="form-footer">
+        <div class="form-group">
+          <label class="form-label">Chữ hiển thị ở footer</label>
+          <input type="text" class="form-control" name="text" value="<%= content.footer.text %>" placeholder="VD: © 2026 Lớp 12A2 - Niên Khóa 2003-2006">
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="footer" data-save-form="form-footer">Lưu thay đổi</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px; background: #fffbeb; border: 1px solid #fde68a;">
+      <div class="card-head">
+        <div class="card-icon">i</div>
+        <h2>Thông tin quản trị</h2>
+      </div>
+      <p style="font-size: 14px; color: #6b7280; line-height: 1.7;">
+        Tab Footer và các tab khác được giữ nguyên dạng form cũ. Nếu muốn sửa theo giao diện thật, hãy vào tab <strong>Tất cả nội dung</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-content">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">L</div>
+        <h2>Live Editor - Tất Cả Nội Dung</h2>
+      </div>
+
+      <div class="live-editor-intro">
+        Bấm vào section trong preview để mở popup sửa nội dung. Các tab khác vẫn hoạt động theo giao diện form cũ.
+      </div>
+
+      <div class="live-editor-shell">
+        <aside class="live-editor-sidebar">
+          <div class="live-editor-sidebar-card">
+            <div class="live-editor-eyebrow">Customizer</div>
+            <h3 class="live-editor-title">Chọn section cần sửa</h3>
+            <p class="live-editor-copy">Có thể bấm vào danh sách bên trái hoặc bấm trực tiếp vào vùng trên preview.</p>
+          </div>
+
+          <div class="live-editor-sidebar-card">
+            <div class="live-editor-side-head">
+              <h3>Section tren trang</h3>
+              <span class="live-editor-pill" id="current-section-pill">Hero</span>
+            </div>
+            <div class="live-editor-section-list">
+              <button class="live-editor-section-btn active" type="button" data-live-editor-target="hero">Hero</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="about">Giới thiệu</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="event">Sự kiện</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="schedule">Lịch trình</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="registered">Đăng ký</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="gallery">Thư viện ảnh</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="guestbook">Lưu bút</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="announcements">Thông báo</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="contact">Liên hệ</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="footer">Footer</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="cta">CTA data</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="full-content">Toàn bộ `content.json`</button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="live-editor-main">
+          <div class="live-editor-toolbar">
+            <div>
+              <div class="live-editor-toolbar-label">Preview thật</div>
+              <div class="live-editor-toolbar-title" id="preview-toolbar-title">Hero</div>
+            </div>
+            <div class="live-editor-toolbar-actions">
+              <div class="live-editor-device-switcher">
+                <button class="live-editor-device-btn active" type="button" data-preview-device="desktop">Máy tính</button>
+                <button class="live-editor-device-btn" type="button" data-preview-device="tablet">Máy tính bảng</button>
+                <button class="live-editor-device-btn" type="button" data-preview-device="mobile">Di động</button>
+              </div>
+              <button class="btn btn-ghost btn-sm" type="button" id="refresh-preview-btn">Tải lại preview</button>
+            </div>
+          </div>
+
+          <div class="live-editor-preview-stage is-desktop" id="preview-stage">
+            <div class="live-editor-preview-shell">
+              <iframe id="content-preview-frame" class="live-editor-preview-frame" src="/?adminPreview=1" title="Live preview"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="editor-modal" id="editor-modal" hidden>
+  <div class="editor-modal-backdrop" id="editor-modal-backdrop"></div>
+  <div class="editor-modal-dialog" id="editor-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="editor-modal-title">
+    <div class="editor-modal-head">
+      <div>
+        <p class="editor-modal-eyebrow">Đang chỉnh sửa</p>
+        <h2 class="editor-modal-title" id="editor-modal-title">Hero</h2>
+        <p class="editor-modal-subtitle" id="editor-modal-subtitle">Chọn nội dung cần sửa, lưu xong preview sẽ cập nhật ngay.</p>
+      </div>
+      <button class="editor-modal-close" type="button" id="editor-modal-close" aria-label="Đóng">x</button>
+    </div>
+
+    <div class="editor-modal-body">
+      <div id="editor-special-tools"></div>
+      <div id="editor-fields"></div>
+    </div>
+
+    <div class="editor-modal-footer">
+      <div class="editor-modal-status" id="editor-modal-status">Chưa có thay đổi chưa lưu.</div>
+      <div class="editor-modal-actions">
+        <button class="btn btn-ghost" type="button" id="editor-modal-cancel">Đóng</button>
+        <button class="btn btn-primary" type="button" id="editor-modal-save">Lưu và cập nhật preview</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="full-content-data" type="application/json"><%- contentJson %></script>
+<script id="gallery-files-data" type="application/json"><%- galleryFilesJson %></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

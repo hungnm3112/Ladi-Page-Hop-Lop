@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment variables (chứa secrets)
+.env
+.env.local
+.env.*.local
+
+# Data files (có thể chứa thông tin cá nhân)
+data/
+
+# Claude Code settings
+.claude/
+
+# Thư mục tải xuống trang web
+Kỷ Niệm 20 Năm Ngày Ra Trường – Hẹn Ước Thanh Xuân_files/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
