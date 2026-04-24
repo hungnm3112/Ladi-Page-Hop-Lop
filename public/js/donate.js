@@ -13,8 +13,8 @@
   var donatePanels = Array.from(document.querySelectorAll('[data-donate-panel]'))
   var donatePersonalOnly = Array.from(document.querySelectorAll('[data-donate-personal-only]'))
   var amountButtons = Array.from(document.querySelectorAll('[data-donate-amount]'))
-  var boardTabs = Array.from(document.querySelectorAll('[data-donate-board-tab]'))
-  var boardPanels = Array.from(document.querySelectorAll('[data-donate-board-panel]'))
+  var donateBoardRoots = Array.from(document.querySelectorAll('[data-donate-board-root]'))
+  var DONATE_PAGE_SIZE = 10
 
   function setDonateMessage(message, type) {
     if (!donateMessage) return
@@ -71,13 +71,85 @@
     })
   }
 
-  function activateBoardTab(kind) {
+  function renderBoardPanel(panel) {
+    if (!panel) return
+    var items = Array.from(panel.querySelectorAll('[data-donate-page-item]'))
+    var pagination = panel.querySelector('[data-donate-pagination]')
+    if (!pagination) return
+
+    if (items.length <= DONATE_PAGE_SIZE) {
+      items.forEach(function (item) { item.hidden = false })
+      pagination.hidden = true
+      pagination.innerHTML = ''
+      panel.dataset.currentPage = '1'
+      return
+    }
+
+    var totalPages = Math.ceil(items.length / DONATE_PAGE_SIZE)
+    var currentPage = parseInt(panel.dataset.currentPage || '1', 10) || 1
+    if (currentPage > totalPages) currentPage = totalPages
+    if (currentPage < 1) currentPage = 1
+    panel.dataset.currentPage = String(currentPage)
+
+    var start = (currentPage - 1) * DONATE_PAGE_SIZE
+    var end = start + DONATE_PAGE_SIZE
+    items.forEach(function (item, index) {
+      item.hidden = index < start || index >= end
+    })
+
+    pagination.hidden = false
+    pagination.innerHTML = ''
+
+    for (var page = 1; page <= totalPages; page++) {
+      var button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'donate-pagination-btn' + (page === currentPage ? ' active' : '')
+      button.textContent = String(page)
+      button.dataset.page = String(page)
+      button.addEventListener('click', function () {
+        panel.dataset.currentPage = this.dataset.page
+        renderBoardPanel(panel)
+      })
+      pagination.appendChild(button)
+    }
+  }
+
+  function activateBoardTab(root, kind) {
+    if (!root) return
+    var boardTabs = Array.from(root.querySelectorAll('[data-donate-board-tab]'))
+    var boardPanels = Array.from(root.querySelectorAll('[data-donate-board-panel]'))
+
     boardTabs.forEach(function (tab) {
       tab.classList.toggle('active', tab.getAttribute('data-donate-board-tab') === kind)
     })
     boardPanels.forEach(function (panel) {
-      panel.classList.toggle('active', panel.getAttribute('data-donate-board-panel') === kind)
+      var active = panel.getAttribute('data-donate-board-panel') === kind
+      panel.classList.toggle('active', active)
+      if (active) renderBoardPanel(panel)
     })
+  }
+
+  function initDonateBoard(root) {
+    if (!root) return
+    var boardTabs = Array.from(root.querySelectorAll('[data-donate-board-tab]'))
+    var boardPanels = Array.from(root.querySelectorAll('[data-donate-board-panel]'))
+    var activeTab = 'class'
+
+    boardPanels.forEach(function (panel) {
+      panel.dataset.currentPage = panel.dataset.currentPage || '1'
+      renderBoardPanel(panel)
+      if (panel.classList.contains('active')) {
+        activeTab = panel.getAttribute('data-donate-board-panel') || activeTab
+      }
+    })
+
+    boardTabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activateBoardTab(root, tab.getAttribute('data-donate-board-tab'))
+      })
+    })
+
+    activateBoardTab(root, activeTab)
   }
 
   document.querySelectorAll('[data-donate-open]').forEach(function (trigger) {
@@ -114,12 +186,6 @@
       })
     })
   }
-
-  boardTabs.forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      activateBoardTab(tab.getAttribute('data-donate-board-tab'))
-    })
-  })
 
   if (donateForm) {
     donateForm.addEventListener('submit', function (e) {
@@ -186,7 +252,7 @@
   }
 
   if (donateType) activateDonateKind(donateType.value || 'personal')
-  if (boardTabs.length > 0) activateBoardTab('class')
+  donateBoardRoots.forEach(initDonateBoard)
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && donateModal && donateModal.classList.contains('active')) closeDonateModal()

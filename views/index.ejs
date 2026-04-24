@@ -7,6 +7,7 @@
   <meta name="description" content="<%= content.hero.description %>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/donate.css">
   <link rel="icon" type="image/gif" href="/images/icon.gif">
@@ -66,6 +67,7 @@
     <li><a href="#gioi-thieu">GIỚI THIỆU</a></li>
     <li><a href="#lich-trinh">LỊCH TRÌNH</a></li>
     <li><a href="#da-dang-ky">ĐÃ ĐĂNG KÝ</a></li>
+    <li><a href="#ung-ho">ỦNG HỘ</a></li>
     <li><a href="#thu-vien-anh">THƯ VIỆN ẢNH</a></li>
     <li><a href="#luu-but">LƯU BÚT</a></li>
     <li><a href="#lien-he">LIÊN HỆ</a></li>
@@ -79,6 +81,7 @@
   <a href="#gioi-thieu">GIỚI THIỆU</a>
   <a href="#lich-trinh">LỊCH TRÌNH</a>
   <a href="#da-dang-ky">ĐÃ ĐĂNG KÝ</a>
+  <a href="#ung-ho">ỦNG HỘ</a>
   <a href="#thu-vien-anh">THƯ VIỆN ẢNH</a>
   <a href="#luu-but">LƯU BÚT</a>
   <a href="#lien-he">LIÊN HỆ</a>
@@ -92,7 +95,12 @@
 <a href="#dang-ky" class="fixed-cta" data-register-open>ĐĂNG KÝ NGAY</a>
 
 <!-- ══ SECTION 1 — HERO ══════════════════════════════════ -->
-<section class="hero" id="hero">
+<div class="mobile-bottom-nav" aria-label="Hành động nhanh trên điện thoại">
+  <a href="/donate" class="btn-outline-gold" data-donate-open>Ủng hộ</a>
+  <a href="#dang-ky" class="btn-gold" data-register-open>Đăng ký</a>
+</div>
+
+<section class="hero" id="hero"<% if (content.hero && content.hero.bgColor) { %> style="background: <%= content.hero.bgColor %>"<% } %>>
   <div class="hero-content"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="hero" data-admin-label="Hero"<% } %>>
 
     <div class="hero-logo-wrap">
@@ -168,22 +176,22 @@
 
     <div class="info-cards reveal"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="event" data-admin-label="Su kien"<% } %>>
       <div class="info-card">
-        <div class="info-card-icon">📅</div>
+        <div class="info-card-icon"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></div>
         <div class="info-card-label">THỜI GIAN</div>
         <div class="info-card-value"><%= eventDateFormatted %></div>
       </div>
       <div class="info-card">
-        <div class="info-card-icon">📍</div>
+        <div class="info-card-icon"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></div>
         <div class="info-card-label">ĐỊA ĐIỂM</div>
         <div class="info-card-value"><%= content.event.venue %></div>
       </div>
       <div class="info-card">
-        <div class="info-card-icon">👥</div>
+        <div class="info-card-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
         <div class="info-card-label">ĐỐI TƯỢNG</div>
         <div class="info-card-value"><%= content.event.target || 'Cựu HS niên khóa 03-06' %></div>
       </div>
       <div class="info-card">
-        <div class="info-card-icon">📞</div>
+        <div class="info-card-icon"><i class="fa-solid fa-phone" aria-hidden="true"></i></div>
         <div class="info-card-label">LIÊN HỆ</div>
         <div class="info-card-value"><%= content.event.contact || '' %></div>
       </div>
@@ -204,16 +212,12 @@
       <p class="section-subtitle"><%= content.schedule.subtitle || '' %></p>
     </div>
 
-    <% if (content.schedule.activities && content.schedule.activities.length > 0) { %>
+    <% if (scheduleActivities && scheduleActivities.length > 0) { %>
     <div class="activity-icons reveal">
-      <% content.schedule.activities.forEach(function(act) {
-           var parts = act.split(' ')
-           var emoji = parts[0]
-           var label = parts.slice(1).join(' ')
-      %>
+      <% scheduleActivities.forEach(function(act) { %>
       <div class="activity-icon">
-        <span class="activity-icon-emoji"><%= emoji %></span>
-        <span class="activity-icon-label"><%= label %></span>
+        <span class="activity-icon-symbol"><i class="<%= act.icon %>" aria-hidden="true"></i></span>
+        <span class="activity-icon-label"><%= act.label %></span>
       </div>
       <% }) %>
     </div>
@@ -322,7 +326,6 @@
             <span>STT</span>
             <span>Họ và tên</span>
             <span>Lớp</span>
-            <span>Size áo</span>
             <span>Ghi chú</span>
             <span>Trạng thái</span>
           </div>
@@ -331,7 +334,6 @@
             <span class="registered-cell-index" data-row-index><%= index + 1 %></span>
             <span><%= item.name %></span>
             <span><%= item.className || 'Đang cập nhật' %></span>
-            <span><%= item.shirtSize || '–' %></span>
             <span><%= item.note || '–' %></span>
             <span><span class="registered-status"><%= item.status || 'Chờ xác nhận' %></span></span>
           </div>
@@ -350,6 +352,44 @@
 </section>
 <% } %>
 
+<% if (donateSummary) { %>
+<section class="section donate-home-section" id="ung-ho"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="donate" data-admin-label="Ung ho"<% } %>>
+  <div class="donate-hero-page donate-home-hero-page">
+    <div class="donate-hero-inner donate-home-inner">
+      <div class="section-header donate-home-header">
+        <p class="section-label"><%= donateSummary.label || 'ỦNG HỘ' %></p>
+        <h2 class="donate-hero-title donate-home-title">
+          <span><%= donateSummary.title || 'Đóng Góp Cho' %></span>
+          <span class="donate-hero-title-accent"><%= donateSummary.titleAccent || 'Ngày Hội Ngộ' %></span>
+        </h2>
+        <div class="title-underline"></div>
+        <p class="section-subtitle donate-hero-copy"><%= donateSummary.subtitle || '' %></p>
+      </div>
+
+      <div class="donate-hero-stats donate-home-stats">
+        <div class="donate-stat-card">
+          <strong><%= Number(donateSummary.totalAmount || 0).toLocaleString('vi-VN') %></strong>
+          <span>VND đã đóng góp</span>
+        </div>
+        <div class="donate-stat-card">
+          <strong><%= donateSummary.donorCount || 0 %></strong>
+          <span>Người đóng góp</span>
+        </div>
+      </div>
+
+      <div class="donate-hero-actions donate-home-actions">
+        <button class="btn-gold donate-hero-button" type="button" data-donate-open><%= donateSummary.ctaText || 'Đóng Góp Ngay' %></button>
+        <a href="/donate" class="btn-outline-gold">Xem bảng xếp hạng</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="donate-board-section donate-home-board-section">
+    <%- include('partials/donate-board', { donateSummary: donateSummary }) %>
+  </div>
+</section>
+<% } %>
+
 <!-- Registration Modal -->
 <%
   var registerClassOptions = []
@@ -360,15 +400,11 @@
       .map(function(item) { return item && item.name ? item.name : '' })
       .filter(Boolean)
   }
-  var registerShirtSizeOptions = []
-  if (content.registered && Array.isArray(content.registered.shirtSizeOptions) && content.registered.shirtSizeOptions.length > 0) {
-    registerShirtSizeOptions = content.registered.shirtSizeOptions
-  }
 %>
 <div class="register-modal" id="register-modal" aria-hidden="true" aria-modal="true" role="dialog">
   <div class="modal-bg" id="register-modal-bg"></div>
   <div class="register-modal-box">
-    <button class="register-modal-close" id="close-register-modal" aria-label="Đóng">×</button>
+    <button class="register-modal-close" id="close-register-modal" aria-label="Đóng"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
     <div class="register-modal-header">
       <p class="register-modal-label">ĐĂNG KÝ</p>
       <h3 class="register-modal-title">Đăng Ký Tham Gia</h3>
@@ -396,18 +432,6 @@
           <input class="register-form-input" type="text" id="register-phone" name="phone" placeholder="0912 345 678" maxlength="20" required>
         </div>
       </div>
-
-      <% if (registerShirtSizeOptions.length > 0) { %>
-      <div class="register-form-group">
-        <label class="register-form-label" for="register-shirt-size">SIZE ÁO *</label>
-        <select class="register-form-input" id="register-shirt-size" name="shirtSize" required>
-          <option value="">-- Chọn size áo --</option>
-          <% registerShirtSizeOptions.forEach(function(sizeLabel) { %>
-          <option value="<%= sizeLabel %>"><%= sizeLabel %></option>
-          <% }) %>
-        </select>
-      </div>
-      <% } %>
 
       <div class="register-form-group">
         <label class="register-form-label" for="register-note">GHI CHÚ</label>
@@ -446,8 +470,8 @@
         </div>
         <% }) %>
       </div>
-      <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Ảnh trước">‹</button>
-      <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Ảnh tiếp">›</button>
+      <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Ảnh trước"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+      <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Ảnh tiếp"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
       <div class="carousel-counter" id="slide-counter">1 / <%= galleryImages.length %></div>
     </div>
 
@@ -494,7 +518,7 @@
       <% }) %>
     </div>
     <% } else { %>
-    <p class="section-subtitle reveal guestbook-empty" style="text-align:center;margin-top:8px">Chưa có lời nhắn nào. Hãy là người đầu tiên! 💌</p>
+    <p class="section-subtitle reveal guestbook-empty" style="text-align:center;margin-top:8px">Chưa có lời nhắn nào. Hãy là người đầu tiên!</p>
     <% } %>
 
   </div>
@@ -504,7 +528,7 @@
 <div class="guestbook-modal" id="guestbook-modal" aria-hidden="true" aria-modal="true" role="dialog">
   <div class="modal-bg" id="guestbook-modal-bg"></div>
   <div class="modal-box">
-    <button class="modal-close" id="close-guestbook-modal" aria-label="Đóng">✕</button>
+    <button class="modal-close" id="close-guestbook-modal" aria-label="Đóng"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
     <h3 class="modal-title">Gửi Lời Nhắn</h3>
     <form id="guestbook-form" novalidate>
       <div class="modal-form-group">
@@ -580,28 +604,28 @@
 
       <div class="contact-info">
         <div class="contact-row">
-          <div class="contact-icon">📍</div>
+          <div class="contact-icon"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></div>
           <div>
             <div class="contact-label">ĐỊA CHỈ</div>
             <div class="contact-value"><%= content.contact.address %></div>
           </div>
         </div>
         <div class="contact-row">
-          <div class="contact-icon">📞</div>
+          <div class="contact-icon"><i class="fa-solid fa-phone" aria-hidden="true"></i></div>
           <div>
             <div class="contact-label">ĐIỆN THOẠI</div>
             <div class="contact-value"><%= content.contact.phone %></div>
           </div>
         </div>
         <div class="contact-row">
-          <div class="contact-icon">💬</div>
+          <div class="contact-icon"><i class="fa-brands fa-rocketchat" aria-hidden="true"></i></div>
           <div>
             <div class="contact-label">NHÓM ZALO</div>
             <div class="contact-value"><%= content.contact.zalo %></div>
           </div>
         </div>
         <div class="contact-row">
-          <div class="contact-icon">🚗</div>
+          <div class="contact-icon"><i class="fa-solid fa-car-side" aria-hidden="true"></i></div>
           <div>
             <div class="contact-label">GỬI XE</div>
             <div class="contact-value"><%= content.contact.parking %></div>
@@ -623,12 +647,13 @@
     <a href="#gioi-thieu">Giới Thiệu</a>
     <a href="#lich-trinh">Lịch Trình</a>
     <a href="#da-dang-ky">Đã Đăng Ký</a>
+    <a href="#ung-ho">Ủng Hộ</a>
     <a href="#thu-vien-anh">Thư Viện Ảnh</a>
     <a href="#luu-but">Lưu Bút</a>
     <a href="#lien-he">Liên Hệ</a>
   </nav>
   <p class="footer-copy"><%= content.footer.text %></p>
-  <a href="/admin" class="admin-link" aria-label="Quản trị">⚙</a>
+  <a href="/admin" class="admin-link" aria-label="Quản trị"><i class="fa-solid fa-gear" aria-hidden="true"></i></a>
 </footer>
 
 <!-- ══ SCRIPTS ══════════════════════════════════════════════ -->
@@ -649,7 +674,7 @@
   function tick() {
     var diff = eventDateTime - Date.now()
     if (diff <= 0) {
-      cdBox.innerHTML = '<div class="cd-done">🎉 Sự kiện đã diễn ra!</div>'
+      cdBox.innerHTML = '<div class="cd-done"><i class="fa-solid fa-party-popper" aria-hidden="true"></i><span>Sự kiện đã diễn ra!</span></div>'
       return
     }
     cdDays.textContent    = pad(Math.floor(diff / 86400000))
@@ -1029,21 +1054,15 @@
   if (registerForm) {
     registerForm.addEventListener('submit', function(e) {
       e.preventDefault()
-      var shirtSizeField = registerForm.querySelector('[name="shirtSize"]')
       var formData = {
         name: registerForm.querySelector('[name="name"]').value.trim(),
         className: registerForm.querySelector('[name="className"]').value.trim(),
-        shirtSize: shirtSizeField ? shirtSizeField.value.trim() : '',
         phone: registerForm.querySelector('[name="phone"]').value.trim(),
         note: registerForm.querySelector('[name="note"]').value.trim()
       }
 
       if (!formData.name || !formData.className || !formData.phone) {
         setRegisterMessage('Vui lòng nhập đủ họ tên, lớp và số điện thoại.', 'error')
-        return
-      }
-      if (shirtSizeField && !formData.shirtSize) {
-        setRegisterMessage('Vui lòng chọn size áo.', 'error')
         return
       }
 
@@ -1122,7 +1141,7 @@
             (cls ? '<div class="guestbook-class">' + cls.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : '') +
             '<div class="guestbook-date">' + (result.item && result.item.createdAtLabel ? result.item.createdAtLabel : '') + '</div>'
           grid.insertBefore(card, grid.firstChild)
-          alert('Cảm ơn bạn đã gửi lời nhắn! 🎉')
+          alert('Cảm ơn bạn đã gửi lời nhắn!')
         } else {
           alert('Lỗi: ' + (result.message || 'Vui lòng thử lại'))
         }

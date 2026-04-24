@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Trị - Ladi Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
@@ -28,6 +29,7 @@
     <a class="tab-item" data-panel="event">Sự kiện</a>
     <a class="tab-item" data-panel="about">Giới thiệu</a>
     <a class="tab-item" data-panel="registered">Đăng ký</a>
+    <a class="tab-item" data-panel="attendees">Người đăng ký</a>
     <a class="tab-item" data-panel="gallery">Gallery</a>
     <a class="tab-item" data-panel="cta">Nút đăng ký</a>
     <a class="tab-item" data-panel="footer">Footer</a>
@@ -116,6 +118,33 @@
         <button class="btn btn-primary" data-save-section="event" data-save-form="form-event">Lưu thay đổi</button>
       </div>
     </div>
+
+    <div class="card" style="margin-top: 20px">
+      <div class="card-head">
+        <div class="card-icon"><i class="fa-solid fa-icons" aria-hidden="true"></i></div>
+        <h2>Icon Chương Trình Sự Kiện</h2>
+      </div>
+
+      <div class="schedule-activity-editor">
+        <div class="schedule-activity-editor-head">
+          <h3>Danh sách hoạt động nổi bật</h3>
+          <p>Chọn icon Font Awesome và nhãn hiển thị ở section “Lịch trình” ngoài trang chủ.</p>
+        </div>
+
+        <div class="schedule-activity-list" id="schedule-activities-list"></div>
+
+        <div class="card-footer">
+          <button class="btn btn-ghost" type="button" id="schedule-activities-add">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            Thêm hoạt động
+          </button>
+          <button class="btn btn-primary" type="button" id="schedule-activities-save">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+            Lưu icon chương trình
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="panel" id="panel-about">
@@ -164,44 +193,67 @@
           <textarea class="form-control" name="classOptionsText" rows="8" placeholder="Mỗi dòng một lớp, ví dụ: A1"><%= registeredClassText %></textarea>
           <div class="form-hint">Các lựa chọn trong popup đăng ký sẽ lấy từ danh sách này. Nhập mỗi lớp trên một dòng.</div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Tùy chọn size áo</label>
-          <textarea class="form-control" name="shirtSizeOptionsText" rows="8" placeholder="Mỗi dòng một size, ví dụ: S Nam"><%= registeredShirtSizeText %></textarea>
-          <div class="form-hint">Popup đăng ký sẽ hiển thị danh sách size áo này dưới dạng ô chọn. Nhập mỗi size trên một dòng, ví dụ: S Nam, S Nữ, M Nam, M Nữ.</div>
-        </div>
       </form>
       <div class="card-footer">
         <button class="btn btn-primary" data-save-handler="registered">Lưu danh sách lớp</button>
       </div>
     </div>
 
-    <div class="card" style="margin-top: 16px">
+    <div class="form-hint" style="margin-top: 8px">
+      Xem, tìm kiếm, đổi trạng thái và xóa người đăng ký ở tab <strong>Người đăng ký</strong>.
+    </div>
+  </div>
+
+  <div class="panel" id="panel-attendees">
+    <div class="card">
       <div class="card-head">
         <div class="card-icon">N</div>
-        <h2>Đăng Ký Hiện Có (<%= (content.registered.attendees || []).length %> người)</h2>
+        <h2>Danh Sách Người Đăng Ký (<span id="attendees-total-count">0</span>)</h2>
       </div>
-      <% if ((content.registered.attendees || []).length > 0) { %>
-      <div class="admin-registered-table">
-        <div class="admin-registered-head">
+
+      <div class="attendees-stats" id="attendees-stats">
+        <div class="attendees-stat">
+          <span class="attendees-stat-label">Tổng</span>
+          <strong id="attendees-stat-total">0</strong>
+        </div>
+        <div class="attendees-stat">
+          <span class="attendees-stat-label">Đã xác nhận</span>
+          <strong id="attendees-stat-confirmed">0</strong>
+        </div>
+        <div class="attendees-stat">
+          <span class="attendees-stat-label">Chờ xác nhận</span>
+          <strong id="attendees-stat-pending">0</strong>
+        </div>
+      </div>
+
+      <div class="attendees-toolbar">
+        <input type="search" id="attendees-search" class="form-control attendees-search" placeholder="Tìm theo tên, SĐT, lớp, ghi chú..." autocomplete="off">
+        <select id="attendees-filter-class" class="form-control attendees-filter">
+          <option value="all">Tất cả lớp</option>
+        </select>
+        <select id="attendees-filter-status" class="form-control attendees-filter">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="Chờ xác nhận">Chờ xác nhận</option>
+          <option value="Đã xác nhận">Đã xác nhận</option>
+        </select>
+        <button type="button" class="btn btn-ghost btn-sm" id="attendees-export">Xuất CSV</button>
+      </div>
+
+      <div class="attendees-table-wrap">
+        <div class="attendees-table-head">
+          <span>#</span>
           <span>Họ tên</span>
           <span>Lớp</span>
-          <span>Size áo</span>
-          <span>SDT</span>
+          <span>SĐT</span>
+          <span>Ghi chú</span>
           <span>Trạng thái</span>
+          <span>Ngày</span>
+          <span>Thao tác</span>
         </div>
-        <% content.registered.attendees.slice(0, 20).forEach(function(item) { %>
-        <div class="admin-registered-row">
-          <span><%= item.name %></span>
-          <span><%= item.className %></span>
-          <span><%= item.shirtSize || '–' %></span>
-          <span><%= item.phone || '' %></span>
-          <span><%= item.status || 'Chờ xác nhận' %></span>
-        </div>
-        <% }) %>
+        <div id="attendees-list"></div>
       </div>
-      <% } else { %>
-      <p class="form-hint">Chưa có người đăng ký nào.</p>
-      <% } %>
+
+      <div class="attendees-pagination" id="attendees-pagination"></div>
     </div>
   </div>
 
@@ -436,6 +488,7 @@
 
 <script id="full-content-data" type="application/json"><%- contentJson %></script>
 <script id="gallery-files-data" type="application/json"><%- galleryFilesJson %></script>
+<script id="schedule-activity-icons-data" type="application/json"><%- scheduleActivityIconsJson %></script>
 <script src="/js/admin.js"></script>
 </body>
 </html>

@@ -13,7 +13,7 @@
     "ctaPrimaryUrl": "#gioi-thieu",
     "ctaSecondaryText": "Xem Lịch Trình →",
     "ctaSecondaryUrl": "#lich-trinh",
-    "bgColor": "#1a1a1a"
+    "bgColor": "#535ef3"
   },
   "event": {
     "date": "2026-06-28",
@@ -129,12 +129,6 @@
       "B2",
       "B3"
     ],
-    "shirtSizeOptions": [
-      "S Nam",
-      "S Nữ",
-      "M Nam",
-      "M Nữ"
-    ],
     "total": 0,
     "classCount": "0 / 15 lớp tham gia",
     "classes": [
@@ -192,7 +186,6 @@
         "id": "1776998203457",
         "name": "Nguyễn Xuân Tưởng",
         "className": "A1",
-        "shirtSize": "M Nam",
         "phone": "0988355980",
         "note": "Tôi sẵn lòng tham gia, cùng hết mình với các bạn cùng khóa, chúc BTC hội khóa 20 năm gặp lại của niên khóa 2003-2006 thành công tốt đẹp.",
         "status": "Chờ xác nhận",
@@ -322,6 +315,18 @@
       10000000
     ],
     "entries": [
+      {
+        "id": "1777003719747",
+        "type": "personal",
+        "name": "Nguyễn Mạnh Hùng",
+        "className": "A2",
+        "contactName": "",
+        "organizationName": "",
+        "amount": 2000000,
+        "message": "",
+        "anonymous": false,
+        "createdAt": "2026-04-24T04:08:39.747Z"
+      },
       {
         "id": "1776998148090",
         "type": "personal",

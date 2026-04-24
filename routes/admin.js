@@ -8,6 +8,20 @@ const DATA_FILE = path.join(__dirname, '../data/content.json')
 const GALLERY_DIR = path.join(__dirname, '../public/images/gallery')
 const IMAGES_DIR = path.join(__dirname, '../public/images')
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
+const SCHEDULE_ACTIVITY_ICON_OPTIONS = [
+  { value: 'fa-solid fa-futbol', label: 'Bóng đá' },
+  { value: 'fa-solid fa-people-pulling', label: 'Kéo co / kéo cờ' },
+  { value: 'fa-solid fa-table-tennis-paddle-ball', label: 'Pickleball / tennis' },
+  { value: 'fa-solid fa-fire', label: 'Lửa trại' },
+  { value: 'fa-solid fa-music', label: 'Văn nghệ / âm nhạc' },
+  { value: 'fa-solid fa-microphone-lines', label: 'MC / phát biểu' },
+  { value: 'fa-solid fa-camera', label: 'Chụp ảnh' },
+  { value: 'fa-solid fa-school', label: 'Trường lớp' },
+  { value: 'fa-solid fa-utensils', label: 'Ăn uống' },
+  { value: 'fa-solid fa-champagne-glasses', label: 'Tiệc / liên hoan' },
+  { value: 'fa-solid fa-handshake', label: 'Hội ngộ / giao lưu' },
+  { value: 'fa-solid fa-star', label: 'Khác' }
+]
 
 // Multer: gallery upload
 const galleryStorage = multer.diskStorage({
@@ -91,16 +105,6 @@ function getRegisteredClassOptions(registered) {
   return []
 }
 
-function getRegisteredShirtSizeOptions(registered) {
-  if (Array.isArray(registered?.shirtSizeOptions) && registered.shirtSizeOptions.length > 0) {
-    return registered.shirtSizeOptions
-      .map(item => String(item || '').trim())
-      .filter(Boolean)
-  }
-
-  return []
-}
-
 function parseClassOptionsText(text) {
   return Array.from(new Set(
     String(text || '')
@@ -108,6 +112,49 @@ function parseClassOptionsText(text) {
       .map(item => item.trim())
       .filter(Boolean)
   ))
+}
+
+function sanitizeScheduleIcon(icon) {
+  const value = String(icon || '').trim().replace(/\s+/g, ' ')
+  const found = SCHEDULE_ACTIVITY_ICON_OPTIONS.find(item => item.value === value)
+  return found ? found.value : 'fa-solid fa-star'
+}
+
+function inferScheduleIcon(label) {
+  const normalized = String(label || '').toLowerCase()
+  if (normalized.includes('bóng') || normalized.includes('đá')) return 'fa-solid fa-futbol'
+  if (normalized.includes('kéo co') || normalized.includes('kéo cờ')) return 'fa-solid fa-people-pulling'
+  if (normalized.includes('pickleball') || normalized.includes('tennis')) return 'fa-solid fa-table-tennis-paddle-ball'
+  if (normalized.includes('lửa trại') || normalized.includes('lửa')) return 'fa-solid fa-fire'
+  if (normalized.includes('văn nghệ') || normalized.includes('karaoke') || normalized.includes('nhạc')) return 'fa-solid fa-music'
+  if (normalized.includes('ẩm thực') || normalized.includes('ăn')) return 'fa-solid fa-utensils'
+  if (normalized.includes('gặp mặt') || normalized.includes('hội ngộ')) return 'fa-solid fa-handshake'
+  return 'fa-solid fa-star'
+}
+
+function normalizeScheduleActivities(schedule) {
+  const rawActivities = Array.isArray(schedule?.activities) ? schedule.activities : []
+
+  return rawActivities
+    .map(item => {
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        const label = String(item.label || '').trim()
+        if (!label) return null
+        return {
+          icon: sanitizeScheduleIcon(item.icon),
+          label
+        }
+      }
+
+      const raw = String(item || '').trim()
+      if (!raw) return null
+      const label = raw.replace(/^[^\p{L}\p{N}]+/u, '').trim() || raw
+      return {
+        icon: inferScheduleIcon(label),
+        label
+      }
+    })
+    .filter(Boolean)
 }
 
 function requireAdmin(req, res, next) {
@@ -154,10 +201,11 @@ router.get('/', requireAdmin, (req, res) => {
     }
   })
   const registeredClassText = getRegisteredClassOptions(content.registered).join('\n')
-  const registeredShirtSizeText = getRegisteredShirtSizeOptions(content.registered).join('\n')
+  const scheduleActivities = normalizeScheduleActivities(content.schedule)
+  const scheduleActivityIconsJson = JSON.stringify(SCHEDULE_ACTIVITY_ICON_OPTIONS).replace(/</g, '\\u003c')
   const contentJson = JSON.stringify(content).replace(/</g, '\\u003c')
   const galleryFilesJson = JSON.stringify(galleryFiles).replace(/</g, '\\u003c')
-  res.render('admin', { content, galleryFiles, registeredClassText, registeredShirtSizeText, contentJson, galleryFilesJson })
+  res.render('admin', { content, galleryFiles, registeredClassText, scheduleActivities, scheduleActivityIconsJson, contentJson, galleryFilesJson })
 })
 
 // ── Save content ──────────────────────────────────────
@@ -180,7 +228,6 @@ router.post('/registered-settings', requireAdmin, (req, res) => {
     if (!content.registered) content.registered = {}
 
     const classOptions = parseClassOptionsText(req.body?.classOptionsText)
-    const shirtSizeOptions = parseClassOptionsText(req.body?.shirtSizeOptionsText)
     if (classOptions.length === 0) {
       return res.json({ ok: false, message: 'Danh sách lớp không được để trống.' })
     }
@@ -189,7 +236,6 @@ router.post('/registered-settings', requireAdmin, (req, res) => {
     content.registered.title = String(req.body?.title || content.registered.title || 'Đã Đăng Ký Tham Gia').trim()
     content.registered.subtitle = String(req.body?.subtitle || content.registered.subtitle || '').trim()
     content.registered.classOptions = classOptions
-    content.registered.shirtSizeOptions = shirtSizeOptions
     content.registered.classes = classOptions.map(name => ({ name, count: 0 }))
     if (!Array.isArray(content.registered.attendees)) content.registered.attendees = []
 
@@ -197,6 +243,80 @@ router.post('/registered-settings', requireAdmin, (req, res) => {
     return res.json({ ok: true, message: 'Đã lưu cấu hình danh sách lớp.' })
   } catch (error) {
     return res.json({ ok: false, message: 'Không thể lưu danh sách lớp: ' + error.message })
+  }
+})
+
+// ── Attendees management ──────────────────────────────
+router.post('/schedule-activities', requireAdmin, (req, res) => {
+  try {
+    const content = getContent()
+    if (!content.schedule) content.schedule = {}
+
+    const activities = Array.isArray(req.body?.activities) ? req.body.activities : []
+    const normalizedActivities = activities
+      .map(item => ({
+        icon: sanitizeScheduleIcon(item?.icon),
+        label: String(item?.label || '').trim().slice(0, 40)
+      }))
+      .filter(item => item.label)
+
+    if (normalizedActivities.length === 0) {
+      return res.json({ ok: false, message: 'Vui lòng thêm ít nhất 1 hoạt động cho chương trình.' })
+    }
+
+    content.schedule.activities = normalizedActivities
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã lưu danh sách hoạt động chương trình.' })
+  } catch (error) {
+    return res.json({ ok: false, message: 'Không thể lưu hoạt động chương trình: ' + error.message })
+  }
+})
+
+router.post('/attendees/:id/status', requireAdmin, (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim()
+    const status = String(req.body?.status || '').trim()
+    if (!id) return res.json({ ok: false, message: 'ID không hợp lệ.' })
+    if (!status || status.length > 40) {
+      return res.json({ ok: false, message: 'Trạng thái không hợp lệ.' })
+    }
+
+    const content = getContent()
+    if (!content.registered || !Array.isArray(content.registered.attendees)) {
+      return res.json({ ok: false, message: 'Chưa có danh sách đăng ký.' })
+    }
+
+    const attendee = content.registered.attendees.find(item => String(item?.id || '') === id)
+    if (!attendee) return res.json({ ok: false, message: 'Không tìm thấy người đăng ký.' })
+
+    attendee.status = status
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã cập nhật trạng thái.', attendee })
+  } catch (err) {
+    return res.json({ ok: false, message: 'Không thể cập nhật: ' + err.message })
+  }
+})
+
+router.delete('/attendees/:id', requireAdmin, (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim()
+    if (!id) return res.json({ ok: false, message: 'ID không hợp lệ.' })
+
+    const content = getContent()
+    if (!content.registered || !Array.isArray(content.registered.attendees)) {
+      return res.json({ ok: false, message: 'Chưa có danh sách đăng ký.' })
+    }
+
+    const before = content.registered.attendees.length
+    content.registered.attendees = content.registered.attendees.filter(item => String(item?.id || '') !== id)
+    if (content.registered.attendees.length === before) {
+      return res.json({ ok: false, message: 'Không tìm thấy người đăng ký.' })
+    }
+
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã xóa người đăng ký.' })
+  } catch (err) {
+    return res.json({ ok: false, message: 'Không thể xóa: ' + err.message })
   }
 })
 

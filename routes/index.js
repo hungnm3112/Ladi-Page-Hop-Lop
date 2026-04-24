@@ -18,12 +18,69 @@ const DONATE_DEFAULTS = {
   entries: []
 }
 
+const SCHEDULE_ACTIVITY_ICON_OPTIONS = [
+  'fa-solid fa-futbol',
+  'fa-solid fa-people-pulling',
+  'fa-solid fa-table-tennis-paddle-ball',
+  'fa-solid fa-fire',
+  'fa-solid fa-music',
+  'fa-solid fa-microphone-lines',
+  'fa-solid fa-camera',
+  'fa-solid fa-school',
+  'fa-solid fa-utensils',
+  'fa-solid fa-champagne-glasses',
+  'fa-solid fa-handshake',
+  'fa-solid fa-star'
+]
+
 function getContent() {
   return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'))
 }
 
 function saveContent(content) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(content, null, 2), 'utf8')
+}
+
+function sanitizeScheduleIcon(icon) {
+  const value = String(icon || '').trim().replace(/\s+/g, ' ')
+  return SCHEDULE_ACTIVITY_ICON_OPTIONS.includes(value) ? value : 'fa-solid fa-star'
+}
+
+function inferScheduleIcon(label) {
+  const normalized = String(label || '').toLowerCase()
+  if (normalized.includes('bóng') || normalized.includes('đá')) return 'fa-solid fa-futbol'
+  if (normalized.includes('kéo co') || normalized.includes('kéo cờ')) return 'fa-solid fa-people-pulling'
+  if (normalized.includes('pickleball') || normalized.includes('tennis')) return 'fa-solid fa-table-tennis-paddle-ball'
+  if (normalized.includes('lửa trại') || normalized.includes('lửa')) return 'fa-solid fa-fire'
+  if (normalized.includes('văn nghệ') || normalized.includes('karaoke') || normalized.includes('nhạc')) return 'fa-solid fa-music'
+  if (normalized.includes('ẩm thực') || normalized.includes('ăn')) return 'fa-solid fa-utensils'
+  if (normalized.includes('gặp mặt') || normalized.includes('hội ngộ')) return 'fa-solid fa-handshake'
+  return 'fa-solid fa-star'
+}
+
+function normalizeScheduleActivities(schedule) {
+  const rawActivities = Array.isArray(schedule?.activities) ? schedule.activities : []
+
+  return rawActivities
+    .map(item => {
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        const label = String(item.label || '').trim()
+        if (!label) return null
+        return {
+          icon: sanitizeScheduleIcon(item.icon),
+          label
+        }
+      }
+
+      const raw = String(item || '').trim()
+      if (!raw) return null
+      const label = raw.replace(/^[^\p{L}\p{N}]+/u, '').trim() || raw
+      return {
+        icon: inferScheduleIcon(label),
+        label
+      }
+    })
+    .filter(Boolean)
 }
 
 function getGalleryImages(content) {
@@ -78,27 +135,15 @@ function getRegisteredClassOptions(registered) {
   return []
 }
 
-function getRegisteredShirtSizeOptions(registered) {
-  if (Array.isArray(registered?.shirtSizeOptions) && registered.shirtSizeOptions.length > 0) {
-    return registered.shirtSizeOptions
-      .map(item => String(item || '').trim())
-      .filter(Boolean)
-  }
-
-  return []
-}
-
 function normalizeRegistered(content) {
   const registered = content.registered || {}
   const classOptions = getRegisteredClassOptions(registered)
-  const shirtSizeOptions = getRegisteredShirtSizeOptions(registered)
   const attendees = Array.isArray(registered.attendees)
     ? registered.attendees
         .filter(item => item && item.name)
         .map(item => ({
           name: String(item.name).trim(),
           className: String(item.className || '').trim(),
-          shirtSize: String(item.shirtSize || '').trim(),
           phone: String(item.phone || '').trim(),
           note: String(item.note || '').trim(),
           status: String(item.status || 'Chờ xác nhận').trim() || 'Chờ xác nhận',
@@ -153,8 +198,7 @@ function normalizeRegistered(content) {
     classCount,
     classes: normalizedClasses,
     attendees,
-    classOptions,
-    shirtSizeOptions
+    classOptions
   }
 }
 
@@ -278,8 +322,9 @@ router.get('/', (req, res) => {
   const eventDateFormatted = formatEventDate(content.event?.date)
   const registeredSummary = normalizeRegistered(content)
   const donateSummary = normalizeDonate(content)
+  const scheduleActivities = normalizeScheduleActivities(content.schedule)
   const previewMode = req.query.adminPreview === '1'
-  res.render('index', { content, galleryImages, eventDateFormatted, registeredSummary, donateSummary, previewMode })
+  res.render('index', { content, galleryImages, eventDateFormatted, registeredSummary, donateSummary, scheduleActivities, previewMode })
 })
 
 router.get('/donate', (req, res) => {
@@ -335,7 +380,6 @@ router.post('/register', (req, res) => {
   try {
     const name = String(req.body?.name || '').trim()
     const className = String(req.body?.className || '').trim()
-    const shirtSize = String(req.body?.shirtSize || '').trim()
     const phone = String(req.body?.phone || '').trim()
     const note = String(req.body?.note || '').trim()
 
@@ -343,7 +387,7 @@ router.post('/register', (req, res) => {
       return res.status(400).json({ ok: false, message: 'Vui lòng nhập đủ họ tên, lớp và số điện thoại.' })
     }
 
-    if (name.length > 80 || className.length > 20 || shirtSize.length > 40 || phone.length > 20 || note.length > 300) {
+    if (name.length > 80 || className.length > 20 || phone.length > 20 || note.length > 300) {
       return res.status(400).json({ ok: false, message: 'Thông tin đăng ký vượt quá giới hạn cho phép.' })
     }
 
@@ -352,17 +396,8 @@ router.post('/register', (req, res) => {
     if (!Array.isArray(content.registered.attendees)) content.registered.attendees = []
 
     const classOptions = getRegisteredClassOptions(content.registered)
-    const shirtSizeOptions = getRegisteredShirtSizeOptions(content.registered)
     if (classOptions.length > 0 && !classOptions.includes(className)) {
       return res.status(400).json({ ok: false, message: 'Lớp đã chọn không hợp lệ. Vui lòng tải lại trang.' })
-    }
-    if (shirtSizeOptions.length > 0) {
-      if (!shirtSize) {
-        return res.status(400).json({ ok: false, message: 'Vui lòng chọn size áo.' })
-      }
-      if (!shirtSizeOptions.includes(shirtSize)) {
-        return res.status(400).json({ ok: false, message: 'Size áo đã chọn không hợp lệ. Vui lòng tải lại trang.' })
-      }
     }
 
     const normalizedPhone = phone.replace(/\s+/g, '')
@@ -379,7 +414,6 @@ router.post('/register', (req, res) => {
       id: `${now.getTime()}`,
       name,
       className,
-      shirtSize,
       phone,
       note,
       status: 'Chờ xác nhận',

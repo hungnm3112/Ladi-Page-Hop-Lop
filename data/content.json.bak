@@ -129,12 +129,6 @@
       "B2",
       "B3"
     ],
-    "shirtSizeOptions": [
-      "S Nam",
-      "S Nữ",
-      "M Nam",
-      "M Nữ"
-    ],
     "total": 0,
     "classCount": "0 / 15 lớp tham gia",
     "classes": [
@@ -192,7 +186,6 @@
         "id": "1776998203457",
         "name": "Nguyễn Xuân Tưởng",
         "className": "A1",
-        "shirtSize": "M Nam",
         "phone": "0988355980",
         "note": "Tôi sẵn lòng tham gia, cùng hết mình với các bạn cùng khóa, chúc BTC hội khóa 20 năm gặp lại của niên khóa 2003-2006 thành công tốt đẹp.",
         "status": "Chờ xác nhận",
@@ -205,7 +198,13 @@
     "label": "ALBUM ẢNH",
     "title": "Thư Viện Kỷ Niệm",
     "subtitle": "Ngày Ấy – Bây Giờ",
-    "captions": [],
+    "captions": [
+      {
+        "filename": "1776932995898_alff4.png",
+        "title": "Lớp A1",
+        "subtitle": ""
+      }
+    ],
     "order": [
       "1776932995898_alff4.png",
       "1776933013860_xne1r.jpg",

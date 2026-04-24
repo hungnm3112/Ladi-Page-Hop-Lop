@@ -25,6 +25,7 @@
   var pendingPreviewHighlight = null
   var dragSrc = null
   var dragSourceThumb = null
+  var scheduleActivityIconOptions = []
 
   function esc(str) {
     return String(str)
@@ -69,6 +70,16 @@
     return JSON.parse(JSON.stringify(value))
   }
 
+  function parseJsonScript(id, fallback) {
+    var el = document.getElementById(id)
+    if (!el) return fallback
+    try {
+      return JSON.parse(el.textContent || '')
+    } catch (error) {
+      return fallback
+    }
+  }
+
   function parseClassOptionsText(text) {
     var seen = {}
     return String(text || '')
@@ -79,6 +90,53 @@
         seen[item] = true
         return true
       })
+  }
+
+  function normalizeScheduleActivityItem(item) {
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      return {
+        icon: String(item.icon || 'fa-solid fa-star').trim() || 'fa-solid fa-star',
+        label: String(item.label || '').trim()
+      }
+    }
+
+    var raw = String(item || '').trim()
+    if (!raw) {
+      return { icon: 'fa-solid fa-star', label: '' }
+    }
+
+    var label = raw.replace(/^[^\p{L}\p{N}]+/u, '').trim() || raw
+    var normalized = label.toLowerCase()
+    var inferredIcon = 'fa-solid fa-star'
+    if (normalized.indexOf('bóng') !== -1 || normalized.indexOf('đá') !== -1) inferredIcon = 'fa-solid fa-futbol'
+    else if (normalized.indexOf('kéo co') !== -1 || normalized.indexOf('kéo cờ') !== -1) inferredIcon = 'fa-solid fa-people-pulling'
+    else if (normalized.indexOf('pickleball') !== -1 || normalized.indexOf('tennis') !== -1) inferredIcon = 'fa-solid fa-table-tennis-paddle-ball'
+    else if (normalized.indexOf('lửa trại') !== -1 || normalized.indexOf('lửa') !== -1) inferredIcon = 'fa-solid fa-fire'
+    else if (normalized.indexOf('văn nghệ') !== -1 || normalized.indexOf('karaoke') !== -1 || normalized.indexOf('nhạc') !== -1) inferredIcon = 'fa-solid fa-music'
+    else if (normalized.indexOf('ẩm thực') !== -1 || normalized.indexOf('ăn') !== -1) inferredIcon = 'fa-solid fa-utensils'
+    else if (normalized.indexOf('gặp mặt') !== -1 || normalized.indexOf('hội ngộ') !== -1) inferredIcon = 'fa-solid fa-handshake'
+
+    return {
+      icon: inferredIcon,
+      label: label
+    }
+  }
+
+  function getScheduleActivitiesFromState() {
+    if (!fullContentState) return []
+    if (!fullContentState.schedule) fullContentState.schedule = {}
+    var items = Array.isArray(fullContentState.schedule.activities) ? fullContentState.schedule.activities : []
+    return items
+      .map(normalizeScheduleActivityItem)
+      .filter(function (item) { return item.label })
+  }
+
+  function setScheduleActivitiesToState(items) {
+    if (!fullContentState) return
+    if (!fullContentState.schedule) fullContentState.schedule = {}
+    fullContentState.schedule.activities = items
+      .map(normalizeScheduleActivityItem)
+      .filter(function (item) { return item.label })
   }
 
   function createEl(tag, className, text) {
@@ -153,12 +211,10 @@
       var result = await parseJsonResponse(res)
       if (result.ok && fullContentState && fullContentState.registered) {
         var classOptions = parseClassOptionsText(data.classOptionsText)
-        var shirtSizeOptions = parseClassOptionsText(data.shirtSizeOptionsText)
         fullContentState.registered.label = data.label || fullContentState.registered.label || ''
         fullContentState.registered.title = data.title || fullContentState.registered.title || ''
         fullContentState.registered.subtitle = data.subtitle || fullContentState.registered.subtitle || ''
         fullContentState.registered.classOptions = classOptions
-        fullContentState.registered.shirtSizeOptions = shirtSizeOptions
         fullContentState.registered.classes = classOptions.map(function (name) { return { name: name, count: 0 } })
         fullContentInitial = deepClone(fullContentState)
         clearDirty()
@@ -167,6 +223,131 @@
       if (result.ok) reloadPreview('registered')
     } catch (err) {
       showToast('Lỗi kết nối: ' + err.message, 'error')
+    }
+  }
+
+  function buildScheduleActivityIconOptions(selectedValue) {
+    return scheduleActivityIconOptions.map(function (item) {
+      var selected = item.value === selectedValue ? ' selected' : ''
+      return '<option value="' + esc(item.value) + '"' + selected + '>' + esc(item.label) + '</option>'
+    }).join('')
+  }
+
+  function createScheduleActivityRow(activity) {
+    var item = normalizeScheduleActivityItem(activity)
+    var row = document.createElement('div')
+    row.className = 'schedule-activity-item'
+    row.innerHTML =
+      '<div class="schedule-activity-preview" data-schedule-activity-preview><i class="' + esc(item.icon) + '" aria-hidden="true"></i></div>' +
+      '<select class="form-control" data-schedule-activity-icon>' + buildScheduleActivityIconOptions(item.icon) + '</select>' +
+      '<input class="form-control" type="text" maxlength="40" placeholder="VD: Bóng đá" data-schedule-activity-label value="' + esc(item.label) + '">' +
+      '<div class="schedule-activity-actions"><button class="btn btn-danger btn-sm" type="button" data-schedule-activity-remove>Xóa</button></div>'
+
+    var iconSelect = row.querySelector('[data-schedule-activity-icon]')
+    var labelInput = row.querySelector('[data-schedule-activity-label]')
+    var removeBtn = row.querySelector('[data-schedule-activity-remove]')
+    var preview = row.querySelector('[data-schedule-activity-preview]')
+
+    iconSelect.addEventListener('change', function () {
+      preview.innerHTML = '<i class="' + esc(iconSelect.value) + '" aria-hidden="true"></i>'
+      markDirty()
+    })
+
+    labelInput.addEventListener('input', markDirty)
+
+    removeBtn.addEventListener('click', function () {
+      row.remove()
+      markDirty()
+      ensureScheduleActivityRows()
+    })
+
+    return row
+  }
+
+  function renderScheduleActivitiesManager() {
+    var list = document.getElementById('schedule-activities-list')
+    if (!list) return
+    var activities = getScheduleActivitiesFromState()
+    list.innerHTML = ''
+    if (activities.length === 0) activities = [{ icon: 'fa-solid fa-star', label: '' }]
+    activities.forEach(function (activity) {
+      list.appendChild(createScheduleActivityRow(activity))
+    })
+  }
+
+  function ensureScheduleActivityRows() {
+    var list = document.getElementById('schedule-activities-list')
+    if (!list) return
+    if (list.children.length === 0) {
+      list.appendChild(createScheduleActivityRow({ icon: 'fa-solid fa-star', label: '' }))
+    }
+  }
+
+  function collectScheduleActivitiesFromManager() {
+    var list = document.getElementById('schedule-activities-list')
+    if (!list) return []
+    return Array.from(list.querySelectorAll('.schedule-activity-item'))
+      .map(function (row) {
+        var iconEl = row.querySelector('[data-schedule-activity-icon]')
+        var labelEl = row.querySelector('[data-schedule-activity-label]')
+        return {
+          icon: iconEl ? iconEl.value : 'fa-solid fa-star',
+          label: labelEl ? labelEl.value : ''
+        }
+      })
+      .map(normalizeScheduleActivityItem)
+      .filter(function (item) { return item.label })
+  }
+
+  async function saveScheduleActivities() {
+    var activities = collectScheduleActivitiesFromManager()
+    if (activities.length === 0) {
+      showToast('Vui lòng thêm ít nhất 1 hoạt động cho chương trình.', 'error')
+      return
+    }
+
+    try {
+      var res = await fetch('/admin/schedule-activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ activities: activities }),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (result.ok) {
+        setScheduleActivitiesToState(activities)
+        fullContentInitial = deepClone(fullContentState)
+        clearDirty()
+        renderScheduleActivitiesManager()
+        renderEditor()
+        reloadPreview('schedule')
+      }
+      showToast(result.message || 'Đã lưu!', result.ok ? 'success' : 'error')
+    } catch (err) {
+      showToast('Lỗi kết nối: ' + err.message, 'error')
+    }
+  }
+
+  function initScheduleActivitiesManager() {
+    scheduleActivityIconOptions = parseJsonScript('schedule-activity-icons-data', [])
+    if (!scheduleActivityIconOptions.length) return
+
+    var addBtn = document.getElementById('schedule-activities-add')
+    var saveBtn = document.getElementById('schedule-activities-save')
+    var list = document.getElementById('schedule-activities-list')
+    if (!list) return
+
+    renderScheduleActivitiesManager()
+
+    if (addBtn) {
+      addBtn.addEventListener('click', function () {
+        list.appendChild(createScheduleActivityRow({ icon: scheduleActivityIconOptions[0].value, label: '' }))
+        markDirty()
+      })
+    }
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', saveScheduleActivities)
     }
   }
 
@@ -496,6 +677,285 @@
     updateGalleryCount()
   }
 
+  // ── Attendees manager ─────────────────────────────────
+  var attendeesState = {
+    list: [],
+    search: '',
+    classFilter: 'all',
+    statusFilter: 'all',
+    page: 1,
+    pageSize: 20
+  }
+
+  function getAttendeesFromState() {
+    if (fullContentState && fullContentState.registered && Array.isArray(fullContentState.registered.attendees)) {
+      return fullContentState.registered.attendees
+    }
+    return []
+  }
+
+  function getClassOptionsFromState() {
+    if (fullContentState && fullContentState.registered) {
+      var opts = fullContentState.registered.classOptions
+      if (Array.isArray(opts) && opts.length > 0) return opts
+    }
+    return []
+  }
+
+  function normalizeStatus(s) {
+    var v = String(s || '').trim()
+    return v || 'Chờ xác nhận'
+  }
+
+  function filterAttendees() {
+    var term = attendeesState.search.trim().toLowerCase()
+    return attendeesState.list.filter(function (a) {
+      if (attendeesState.classFilter !== 'all' && (a.className || '') !== attendeesState.classFilter) return false
+      if (attendeesState.statusFilter !== 'all' && normalizeStatus(a.status) !== attendeesState.statusFilter) return false
+      if (!term) return true
+      var haystack = [a.name, a.className, a.phone, a.note].join(' ').toLowerCase()
+      return haystack.indexOf(term) !== -1
+    })
+  }
+
+  function renderAttendeesStats() {
+    var list = attendeesState.list
+    var total = list.length
+    var confirmed = list.filter(function (a) { return normalizeStatus(a.status) === 'Đã xác nhận' }).length
+    var pending = total - confirmed
+    var totalEl = document.getElementById('attendees-stat-total')
+    var confirmedEl = document.getElementById('attendees-stat-confirmed')
+    var pendingEl = document.getElementById('attendees-stat-pending')
+    var countEl = document.getElementById('attendees-total-count')
+    if (totalEl) totalEl.textContent = String(total)
+    if (confirmedEl) confirmedEl.textContent = String(confirmed)
+    if (pendingEl) pendingEl.textContent = String(pending)
+    if (countEl) countEl.textContent = String(total)
+  }
+
+  function renderAttendeesClassFilter() {
+    var select = document.getElementById('attendees-filter-class')
+    if (!select) return
+    var current = attendeesState.classFilter
+    var classOptions = getClassOptionsFromState()
+    var extras = Array.from(new Set(attendeesState.list
+      .map(function (a) { return a.className })
+      .filter(function (c) { return c && classOptions.indexOf(c) === -1 })))
+    var options = ['<option value="all">Tất cả lớp</option>']
+      .concat(classOptions.concat(extras).map(function (c) {
+        return '<option value="' + esc(c) + '">' + esc(c) + '</option>'
+      }))
+    select.innerHTML = options.join('')
+    select.value = classOptions.concat(extras).indexOf(current) === -1 ? 'all' : current
+    attendeesState.classFilter = select.value
+  }
+
+  function renderAttendeesPagination(totalPages) {
+    var pag = document.getElementById('attendees-pagination')
+    if (!pag) return
+    pag.innerHTML = ''
+    if (totalPages <= 1) return
+    for (var i = 1; i <= totalPages; i++) {
+      var btn = document.createElement('button')
+      btn.type = 'button'
+      btn.textContent = String(i)
+      if (i === attendeesState.page) btn.className = 'active'
+      btn.dataset.page = String(i)
+      btn.addEventListener('click', function () {
+        attendeesState.page = parseInt(this.dataset.page, 10) || 1
+        renderAttendeesList()
+      })
+      pag.appendChild(btn)
+    }
+  }
+
+  function renderAttendeesList() {
+    var listEl = document.getElementById('attendees-list')
+    if (!listEl) return
+    var filtered = filterAttendees()
+    var totalPages = Math.max(1, Math.ceil(filtered.length / attendeesState.pageSize))
+    if (attendeesState.page > totalPages) attendeesState.page = totalPages
+    var start = (attendeesState.page - 1) * attendeesState.pageSize
+    var slice = filtered.slice(start, start + attendeesState.pageSize)
+
+    if (slice.length === 0) {
+      listEl.innerHTML = '<div class="attendees-empty">Không có người đăng ký nào khớp bộ lọc.</div>'
+      renderAttendeesPagination(totalPages)
+      return
+    }
+
+    listEl.innerHTML = slice.map(function (a, idx) {
+      var status = normalizeStatus(a.status)
+      var statusClass = status === 'Đã xác nhận' ? 'confirmed' : 'pending'
+      var id = esc(a.id || '')
+      var toggleLabel = status === 'Đã xác nhận' ? 'Hủy xác nhận' : 'Xác nhận'
+      var toggleClass = status === 'Đã xác nhận' ? 'btn-unconfirm' : 'btn-confirm'
+      var nextStatus = status === 'Đã xác nhận' ? 'Chờ xác nhận' : 'Đã xác nhận'
+
+      return '<div class="attendees-row" data-attendee-id="' + id + '">' +
+        '<span data-label="#">' + (start + idx + 1) + '</span>' +
+        '<span data-label="Họ tên"><strong>' + esc(a.name || '') + '</strong></span>' +
+        '<span data-label="Lớp">' + esc(a.className || '–') + '</span>' +
+        '<span data-label="SĐT">' + esc(a.phone || '–') + '</span>' +
+        '<span data-label="Ghi chú" class="attendees-note">' + (a.note ? esc(a.note) : '–') + '</span>' +
+        '<span data-label="Trạng thái"><span class="attendees-status ' + statusClass + '">' + esc(status) + '</span></span>' +
+        '<span data-label="Ngày">' + esc(a.registeredAt || '–') + '</span>' +
+        '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
+          '<button type="button" class="' + toggleClass + '" data-attendee-action="toggle" data-attendee-status="' + esc(nextStatus) + '">' + toggleLabel + '</button>' +
+          '<button type="button" class="btn-delete" data-attendee-action="delete">Xóa</button>' +
+        '</div></span>' +
+      '</div>'
+    }).join('')
+
+    renderAttendeesPagination(totalPages)
+  }
+
+  function renderAttendeesAll() {
+    attendeesState.list = getAttendeesFromState().slice()
+    renderAttendeesStats()
+    renderAttendeesClassFilter()
+    renderAttendeesList()
+  }
+
+  async function updateAttendeeStatus(id, status) {
+    try {
+      var res = await fetch('/admin/attendees/' + encodeURIComponent(id) + '/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: status }),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể cập nhật.')
+
+      var attendees = getAttendeesFromState()
+      var match = attendees.find(function (a) { return String(a.id) === String(id) })
+      if (match) match.status = status
+      fullContentInitial = deepClone(fullContentState)
+      renderAttendeesAll()
+      showToast(result.message || 'Đã cập nhật.', 'success')
+      reloadPreview('registered')
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error')
+    }
+  }
+
+  async function deleteAttendee(id) {
+    if (!window.confirm('Xóa người đăng ký này? Thao tác không thể hoàn tác.')) return
+    try {
+      var res = await fetch('/admin/attendees/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể xóa.')
+
+      if (fullContentState && fullContentState.registered) {
+        fullContentState.registered.attendees = getAttendeesFromState().filter(function (a) {
+          return String(a.id) !== String(id)
+        })
+      }
+      fullContentInitial = deepClone(fullContentState)
+      renderAttendeesAll()
+      showToast(result.message || 'Đã xóa.', 'success')
+      reloadPreview('registered')
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error')
+    }
+  }
+
+  function exportAttendeesCSV() {
+    var rows = filterAttendees()
+    if (rows.length === 0) {
+      showToast('Không có dữ liệu để xuất.', 'error')
+      return
+    }
+    var headers = ['STT', 'Họ tên', 'Lớp', 'SĐT', 'Ghi chú', 'Trạng thái', 'Ngày đăng ký']
+    var csv = [headers.join(',')]
+    rows.forEach(function (a, i) {
+      var cells = [
+        String(i + 1),
+        a.name || '',
+        a.className || '',
+        a.phone || '',
+        a.note || '',
+        normalizeStatus(a.status),
+        a.registeredAt || ''
+      ].map(function (v) {
+        var s = String(v).replace(/"/g, '""')
+        return '"' + s + '"'
+      })
+      csv.push(cells.join(','))
+    })
+    var blob = new Blob(['﻿' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    var url = URL.createObjectURL(blob)
+    var link = document.createElement('a')
+    link.href = url
+    link.download = 'danh-sach-dang-ky-' + new Date().toISOString().slice(0, 10) + '.csv'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  function initAttendeesManager() {
+    var searchEl = document.getElementById('attendees-search')
+    var classEl = document.getElementById('attendees-filter-class')
+    var statusEl = document.getElementById('attendees-filter-status')
+    var exportBtn = document.getElementById('attendees-export')
+    var listEl = document.getElementById('attendees-list')
+
+    if (!listEl) return
+
+    if (searchEl) {
+      var searchTimer = null
+      searchEl.addEventListener('input', function () {
+        if (searchTimer) clearTimeout(searchTimer)
+        searchTimer = setTimeout(function () {
+          attendeesState.search = searchEl.value
+          attendeesState.page = 1
+          renderAttendeesList()
+        }, 180)
+      })
+    }
+
+    if (classEl) {
+      classEl.addEventListener('change', function () {
+        attendeesState.classFilter = classEl.value
+        attendeesState.page = 1
+        renderAttendeesList()
+      })
+    }
+
+    if (statusEl) {
+      statusEl.addEventListener('change', function () {
+        attendeesState.statusFilter = statusEl.value
+        attendeesState.page = 1
+        renderAttendeesList()
+      })
+    }
+
+    if (exportBtn) {
+      exportBtn.addEventListener('click', exportAttendeesCSV)
+    }
+
+    listEl.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-attendee-action]')
+      if (!btn) return
+      var row = btn.closest('[data-attendee-id]')
+      if (!row) return
+      var id = row.dataset.attendeeId
+      var action = btn.dataset.attendeeAction
+      if (action === 'delete') {
+        deleteAttendee(id)
+      } else if (action === 'toggle') {
+        updateAttendeeStatus(id, btn.dataset.attendeeStatus)
+      }
+    })
+
+    renderAttendeesAll()
+  }
+
   function bindSaveButtons() {
     document.querySelectorAll('[data-save-section]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -623,11 +1083,10 @@
       'guestbook.messages': { name: '', className: '', message: '', createdAt: '' },
       'registered.classes': { name: '', count: 0 },
       'registered.classOptions': '',
-      'registered.shirtSizeOptions': '',
-      'registered.attendees': { name: '', className: '', shirtSize: '', phone: '', note: '', status: 'Chờ xác nhận', registeredAt: '' },
+      'registered.attendees': { name: '', className: '', phone: '', note: '', status: 'Chờ xác nhận', registeredAt: '' },
       'donate.quickAmounts': 0,
       'donate.entries': { type: 'personal', name: '', className: '', contactName: '', organizationName: '', amount: 0, message: '', anonymous: false, createdAt: '' },
-      'schedule.activities': '',
+      'schedule.activities': { icon: 'fa-solid fa-star', label: '' },
       'schedule.days': { label: '', date: '', items: [{ time: '', endTime: '', title: '', desc: '' }] },
       'schedule.days.[].items': { time: '', endTime: '', title: '', desc: '' },
       'announcements.items': { title: '', desc: '', date: '', url: '' }
@@ -1017,6 +1476,8 @@
     if (!contentEl || !galleryEl) return
     fullContentInitial = JSON.parse(contentEl.textContent || '{}')
     fullContentState = deepClone(fullContentInitial)
+    setScheduleActivitiesToState(getScheduleActivitiesFromState())
+    fullContentInitial = deepClone(fullContentState)
     galleryFilesState = JSON.parse(galleryEl.textContent || '[]')
     syncGalleryOrderToState()
     syncGalleryCaptionsToState()
@@ -1031,11 +1492,13 @@
     initGalleryUpload()
     initExistingThumbs()
     renderGalleryCaptionList()
+    initScheduleActivitiesManager()
     bindSaveButtons()
     initLiveEditorSidebar()
     initLiveEditorToolbar()
     initLiveEditorModal()
     initPreviewMessaging()
+    initAttendeesManager()
     updatePreviewDevice('desktop')
   })
 })()
