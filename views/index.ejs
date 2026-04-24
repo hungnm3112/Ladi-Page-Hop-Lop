@@ -1254,11 +1254,6 @@
       if (!gbDown) return
       gbDown = false
       gbScroller.classList.remove('dragging')
-      if (gbMoved) {
-        var pageWidth = gbScroller.clientWidth
-        var idx = Math.round(gbScroller.scrollLeft / pageWidth)
-        gbScrollToPage(idx)
-      }
     })
 
     gbScroller.addEventListener('click', function(e) {
