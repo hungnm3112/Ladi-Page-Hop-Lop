@@ -512,9 +512,11 @@
         <div class="guestbook-card<%= i === 0 ? ' highlighted' : '' %>">
           <p class="guestbook-quote">"<%= msg.message %>"</p>
           <span class="guestbook-sep">——</span>
-          <div class="guestbook-name"><%= msg.name %></div>
-          <% if (msg.className) { %><div class="guestbook-class"><%= msg.className %></div><% } %>
-          <% if (msg.createdAt) { %><div class="guestbook-date"><%= new Date(msg.createdAt).toLocaleDateString('vi-VN') %></div><% } %>
+          <div class="guestbook-meta">
+            <span class="guestbook-name"><%= msg.name %></span>
+            <% if (msg.className) { %><span class="guestbook-class"><%= msg.className %></span><% } %>
+            <% if (msg.createdAt) { %><span class="guestbook-date"><%= new Date(msg.createdAt).toLocaleDateString('vi-VN') %></span><% } %>
+          </div>
         </div>
         <% }) %>
       </div>
@@ -1145,9 +1147,11 @@
           card.innerHTML =
             '<p class="guestbook-quote">"' + message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"</p>' +
             '<span class="guestbook-sep">——</span>' +
-            '<div class="guestbook-name">' + name.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' +
-            (cls ? '<div class="guestbook-class">' + cls.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : '') +
-            '<div class="guestbook-date">' + (result.item && result.item.createdAtLabel ? result.item.createdAtLabel : '') + '</div>'
+            '<div class="guestbook-meta">' +
+              '<span class="guestbook-name">' + name.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' +
+              (cls ? '<span class="guestbook-class">' + cls.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' : '') +
+              '<span class="guestbook-date">' + (result.item && result.item.createdAtLabel ? result.item.createdAtLabel : '') + '</span>' +
+            '</div>'
           grid.insertBefore(card, grid.firstChild)
           scroller.scrollTo({ left: 0, behavior: 'smooth' })
           if (typeof renderGuestbookDots === 'function') renderGuestbookDots()
