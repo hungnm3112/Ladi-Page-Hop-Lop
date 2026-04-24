@@ -1,0 +1,342 @@
+{
+  "hero": {
+    "logo": "/images/logo.png",
+    "label": "CHẠM LẠI THANH XUÂN",
+    "titleLine1": "Kỷ Niệm 20 Năm",
+    "titleLine2": "Ngày Ra Trường",
+    "title": "Kỷ Niệm 20 Năm Ngày Ra Trường",
+    "school": "Trường THPT Việt Yên Số 2",
+    "tagline": "NIÊN KHÓA 2003 – 2006",
+    "subtitle": "Chạm lại Thanh Xuân",
+    "description": "Sau 20 năm, đây là dịp để bạn bè, thầy cô gặp lại nhau. Cùng ôn lại kỷ niệm cũ và tạo thêm những kỷ niệm mới.",
+    "ctaPrimaryText": "Đăng Ký Tham Gia",
+    "ctaPrimaryUrl": "#gioi-thieu",
+    "ctaSecondaryText": "Xem Lịch Trình →",
+    "ctaSecondaryUrl": "#lich-trinh",
+    "bgColor": "#1a1a1a"
+  },
+  "event": {
+    "date": "2026-06-28",
+    "time": "07:00",
+    "venue": "Trường THPT Việt Yên Số 2",
+    "address": "Phường Tự Lạn, tỉnh Bắc Ninh",
+    "target": "Cựu HS niên khóa 03-06",
+    "contact": "0981 388 562",
+    "mapUrl": "https://maps.google.com/maps?q=THPT+Yen+Dung+So+2"
+  },
+  "about": {
+    "label": "THƯ NGỎ",
+    "title": "Lời Mời Từ Trái Tim",
+    "subtitle": "Gửi tới tất cả các bạn cựu học sinh niên khóa 2003 – 2006",
+    "content": "Kính gửi các bạn cựu học sinh thân mến!\n\nThời gian trôi thật nhanh… Mới đó mà đã 20 năm kể từ ngày chúng ta rời xa mái trường thân yêu. Hai mươi năm – đủ để mỗi người trưởng thành, thay đổi và bước đi trên những con đường riêng. Nhưng cũng chừng ấy thời gian, để chúng ta nhận ra rằng ký ức về một thời áo trắng, về thầy cô, bạn bè vẫn luôn là những điều đẹp đẽ và quý giá nhất trong cuộc đời.\n   Những giờ học, những tiếng cười, những kỷ niệm tưởng chừng giản dị ngày ấy – nay đã trở thành một phần ký ức không thể nào quên. Dù mỗi người một nơi, một hành trình khác nhau, nhưng chắc chắn rằng trong sâu thẳm, ai trong chúng ta cũng từng mong một ngày được trở về, được gặp lại những gương mặt thân quen của một thời tuổi trẻ.\n   Nhân dịp kỷ niệm 20 năm ngày ra trường, Ban Tổ Chức trân trọng kính mời toàn thể các bạn cựu học sinh cùng các thầy cô giáo Trường THPT Việt Yên Số 2 niên khóa 2003~2006 tham dự buổi họp mặt đầy ý nghĩa này.\n   Đây không chỉ là dịp để chúng ta hội ngộ, ôn lại những kỷ niệm xưa, mà còn là cơ hội để cùng nhau chia sẻ về hành trình đã qua, tiếp thêm động lực và cảm hứng cho chặng đường phía trước.\nSự hiện diện của mỗi bạn chính là niềm vui, là món quà ý nghĩa nhất để làm nên một ngày hội trọn vẹn.\nRất mong được gặp lại các bạn trong ngày đặc biệt này!\n\nThân ái.",
+    "signature": "– Ban Tổ Chức –"
+  },
+  "schedule": {
+    "label": "LỊCH TRÌNH",
+    "title": "Chương Trình Sự Kiện",
+    "subtitle": "Hai ngày tràn đầy cảm xúc và kỷ niệm",
+    "activities": [
+      "⚽ BÓNG ĐÁ",
+      "💪 KÉO CƠ",
+      "🏓 PICKLEBALL",
+      "🔥 LỬA TRẠI",
+      "🎵 VĂN NGHỆ"
+    ],
+    "days": [
+      {
+        "label": "NGÀY 1",
+        "date": "Chiều & Tối 08/08/2026",
+        "items": [
+          {
+            "time": "13:00",
+            "endTime": "14:00",
+            "title": "Đón Tiếp & Tập Trung",
+            "desc": "Check-in, gặp gỡ bạn bè"
+          },
+          {
+            "time": "14:00",
+            "endTime": "17:00",
+            "title": "Giao Lưu Thể Thao",
+            "desc": "Bóng đá, kéo co, pickleball"
+          },
+          {
+            "time": "17:00",
+            "endTime": "18:30",
+            "title": "Nghỉ Ngơi & Ăn Tối",
+            "desc": "Thư giãn và nạp năng lượng"
+          },
+          {
+            "time": "19:00",
+            "endTime": "22:00",
+            "title": "Đốt Lửa Trại & Văn Nghệ",
+            "desc": "Giao lưu văn nghệ bên lửa trại"
+          }
+        ]
+      },
+      {
+        "label": "NGÀY 2",
+        "date": "Sáng 09/08/2026",
+        "items": [
+          {
+            "time": "07:30",
+            "endTime": "08:00",
+            "title": "Đón Tiếp & Đăng Ký",
+            "desc": "Tập trung tại sân trường"
+          },
+          {
+            "time": "08:00",
+            "endTime": "10:00",
+            "title": "Lễ Khai Mạc Chính Thức",
+            "desc": "Phát biểu cảm tưởng, trao kỷ niệm chương"
+          },
+          {
+            "time": "10:00",
+            "endTime": "12:00",
+            "title": "Thăm Quan Trường Cũ",
+            "desc": "Chụp ảnh lưu niệm, thăm thầy cô"
+          },
+          {
+            "time": "12:00",
+            "endTime": "14:00",
+            "title": "Tiệc Liên Hoan & Bế Mạc",
+            "desc": "Ăn trưa, chia tay hẹn gặp lại"
+          },
+          {
+            "time": "14:00",
+            "endTime": "17:00",
+            "title": "Đi hát Karaoke",
+            "desc": "Đi hát Karaoke cho tiêu rượu bia"
+          }
+        ]
+      }
+    ]
+  },
+  "registered": {
+    "label": "DANH SÁCH",
+    "title": "Đã Đăng Ký Tham Gia",
+    "subtitle": "Xem ai đã đăng ký và rủ thêm bạn bè nhé!",
+    "classOptions": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8",
+      "A9",
+      "B1",
+      "B2",
+      "B3"
+    ],
+    "shirtSizeOptions": [
+      "S Nam",
+      "S Nữ",
+      "M Nam",
+      "M Nữ"
+    ],
+    "total": 0,
+    "classCount": "0 / 15 lớp tham gia",
+    "classes": [
+      {
+        "name": "A1",
+        "count": 0
+      },
+      {
+        "name": "A2",
+        "count": 0
+      },
+      {
+        "name": "A3",
+        "count": 0
+      },
+      {
+        "name": "A4",
+        "count": 0
+      },
+      {
+        "name": "A5",
+        "count": 0
+      },
+      {
+        "name": "A6",
+        "count": 0
+      },
+      {
+        "name": "A7",
+        "count": 0
+      },
+      {
+        "name": "A8",
+        "count": 0
+      },
+      {
+        "name": "A9",
+        "count": 0
+      },
+      {
+        "name": "B1",
+        "count": 0
+      },
+      {
+        "name": "B2",
+        "count": 0
+      },
+      {
+        "name": "B3",
+        "count": 0
+      }
+    ],
+    "attendees": [
+      {
+        "id": "1776998203457",
+        "name": "Nguyễn Xuân Tưởng",
+        "className": "A1",
+        "shirtSize": "M Nam",
+        "phone": "0988355980",
+        "note": "Tôi sẵn lòng tham gia, cùng hết mình với các bạn cùng khóa, chúc BTC hội khóa 20 năm gặp lại của niên khóa 2003-2006 thành công tốt đẹp.",
+        "status": "Chờ xác nhận",
+        "registeredAt": "24/4/2026",
+        "createdAt": "2026-04-24T02:36:43.457Z"
+      }
+    ]
+  },
+  "gallery": {
+    "label": "ALBUM ẢNH",
+    "title": "Thư Viện Kỷ Niệm",
+    "subtitle": "Ngày Ấy – Bây Giờ",
+    "captions": [
+      {
+        "filename": "1776932995898_alff4.png",
+        "title": "Lớp A1",
+        "subtitle": ""
+      }
+    ],
+    "order": [
+      "1776932995898_alff4.png",
+      "1776933013860_xne1r.jpg",
+      "1776933013992_pb34t.jpg",
+      "1776933013997_4xv1o.jpg",
+      "1776933014045_js6c8.jpg",
+      "1776933014088_0qn5a.jpg",
+      "1776933014135_0n99w.jpg",
+      "1776933679215_drx4n.jpg",
+      "1776933680065_e19yk.jpg",
+      "1776933681250_pz9cu.jpg",
+      "1776933681910_bdhoo.jpg",
+      "1776933683184_hcldw.jpg",
+      "1776933683332_swv0m.jpg",
+      "1776933683849_7xc65.jpg",
+      "1776933684038_syobk.jpg",
+      "1776933684275_1xffa.jpg",
+      "1776933684461_cvftc.jpg",
+      "1776933684745_hskrv.jpg",
+      "1776933685455_sd0u3.jpg",
+      "1776933685599_p9ykx.jpg",
+      "1776934523780_r918w.jpg",
+      "1776934632376_hcouf.jpg",
+      "1776939396211_nb3fw.jpg",
+      "1776939395839_ov14h.jpg",
+      "1776939396061_7p5cz.jpg",
+      "1776939396163_y4xu9.jpg",
+      "1776939396209_qyo5j.jpg",
+      "1776939396277_x6h16.jpg",
+      "1776939396305_ioxge.jpg",
+      "1776939396379_yrkd6.jpg",
+      "1776939396402_g51ap.jpg",
+      "1776939396447_tlu68.jpg",
+      "1776939396467_32wxo.jpg",
+      "1776995788992_3mk2m.jpg",
+      "1776995793841_44az7.jpg"
+    ]
+  },
+  "guestbook": {
+    "label": "LƯU BÚT",
+    "title": "Sổ Lưu Bút Online",
+    "subtitle": "Để lại vài dòng nhắn gửi tới bạn bè và thầy cô",
+    "messages": [
+      {
+        "name": "Nguyễn Xuân Tưởng",
+        "className": "A1",
+        "message": "Xin chào các bạn khóa 2003 - 2006, thấm thoát thoi đưa đã 20 năm trôi qua, hãy cùng nhau tạo ra một ngày bùng nổ của hội khóa  tuổi Rồng nhé, tôi và các bạn bỏ qua hết tất cả bộn bề âu lo về cuộc sống, tìm lại sự hồn nhiên vô tư của tuổi học trò của 20 năm về trước nhé.",
+        "createdAt": "2026-04-23T15:48:09.465Z"
+      }
+    ]
+  },
+  "announcements": {
+    "label": "THÔNG BÁO",
+    "title": "Tin Từ Ban Tổ Chức",
+    "items": [
+      {
+        "title": "Hạn chốt đăng ký: 01/06/2026",
+        "desc": "Vui lòng đăng ký trước ngày 01/06/2026 để BTC có kế hoạch chuẩn bị tốt nhất.",
+        "date": "16/03/2026"
+      },
+      {
+        "title": "Đồng phục kỷ niệm",
+        "desc": "BTC sẽ chuẩn bị áo đồng phục kỷ niệm 20 năm. Thông tin chi tiết sẽ được cập nhật sớm.",
+        "date": "10/03/2026"
+      },
+      {
+        "title": "Đóng góp cho chương trình",
+        "desc": "Các bạn có thể đóng góp kinh phí để tổ chức buổi họp mặt thêm ý nghĩa. Liên hệ BTC.",
+        "date": "05/03/2026"
+      },
+      {
+        "title": "Gửi ảnh kỷ niệm",
+        "desc": "Hãy gửi ảnh thời học trò của bạn để BTC tổng hợp vào album kỷ niệm.",
+        "date": "01/03/2026"
+      }
+    ]
+  },
+  "contact": {
+    "label": "ĐỊA ĐIỂM",
+    "title": "Địa Điểm & Liên Hệ",
+    "address": "Trường THPT Việt Yên Số 2, Tự Lan, Bắc Ninh",
+    "phone": "0981 388 562 (Mr Tuyên A1 – Trưởng BTC)",
+    "zalo": "CỰU HỌC SINH TRƯỜNG VIỆT YÊN 2 KHÓA 2003-2006",
+    "parking": "Bãi gửi xe miễn phí tại trường",
+    "mapUrl": "https://maps.app.goo.gl/kdCmitfgTJWXLBEV6"
+  },
+  "cta": {
+    "title": "Đừng Bỏ Lỡ Khoảnh Khắc Này!",
+    "subtitle": "Hãy xác nhận tham dự để chúng ta cùng ôn lại những kỷ niệm tuổi học trò tuyệt vời!",
+    "buttonText": "Xác Nhận Tham Dự",
+    "buttonUrl": "#"
+  },
+  "donate": {
+    "label": "ỦNG HỘ",
+    "title": "Đóng Góp Cho",
+    "titleAccent": "Ngày Hội Ngộ",
+    "subtitle": "Mỗi đóng góp đều ý nghĩa, góp phần tạo nên một ngày hội ngộ trọn vẹn và đáng nhớ.",
+    "ctaText": "Đóng Góp Ngay",
+    "rankingLabel": "BẢNG XẾP HẠNG",
+    "rankingTitle": "Danh Sách Đóng Góp",
+    "rankingSubtitle": "Theo lớp, cá nhân và công ty / tập thể",
+    "quickAmounts": [
+      200000,
+      500000,
+      1000000,
+      2000000,
+      5000000,
+      10000000
+    ],
+    "entries": [
+      {
+        "id": "1776998148090",
+        "type": "personal",
+        "name": "Nguyễn Mạnh Hùng",
+        "className": "A1",
+        "contactName": "",
+        "organizationName": "",
+        "amount": 20000000,
+        "message": "chúc mọi người họp lớp vui vẻ",
+        "anonymous": false,
+        "createdAt": "2026-04-24T02:35:48.090Z"
+      }
+    ]
+  },
+  "footer": {
+    "text": "© 2026 Chạm lại Thanh Xuân · Trường THPT Việt Yên Số 2 · Niên Khóa 2003-2006"
+  }
+}
