@@ -1018,22 +1018,80 @@ img { display: block; max-width: 100%; }
 }
 .btn-dark:hover { background: #333; }
 
-.guestbook-grid {
-  columns: 3;
-  column-gap: 16px;
+.guestbook-scroller {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  height: 70vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
 }
-@media (max-width: 900px) { .guestbook-grid { columns: 2; } }
-@media (max-width: 480px) { .guestbook-grid { columns: 1; } }
+.guestbook-scroller::-webkit-scrollbar { display: none; }
+.guestbook-scroller.dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.guestbook-grid {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: 100%;
+  gap: 16px;
+  padding: 8px 4px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .guestbook-scroller { height: 75vh; }
+}
+@media (max-width: 600px) {
+  .guestbook-scroller { height: 85vh; }
+}
+
+.guestbook-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.guestbook-page-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.guestbook-page-dot:hover { background: rgba(201,169,110,0.45); }
+.guestbook-page-dot.active { background: var(--gold); transform: scale(1.15); }
 
 .guestbook-card {
+  flex: 0 0 auto;
+  width: 320px;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
-  margin-bottom: 16px;
-  break-inside: avoid;
+  box-sizing: border-box;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .guestbook-card.highlighted { border-color: var(--gold); }
+@media (max-width: 900px) {
+  .guestbook-card { width: 280px; }
+}
+@media (max-width: 600px) {
+  .guestbook-card { width: calc(100vw - 56px); }
+}
 .guestbook-quote {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;

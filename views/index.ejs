@@ -506,17 +506,20 @@
 
     <% var messages = (content.guestbook && content.guestbook.messages) || [] %>
     <% if (messages.length > 0) { %>
-    <div class="guestbook-grid reveal">
-      <% messages.forEach(function(msg, i) { %>
-      <div class="guestbook-card<%= i === 0 ? ' highlighted' : '' %>">
-        <p class="guestbook-quote">"<%= msg.message %>"</p>
-        <span class="guestbook-sep">——</span>
-        <div class="guestbook-name"><%= msg.name %></div>
-        <% if (msg.className) { %><div class="guestbook-class"><%= msg.className %></div><% } %>
-        <% if (msg.createdAt) { %><div class="guestbook-date"><%= new Date(msg.createdAt).toLocaleDateString('vi-VN') %></div><% } %>
+    <div class="guestbook-scroller reveal" data-guestbook-scroller>
+      <div class="guestbook-grid">
+        <% messages.forEach(function(msg, i) { %>
+        <div class="guestbook-card<%= i === 0 ? ' highlighted' : '' %>">
+          <p class="guestbook-quote">"<%= msg.message %>"</p>
+          <span class="guestbook-sep">——</span>
+          <div class="guestbook-name"><%= msg.name %></div>
+          <% if (msg.className) { %><div class="guestbook-class"><%= msg.className %></div><% } %>
+          <% if (msg.createdAt) { %><div class="guestbook-date"><%= new Date(msg.createdAt).toLocaleDateString('vi-VN') %></div><% } %>
+        </div>
+        <% }) %>
       </div>
-      <% }) %>
     </div>
+    <div class="guestbook-pagination reveal" data-guestbook-pagination></div>
     <% } else { %>
     <p class="section-subtitle reveal guestbook-empty" style="text-align:center;margin-top:8px">Chưa có lời nhắn nào. Hãy là người đầu tiên!</p>
     <% } %>
@@ -1124,12 +1127,17 @@
           var emptyState = document.querySelector('.guestbook-empty')
           if (emptyState) emptyState.remove()
 
-          var grid = document.querySelector('.guestbook-grid')
-          if (!grid) {
+          var scroller = document.querySelector('[data-guestbook-scroller]')
+          var grid = scroller ? scroller.querySelector('.guestbook-grid') : null
+          if (!scroller) {
+            scroller = document.createElement('div')
+            scroller.className = 'guestbook-scroller reveal visible'
+            scroller.setAttribute('data-guestbook-scroller', '')
             grid = document.createElement('div')
-            grid.className = 'guestbook-grid reveal visible'
+            grid.className = 'guestbook-grid'
+            scroller.appendChild(grid)
             var guestbookSection = document.querySelector('.guestbook-section .section-inner')
-            if (guestbookSection) guestbookSection.appendChild(grid)
+            if (guestbookSection) guestbookSection.appendChild(scroller)
           }
 
           var card = document.createElement('div')
@@ -1141,6 +1149,8 @@
             (cls ? '<div class="guestbook-class">' + cls.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : '') +
             '<div class="guestbook-date">' + (result.item && result.item.createdAtLabel ? result.item.createdAtLabel : '') + '</div>'
           grid.insertBefore(card, grid.firstChild)
+          scroller.scrollTo({ left: 0, behavior: 'smooth' })
+          if (typeof renderGuestbookDots === 'function') renderGuestbookDots()
           alert('Cảm ơn bạn đã gửi lời nhắn!')
         } else {
           alert('Lỗi: ' + (result.message || 'Vui lòng thử lại'))
@@ -1153,6 +1163,120 @@
         gbSubmit.disabled = false
         gbSubmit.textContent = 'GỬI LỜI NHẮN'
       })
+    })
+  }
+
+  // ── Guestbook horizontal pagination ────────────────────
+  var gbScroller = document.querySelector('[data-guestbook-scroller]')
+  var gbPagination = document.querySelector('[data-guestbook-pagination]')
+
+  function gbGetPageCount() {
+    if (!gbScroller) return 0
+    var pageWidth = gbScroller.clientWidth
+    if (pageWidth <= 0) return 0
+    return Math.max(1, Math.ceil(gbScroller.scrollWidth / pageWidth))
+  }
+
+  function gbGetCurrentPage() {
+    if (!gbScroller) return 0
+    var pageWidth = gbScroller.clientWidth
+    if (pageWidth <= 0) return 0
+    return Math.round(gbScroller.scrollLeft / pageWidth)
+  }
+
+  function gbUpdateActiveDot() {
+    if (!gbPagination) return
+    var idx = gbGetCurrentPage()
+    var dots = gbPagination.querySelectorAll('.guestbook-page-dot')
+    dots.forEach(function(dot, i) { dot.classList.toggle('active', i === idx) })
+  }
+
+  function renderGuestbookDots() {
+    if (!gbScroller || !gbPagination) return
+    var total = gbGetPageCount()
+    if (total <= 1) { gbPagination.innerHTML = ''; gbPagination.style.display = 'none'; return }
+    gbPagination.style.display = ''
+    var current = gbGetCurrentPage()
+    var html = ''
+    for (var i = 0; i < total; i++) {
+      html += '<button type="button" class="guestbook-page-dot' + (i === current ? ' active' : '') + '" data-guestbook-page="' + i + '" aria-label="Trang ' + (i + 1) + '"></button>'
+    }
+    gbPagination.innerHTML = html
+    gbPagination.querySelectorAll('.guestbook-page-dot').forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        var idx = parseInt(dot.getAttribute('data-guestbook-page'), 10) || 0
+        gbScrollToPage(idx)
+      })
+    })
+  }
+
+  function gbScrollToPage(idx) {
+    if (!gbScroller) return
+    var pageWidth = gbScroller.clientWidth
+    gbScroller.scrollTo({ left: idx * pageWidth, behavior: 'smooth' })
+  }
+
+  // Expose for submit handler rebuild
+  window.renderGuestbookDots = renderGuestbookDots
+
+  if (gbScroller) {
+    // Initial render (wait a tick for layout)
+    setTimeout(renderGuestbookDots, 0)
+
+    var gbScrollTimer
+    gbScroller.addEventListener('scroll', function() {
+      if (gbScrollTimer) clearTimeout(gbScrollTimer)
+      gbScrollTimer = setTimeout(gbUpdateActiveDot, 60)
+    })
+
+    // Drag-to-scroll for PC
+    var gbDown = false
+    var gbStartX = 0
+    var gbStartScroll = 0
+    var gbMoved = false
+
+    gbScroller.addEventListener('mousedown', function(e) {
+      gbDown = true
+      gbMoved = false
+      gbStartX = e.pageX
+      gbStartScroll = gbScroller.scrollLeft
+      gbScroller.classList.add('dragging')
+    })
+
+    document.addEventListener('mousemove', function(e) {
+      if (!gbDown) return
+      var walk = e.pageX - gbStartX
+      if (Math.abs(walk) > 5) gbMoved = true
+      gbScroller.scrollLeft = gbStartScroll - walk
+    })
+
+    document.addEventListener('mouseup', function() {
+      if (!gbDown) return
+      gbDown = false
+      gbScroller.classList.remove('dragging')
+      if (gbMoved) {
+        var pageWidth = gbScroller.clientWidth
+        var idx = Math.round(gbScroller.scrollLeft / pageWidth)
+        gbScrollToPage(idx)
+      }
+    })
+
+    gbScroller.addEventListener('click', function(e) {
+      if (gbMoved) { e.preventDefault(); e.stopPropagation(); gbMoved = false }
+    }, true)
+
+    gbScroller.querySelectorAll('img').forEach(function(img) { img.setAttribute('draggable', 'false') })
+
+    var gbResizeTimer
+    window.addEventListener('resize', function() {
+      if (gbResizeTimer) clearTimeout(gbResizeTimer)
+      gbResizeTimer = setTimeout(function() {
+        renderGuestbookDots()
+        var pageWidth = gbScroller.clientWidth
+        if (pageWidth <= 0) return
+        var idx = Math.round(gbScroller.scrollLeft / pageWidth)
+        gbScroller.scrollTo({ left: idx * pageWidth, behavior: 'auto' })
+      }, 150)
     })
   }
 

@@ -541,6 +541,10 @@
   display: none !important;
 }
 
+[data-donate-page-item][hidden] {
+  display: none !important;
+}
+
 .donate-pagination-btn {
   min-width: 38px;
   height: 38px;
