@@ -1,0 +1,71 @@
+<div class="donate-modal" id="donate-modal" aria-hidden="true" aria-modal="true" role="dialog">
+  <div class="donate-modal-backdrop" id="donate-modal-backdrop"></div>
+  <div class="donate-modal-box">
+    <button class="donate-modal-close" id="donate-modal-close" aria-label="Đóng">×</button>
+    <div class="donate-modal-header">
+      <p class="donate-modal-label"><%= donateSummary.label || 'ỦNG HỘ' %></p>
+      <h3 class="donate-modal-title">Đóng Góp</h3>
+    </div>
+
+    <div class="donate-kind-tabs" role="tablist" aria-label="Loại đóng góp">
+      <button class="donate-kind-tab active" type="button" data-donate-kind="personal">CÁ NHÂN</button>
+      <button class="donate-kind-tab" type="button" data-donate-kind="organization">CÔNG TY / TẬP THỂ</button>
+    </div>
+
+    <form class="donate-form" id="donate-form" novalidate>
+      <input type="hidden" name="type" id="donate-type" value="personal">
+
+      <div class="donate-kind-panel active" data-donate-panel="personal">
+        <div class="donate-form-group">
+          <label class="donate-form-label" for="donate-name">HỌ VÀ TÊN *</label>
+          <input class="donate-form-input" type="text" id="donate-name" name="name" placeholder="Nhập họ tên" maxlength="80">
+        </div>
+
+        <div class="donate-form-group">
+          <label class="donate-form-label" for="donate-class">LỚP *</label>
+          <select class="donate-form-input" id="donate-class" name="className">
+            <option value="">-- Chọn lớp --</option>
+            <% (donateSummary.classOptions || []).forEach(function(className) { %>
+            <option value="<%= className %>"><%= className %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div class="donate-kind-panel" data-donate-panel="organization" hidden>
+        <div class="donate-form-group">
+          <label class="donate-form-label" for="donate-contact-name">NGƯỜI LIÊN HỆ *</label>
+          <input class="donate-form-input" type="text" id="donate-contact-name" name="contactName" placeholder="Nhập họ tên" maxlength="80">
+        </div>
+
+        <div class="donate-form-group">
+          <label class="donate-form-label" for="donate-organization-name">TÊN TỔ CHỨC *</label>
+          <input class="donate-form-input" type="text" id="donate-organization-name" name="organizationName" placeholder="Tên công ty / tập thể" maxlength="120">
+        </div>
+      </div>
+
+      <div class="donate-form-group">
+        <label class="donate-form-label" for="donate-amount-input">SỐ TIỀN (VND) *</label>
+        <div class="donate-quick-grid">
+          <% (donateSummary.quickAmounts || []).forEach(function(amount) { %>
+          <button class="donate-amount-chip" type="button" data-donate-amount="<%= amount %>"><%= Number(amount).toLocaleString('vi-VN') %></button>
+          <% }) %>
+        </div>
+        <input class="donate-form-input" type="text" id="donate-amount-input" name="amount" placeholder="Hoặc nhập số tiền khác...">
+      </div>
+
+      <div class="donate-form-group">
+        <label class="donate-form-label" for="donate-message">LỜI NHẮN</label>
+        <input class="donate-form-input" type="text" id="donate-message" name="message" placeholder="Lời chúc, lời nhắn..." maxlength="300">
+      </div>
+
+      <label class="donate-checkbox-row" data-donate-personal-only>
+        <input type="checkbox" name="anonymous">
+        <span>Đóng góp ẩn danh</span>
+      </label>
+
+      <div class="donate-form-message" id="donate-form-message" hidden></div>
+      <button type="submit" class="donate-submit" id="donate-submit">XÁC NHẬN ĐÓNG GÓP</button>
+    </form>
+  </div>
+</div>

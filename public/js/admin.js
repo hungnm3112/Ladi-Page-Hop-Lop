@@ -8,6 +8,7 @@
     schedule: { label: 'Lịch trình', description: 'Sửa các ngày, hoạt động và timeline.', source: 'schedule' },
     registered: { label: 'Đăng ký', description: 'Sửa danh sách lớp, thống kê và người đăng ký.', source: 'registered' },
     gallery: { label: 'Thư viện ảnh', description: 'Sửa tiêu đề gallery và quản lý hình ảnh.', source: 'gallery' },
+    donate: { label: 'Ủng hộ', description: 'Sửa nội dung trang ủng hộ, mức tiền gợi ý và danh sách đóng góp.', source: 'donate' },
     guestbook: { label: 'Lưu bút', description: 'Sửa tiêu đề và danh sách lời nhắn.', source: 'guestbook' },
     announcements: { label: 'Thông báo', description: 'Sửa tin từ ban tổ chức.', source: 'announcements' },
     contact: { label: 'Liên hệ', description: 'Sửa địa chỉ, số điện thoại, bản đồ và thông tin hỗ trợ.', source: 'contact' },
@@ -152,10 +153,12 @@
       var result = await parseJsonResponse(res)
       if (result.ok && fullContentState && fullContentState.registered) {
         var classOptions = parseClassOptionsText(data.classOptionsText)
+        var shirtSizeOptions = parseClassOptionsText(data.shirtSizeOptionsText)
         fullContentState.registered.label = data.label || fullContentState.registered.label || ''
         fullContentState.registered.title = data.title || fullContentState.registered.title || ''
         fullContentState.registered.subtitle = data.subtitle || fullContentState.registered.subtitle || ''
         fullContentState.registered.classOptions = classOptions
+        fullContentState.registered.shirtSizeOptions = shirtSizeOptions
         fullContentState.registered.classes = classOptions.map(function (name) { return { name: name, count: 0 } })
         fullContentInitial = deepClone(fullContentState)
         clearDirty()
@@ -176,6 +179,19 @@
     fullContentState.gallery.order = galleryFilesState.map(function (item) { return item.filename })
   }
 
+  function syncGalleryCaptionsToState() {
+    if (!fullContentState || !fullContentState.gallery) return
+    fullContentState.gallery.captions = galleryFilesState
+      .map(function (item) {
+        return {
+          filename: item.filename,
+          title: String(item.title || '').trim(),
+          subtitle: String(item.subtitle || '').trim()
+        }
+      })
+      .filter(function (item) { return item.title || item.subtitle })
+  }
+
   function syncAdminGalleryGrid() {
     var grid = document.getElementById('gallery-grid')
     if (!grid) return
@@ -193,6 +209,33 @@
       grid.appendChild(thumb)
     })
     updateGalleryCount()
+  }
+
+  function renderGalleryCaptionList() {
+    var list = document.getElementById('gallery-caption-list')
+    if (!list) return
+
+    list.innerHTML = ''
+    galleryFilesState.forEach(function (item, index) {
+      var row = document.createElement('div')
+      row.className = 'gallery-caption-item'
+      row.dataset.galleryCaptionItem = item.filename
+      row.innerHTML =
+        '<img class="gallery-caption-preview" src="' + esc(item.url) + '" alt="' + esc(item.filename) + '" loading="lazy">' +
+        '<div class="gallery-caption-fields">' +
+          '<div class="gallery-caption-meta">' + (index + 1) + '. ' + esc(item.filename) + '</div>' +
+          '<label class="form-label" for="gallery-caption-' + index + '">Nhãn hiển thị</label>' +
+          '<input id="gallery-caption-' + index + '" class="form-control" type="text" placeholder="VD: Lớp A1" value="' + esc(item.title || '') + '" data-gallery-caption-input="' + esc(item.filename) + '">' +
+        '</div>'
+
+      var input = row.querySelector('[data-gallery-caption-input]')
+      input.addEventListener('input', function () {
+        item.title = input.value
+        syncGalleryCaptionsToState()
+        markDirty()
+      })
+      list.appendChild(row)
+    })
   }
 
   function updateGalleryCount() {
@@ -239,11 +282,20 @@
       })
       var result = await parseJsonResponse(res)
       if (!result.ok) throw new Error(result.message || 'Không thể upload ảnh.')
-      result.urls.forEach(function (item) { galleryFilesState.push(item) })
+      result.urls.forEach(function (item) {
+        galleryFilesState.push({
+          filename: item.filename,
+          url: item.url,
+          title: '',
+          subtitle: ''
+        })
+      })
       syncGalleryOrderToState()
+      syncGalleryCaptionsToState()
       fullContentInitial = deepClone(fullContentState)
       clearDirty()
       syncAdminGalleryGrid()
+      renderGalleryCaptionList()
       renderEditor()
       showToast('Đã upload ' + result.urls.length + ' ảnh!', 'success')
       reloadPreview('gallery')
@@ -264,9 +316,11 @@
       if (!result.ok) throw new Error(result.message || 'Không thể xóa ảnh.')
       galleryFilesState = galleryFilesState.filter(function (item) { return item.filename !== filename })
       syncGalleryOrderToState()
+      syncGalleryCaptionsToState()
       fullContentInitial = deepClone(fullContentState)
       clearDirty()
       syncAdminGalleryGrid()
+      renderGalleryCaptionList()
       renderEditor()
       showToast('Đã xóa ảnh!', 'success')
       reloadPreview('gallery')
@@ -358,15 +412,79 @@
     }
   }
 
+  async function saveGalleryCaptions() {
+    try {
+      var captions = galleryFilesState.map(function (item) {
+        return {
+          filename: item.filename,
+          title: String(item.title || '').trim(),
+          subtitle: String(item.subtitle || '').trim()
+        }
+      })
+
+      var res = await fetch('/admin/gallery-captions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ captions: captions }),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'KhÃ´ng thá»ƒ lÆ°u nhÃ£n áº£nh.')
+      syncGalleryCaptionsToState()
+      fullContentInitial = deepClone(fullContentState)
+      clearDirty()
+      syncAdminGalleryGrid()
+      renderGalleryCaptionList()
+      renderEditor()
+      showToast(result.message || 'ÄÃ£ lÆ°u nhÃ£n áº£nh!', 'success')
+      reloadPreview('gallery')
+    } catch (err) {
+      showToast('Lá»—i lÆ°u nhÃ£n áº£nh: ' + err.message, 'error')
+    }
+  }
+
   function saveGalleryOrderFromDom() {
     var grid = document.getElementById('gallery-grid')
     if (!grid) return
     var order = Array.from(grid.querySelectorAll('.gallery-thumb')).map(function (thumb) { return thumb.dataset.filename })
     galleryFilesState = order.map(function (filename) { return getGalleryFilesStateByName(filename) }).filter(Boolean)
     syncGalleryOrderToState()
+    syncGalleryCaptionsToState()
     fullContentInitial = deepClone(fullContentState)
     clearDirty()
+    renderGalleryCaptionList()
     saveGalleryOrder(order)
+  }
+
+  async function saveGalleryCaptions() {
+    try {
+      var captions = galleryFilesState.map(function (item) {
+        return {
+          filename: item.filename,
+          title: String(item.title || '').trim(),
+          subtitle: String(item.subtitle || '').trim()
+        }
+      })
+
+      var res = await fetch('/admin/gallery-captions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ captions: captions }),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Khong the luu nhan anh.')
+      syncGalleryCaptionsToState()
+      fullContentInitial = deepClone(fullContentState)
+      clearDirty()
+      syncAdminGalleryGrid()
+      renderGalleryCaptionList()
+      renderEditor()
+      showToast(result.message || 'Da luu nhan anh!', 'success')
+      reloadPreview('gallery')
+    } catch (err) {
+      showToast('Loi luu nhan anh: ' + err.message, 'error')
+    }
   }
 
   function initExistingThumbs() {
@@ -387,6 +505,10 @@
 
     document.querySelectorAll('[data-save-handler="registered"]').forEach(function (btn) {
       btn.addEventListener('click', saveRegisteredSettings)
+    })
+
+    document.querySelectorAll('[data-save-handler="gallery-captions"]').forEach(function (btn) {
+      btn.addEventListener('click', saveGalleryCaptions)
     })
   }
 
@@ -501,7 +623,10 @@
       'guestbook.messages': { name: '', className: '', message: '', createdAt: '' },
       'registered.classes': { name: '', count: 0 },
       'registered.classOptions': '',
-      'registered.attendees': { name: '', className: '', phone: '', note: '', status: 'Chờ xác nhận', registeredAt: '' },
+      'registered.shirtSizeOptions': '',
+      'registered.attendees': { name: '', className: '', shirtSize: '', phone: '', note: '', status: 'Chờ xác nhận', registeredAt: '' },
+      'donate.quickAmounts': 0,
+      'donate.entries': { type: 'personal', name: '', className: '', contactName: '', organizationName: '', amount: 0, message: '', anonymous: false, createdAt: '' },
       'schedule.activities': '',
       'schedule.days': { label: '', date: '', items: [{ time: '', endTime: '', title: '', desc: '' }] },
       'schedule.days.[].items': { time: '', endTime: '', title: '', desc: '' },
@@ -753,7 +878,7 @@
       thumb.innerHTML =
         '<img src="' + esc(item.url) + '" alt="' + esc(item.filename) + '" loading="lazy">' +
         '<button class="thumb-delete" type="button" data-filename="' + esc(item.filename) + '">x</button>' +
-        '<div class="gallery-caption-chip">' + esc(item.filename) + '</div>'
+        '<div class="gallery-caption-chip">' + esc(item.title || item.filename) + '</div>'
       thumb.querySelector('.thumb-delete').addEventListener('click', function (e) {
         e.preventDefault()
         deleteGalleryImage(item.filename)
@@ -823,6 +948,7 @@
       clearDirty()
       showToast(result.message || 'Đã lưu toàn bộ nội dung.', 'success')
       reloadPreview(currentTarget)
+      closeEditor()
     } catch (err) {
       showToast('Lỗi lưu full content: ' + err.message, 'error')
     }
@@ -856,7 +982,6 @@
     if (closeBtn) closeBtn.addEventListener('click', closeEditor)
     if (cancelBtn) cancelBtn.addEventListener('click', closeEditor)
     if (backdrop) backdrop.addEventListener('click', closeEditor)
-    if (saveBtn) backdrop.addEventListener('click', closeEditor)
     if (saveBtn) saveBtn.addEventListener('click', saveFullContent)
 
     document.addEventListener('keydown', function (e) {
@@ -894,6 +1019,7 @@
     fullContentState = deepClone(fullContentInitial)
     galleryFilesState = JSON.parse(galleryEl.textContent || '[]')
     syncGalleryOrderToState()
+    syncGalleryCaptionsToState()
     clearDirty()
     updateSectionNav(currentTarget)
   }
@@ -904,6 +1030,7 @@
     initLogoUpload()
     initGalleryUpload()
     initExistingThumbs()
+    renderGalleryCaptionList()
     bindSaveButtons()
     initLiveEditorSidebar()
     initLiveEditorToolbar()

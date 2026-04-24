@@ -58,6 +58,23 @@ function getGalleryFiles() {
     .filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f))
 }
 
+function getGalleryCaptionMap(content, orderedFiles) {
+  const captions = Array.isArray(content.gallery?.captions) ? content.gallery.captions : []
+  const map = new Map()
+
+  captions.forEach((item, index) => {
+    if (!item || typeof item !== 'object') return
+    const filename = String(item.filename || orderedFiles[index] || '').trim()
+    if (!filename) return
+    map.set(filename, {
+      title: String(item.title || item.label || '').trim(),
+      subtitle: String(item.subtitle || '').trim()
+    })
+  })
+
+  return map
+}
+
 function getRegisteredClassOptions(registered) {
   if (Array.isArray(registered?.classOptions) && registered.classOptions.length > 0) {
     return registered.classOptions
@@ -68,6 +85,16 @@ function getRegisteredClassOptions(registered) {
   if (Array.isArray(registered?.classes) && registered.classes.length > 0) {
     return registered.classes
       .map(item => String(item?.name || '').trim())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
+function getRegisteredShirtSizeOptions(registered) {
+  if (Array.isArray(registered?.shirtSizeOptions) && registered.shirtSizeOptions.length > 0) {
+    return registered.shirtSizeOptions
+      .map(item => String(item || '').trim())
       .filter(Boolean)
   }
 
@@ -112,14 +139,25 @@ router.get('/', requireAdmin, (req, res) => {
   const content = getContent()
   const allFiles = getGalleryFiles()
   const order = content.gallery?.order || []
-  const galleryFiles = [
+  const orderedFiles = [
     ...order.filter(f => allFiles.includes(f)),
     ...allFiles.filter(f => !order.includes(f))
-  ].map(f => ({ filename: f, url: `/images/gallery/${f}` }))
+  ]
+  const galleryCaptionMap = getGalleryCaptionMap(content, orderedFiles)
+  const galleryFiles = orderedFiles.map(f => {
+    const caption = galleryCaptionMap.get(f) || {}
+    return {
+      filename: f,
+      url: `/images/gallery/${f}`,
+      title: caption.title || '',
+      subtitle: caption.subtitle || ''
+    }
+  })
   const registeredClassText = getRegisteredClassOptions(content.registered).join('\n')
+  const registeredShirtSizeText = getRegisteredShirtSizeOptions(content.registered).join('\n')
   const contentJson = JSON.stringify(content).replace(/</g, '\\u003c')
   const galleryFilesJson = JSON.stringify(galleryFiles).replace(/</g, '\\u003c')
-  res.render('admin', { content, galleryFiles, registeredClassText, contentJson, galleryFilesJson })
+  res.render('admin', { content, galleryFiles, registeredClassText, registeredShirtSizeText, contentJson, galleryFilesJson })
 })
 
 // ── Save content ──────────────────────────────────────
@@ -142,6 +180,7 @@ router.post('/registered-settings', requireAdmin, (req, res) => {
     if (!content.registered) content.registered = {}
 
     const classOptions = parseClassOptionsText(req.body?.classOptionsText)
+    const shirtSizeOptions = parseClassOptionsText(req.body?.shirtSizeOptionsText)
     if (classOptions.length === 0) {
       return res.json({ ok: false, message: 'Danh sách lớp không được để trống.' })
     }
@@ -150,6 +189,7 @@ router.post('/registered-settings', requireAdmin, (req, res) => {
     content.registered.title = String(req.body?.title || content.registered.title || 'Đã Đăng Ký Tham Gia').trim()
     content.registered.subtitle = String(req.body?.subtitle || content.registered.subtitle || '').trim()
     content.registered.classOptions = classOptions
+    content.registered.shirtSizeOptions = shirtSizeOptions
     content.registered.classes = classOptions.map(name => ({ name, count: 0 }))
     if (!Array.isArray(content.registered.attendees)) content.registered.attendees = []
 
@@ -202,6 +242,9 @@ router.delete('/gallery/:filename', requireAdmin, (req, res) => {
     // Remove from order
     const content = getContent()
     content.gallery.order = (content.gallery.order || []).filter(f => f !== filename)
+    content.gallery.captions = (content.gallery.captions || []).filter(item => {
+      return path.basename(String(item?.filename || '')) !== filename
+    })
     saveContent(content)
     res.json({ ok: true })
   } catch (err) {
@@ -220,6 +263,29 @@ router.post('/gallery-order', requireAdmin, (req, res) => {
     res.json({ ok: true })
   } catch (err) {
     res.json({ ok: false, message: err.message })
+  }
+})
+
+router.post('/gallery-captions', requireAdmin, (req, res) => {
+  try {
+    const captions = Array.isArray(req.body?.captions) ? req.body.captions : []
+    const content = getContent()
+    const allFiles = new Set(getGalleryFiles())
+
+    if (!content.gallery) content.gallery = {}
+
+    content.gallery.captions = captions
+      .map(item => ({
+        filename: path.basename(String(item?.filename || '').trim()),
+        title: String(item?.title || '').trim().slice(0, 80),
+        subtitle: String(item?.subtitle || '').trim().slice(0, 160)
+      }))
+      .filter(item => item.filename && allFiles.has(item.filename) && (item.title || item.subtitle))
+
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã lưu nhãn ảnh gallery.' })
+  } catch (err) {
+    return res.json({ ok: false, message: err.message })
   }
 })
 

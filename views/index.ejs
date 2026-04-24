@@ -2,13 +2,15 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
   <title><%= content.hero.titleLine1 %> <%= content.hero.titleLine2 %> – <%= content.hero.school %></title>
   <meta name="description" content="<%= content.hero.description %>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="icon" type="image/x-icon" href="../public/images/icon.gif">
+  <link rel="stylesheet" href="/css/donate.css">
+  <link rel="icon" type="image/gif" href="/images/icon.gif">
+  <link rel="shortcut icon" href="/images/icon.gif">
   <% if (previewMode) { %>
   <style>
     body.admin-preview-mode [data-admin-editable="true"] {
@@ -49,7 +51,7 @@
   </style>
   <% } %>
 </head>
-<body<% if (previewMode) { %> class="admin-preview-mode"<% } %>>
+<body data-page="home"<% if (previewMode) { %> class="admin-preview-mode"<% } %>>
 
 <!-- ══ STICKY NAV ═══════════════════════════════════════ -->
 <nav class="navbar" id="navbar">
@@ -69,7 +71,7 @@
     <li><a href="#lien-he">LIÊN HỆ</a></li>
   </ul>
   <div class="navbar-actions">
-    <a href="#lien-he" class="btn-outline-gold">ỦNG HỘ</a>
+    <a href="/donate" class="btn-outline-gold" data-donate-open>ỦNG HỘ</a>
     <a href="#dang-ky" class="btn-gold" data-register-open>ĐĂNG KÝ</a>
   </div>
 </nav>
@@ -81,7 +83,7 @@
   <a href="#luu-but">LƯU BÚT</a>
   <a href="#lien-he">LIÊN HỆ</a>
   <div class="navbar-mobile-actions">
-    <a href="#lien-he" class="btn-outline-gold">ỦNG HỘ</a>
+    <a href="/donate" class="btn-outline-gold" data-donate-open>ỦNG HỘ</a>
     <a href="#dang-ky" class="btn-gold" data-register-open>ĐĂNG KÝ</a>
   </div>
 </div>
@@ -320,6 +322,7 @@
             <span>STT</span>
             <span>Họ và tên</span>
             <span>Lớp</span>
+            <span>Size áo</span>
             <span>Ghi chú</span>
             <span>Trạng thái</span>
           </div>
@@ -328,6 +331,7 @@
             <span class="registered-cell-index" data-row-index><%= index + 1 %></span>
             <span><%= item.name %></span>
             <span><%= item.className || 'Đang cập nhật' %></span>
+            <span><%= item.shirtSize || '–' %></span>
             <span><%= item.note || '–' %></span>
             <span><span class="registered-status"><%= item.status || 'Chờ xác nhận' %></span></span>
           </div>
@@ -355,6 +359,10 @@
     registerClassOptions = content.registered.classes
       .map(function(item) { return item && item.name ? item.name : '' })
       .filter(Boolean)
+  }
+  var registerShirtSizeOptions = []
+  if (content.registered && Array.isArray(content.registered.shirtSizeOptions) && content.registered.shirtSizeOptions.length > 0) {
+    registerShirtSizeOptions = content.registered.shirtSizeOptions
   }
 %>
 <div class="register-modal" id="register-modal" aria-hidden="true" aria-modal="true" role="dialog">
@@ -389,6 +397,18 @@
         </div>
       </div>
 
+      <% if (registerShirtSizeOptions.length > 0) { %>
+      <div class="register-form-group">
+        <label class="register-form-label" for="register-shirt-size">SIZE ÁO *</label>
+        <select class="register-form-input" id="register-shirt-size" name="shirtSize" required>
+          <option value="">-- Chọn size áo --</option>
+          <% registerShirtSizeOptions.forEach(function(sizeLabel) { %>
+          <option value="<%= sizeLabel %>"><%= sizeLabel %></option>
+          <% }) %>
+        </select>
+      </div>
+      <% } %>
+
       <div class="register-form-group">
         <label class="register-form-label" for="register-note">GHI CHÚ</label>
         <textarea class="register-form-input register-form-textarea" id="register-note" name="note" placeholder="Lời nhắn cho ban tổ chức..." maxlength="300" rows="4"></textarea>
@@ -399,6 +419,8 @@
     </form>
   </div>
 </div>
+
+<%- include('partials/donate-modal', { donateSummary: donateSummary }) %>
 
 <!-- ══ SECTION 5 — THƯ VIỆN ẢNH ══════════════════════════ -->
 <section class="section gallery-section" id="thu-vien-anh"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="gallery" data-admin-label="Thu vien anh"<% } %>>
@@ -683,6 +705,38 @@
 
   if (closeRegisterModalBtn) closeRegisterModalBtn.addEventListener('click', closeRegisterModal)
   if (registerModalBg) registerModalBg.addEventListener('click', closeRegisterModal)
+
+  // ── Scroll focused input into view khi bàn phím ảo che (mobile) ──
+  function scrollFocusedIntoView(el) {
+    if (!el) return
+    var vp = window.visualViewport
+    var rect = el.getBoundingClientRect()
+    var visibleBottom = vp ? vp.height : window.innerHeight
+    var margin = 24
+    if (rect.bottom > visibleBottom - margin || rect.top < margin) {
+      var container = el.closest('.register-modal, .guestbook-modal')
+      if (container) {
+        container.scrollTop += rect.bottom - visibleBottom + margin + 40
+      } else {
+        el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }
+    }
+  }
+
+  document.querySelectorAll('#register-form input, #register-form textarea, #register-form select, #guestbook-form input, #guestbook-form textarea').forEach(function(el) {
+    el.addEventListener('focus', function() {
+      window.setTimeout(function() { scrollFocusedIntoView(el) }, 320)
+    })
+  })
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function() {
+      var active = document.activeElement
+      if (active && active.matches && active.matches('#register-form input, #register-form textarea, #register-form select, #guestbook-form input, #guestbook-form textarea')) {
+        window.setTimeout(function() { scrollFocusedIntoView(active) }, 120)
+      }
+    })
+  }
 
   // ── Smooth scroll for nav links ────────────────────────
   document.querySelectorAll('a[href^="#"]').forEach(function(a) {
@@ -975,15 +1029,21 @@
   if (registerForm) {
     registerForm.addEventListener('submit', function(e) {
       e.preventDefault()
+      var shirtSizeField = registerForm.querySelector('[name="shirtSize"]')
       var formData = {
         name: registerForm.querySelector('[name="name"]').value.trim(),
         className: registerForm.querySelector('[name="className"]').value.trim(),
+        shirtSize: shirtSizeField ? shirtSizeField.value.trim() : '',
         phone: registerForm.querySelector('[name="phone"]').value.trim(),
         note: registerForm.querySelector('[name="note"]').value.trim()
       }
 
       if (!formData.name || !formData.className || !formData.phone) {
         setRegisterMessage('Vui lòng nhập đủ họ tên, lớp và số điện thoại.', 'error')
+        return
+      }
+      if (shirtSizeField && !formData.shirtSize) {
+        setRegisterMessage('Vui lòng chọn size áo.', 'error')
         return
       }
 
@@ -1079,6 +1139,7 @@
 
 })()
 </script>
+<script src="/js/donate.js"></script>
 <% if (previewMode) { %>
 <script>
 ;(function () {

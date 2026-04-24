@@ -164,6 +164,11 @@
           <textarea class="form-control" name="classOptionsText" rows="8" placeholder="Mỗi dòng một lớp, ví dụ: A1"><%= registeredClassText %></textarea>
           <div class="form-hint">Các lựa chọn trong popup đăng ký sẽ lấy từ danh sách này. Nhập mỗi lớp trên một dòng.</div>
         </div>
+        <div class="form-group">
+          <label class="form-label">Tùy chọn size áo</label>
+          <textarea class="form-control" name="shirtSizeOptionsText" rows="8" placeholder="Mỗi dòng một size, ví dụ: S Nam"><%= registeredShirtSizeText %></textarea>
+          <div class="form-hint">Popup đăng ký sẽ hiển thị danh sách size áo này dưới dạng ô chọn. Nhập mỗi size trên một dòng, ví dụ: S Nam, S Nữ, M Nam, M Nữ.</div>
+        </div>
       </form>
       <div class="card-footer">
         <button class="btn btn-primary" data-save-handler="registered">Lưu danh sách lớp</button>
@@ -180,6 +185,7 @@
         <div class="admin-registered-head">
           <span>Họ tên</span>
           <span>Lớp</span>
+          <span>Size áo</span>
           <span>SDT</span>
           <span>Trạng thái</span>
         </div>
@@ -187,6 +193,7 @@
         <div class="admin-registered-row">
           <span><%= item.name %></span>
           <span><%= item.className %></span>
+          <span><%= item.shirtSize || '–' %></span>
           <span><%= item.phone || '' %></span>
           <span><%= item.status || 'Chờ xác nhận' %></span>
         </div>
@@ -222,6 +229,34 @@
           <button class="thumb-delete" data-filename="<%= f.filename %>" title="Xóa ảnh này">x</button>
         </div>
         <% }) %>
+      </div>
+
+      <div class="gallery-caption-editor">
+        <div class="gallery-caption-editor-head">
+          <h3>Nhãn hiển thị trên từng ảnh</h3>
+          <p>Nhập tên lớp hoặc nội dung muốn hiển thị thay cho chữ mặc định như “Khoảnh khắc 22”.</p>
+        </div>
+        <div class="gallery-caption-list" id="gallery-caption-list">
+          <% galleryFiles.forEach(function(f, index) { %>
+          <div class="gallery-caption-item" data-gallery-caption-item="<%= f.filename %>">
+            <img class="gallery-caption-preview" src="<%= f.url %>" alt="<%= f.filename %>" loading="lazy">
+            <div class="gallery-caption-fields">
+              <div class="gallery-caption-meta"><%= index + 1 %>. <%= f.filename %></div>
+              <label class="form-label" for="gallery-caption-<%= index %>">Nhãn hiển thị</label>
+              <input
+                id="gallery-caption-<%= index %>"
+                class="form-control"
+                type="text"
+                value="<%= f.title || '' %>"
+                placeholder="VD: Lớp A1"
+                data-gallery-caption-input="<%= f.filename %>">
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-handler="gallery-captions">Lưu nhãn ảnh</button>
       </div>
     </div>
 
@@ -334,6 +369,7 @@
               <button class="live-editor-section-btn" type="button" data-live-editor-target="schedule">Lịch trình</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="registered">Đăng ký</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="gallery">Thư viện ảnh</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="donate">Ủng hộ</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="guestbook">Lưu bút</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="announcements">Thông báo</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="contact">Liên hệ</button>

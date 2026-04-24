@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= donateSummary.title %> <%= donateSummary.titleAccent %> – <%= content.hero.school %></title>
+  <meta name="description" content="<%= donateSummary.subtitle %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/donate.css">
+  <link rel="icon" type="image/gif" href="/images/icon.gif">
+  <link rel="shortcut icon" href="/images/icon.gif">
+</head>
+<body data-page="donate">
+  <header class="donate-page-topbar">
+    <a href="/" class="donate-breadcrumb">
+      <img src="<%= content.hero.logo %>" alt="Logo" class="donate-breadcrumb-logo">
+      <span>← Trang chủ</span>
+    </a>
+  </header>
+
+  <section class="donate-hero-page">
+    <div class="donate-hero-inner">
+      <div class="section-header">
+        <p class="section-label"><%= donateSummary.label %></p>
+        <h1 class="donate-hero-title">
+          <span><%= donateSummary.title %></span>
+          <span class="donate-hero-title-accent"><%= donateSummary.titleAccent %></span>
+        </h1>
+        <div class="title-underline"></div>
+        <p class="section-subtitle donate-hero-copy"><%= donateSummary.subtitle %></p>
+      </div>
+
+      <div class="donate-hero-stats">
+        <div class="donate-stat-card">
+          <strong><%= Number(donateSummary.totalAmount || 0).toLocaleString('vi-VN') %></strong>
+          <span>VND đã đóng góp</span>
+        </div>
+        <div class="donate-stat-card">
+          <strong><%= donateSummary.donorCount || 0 %></strong>
+          <span>Người đóng góp</span>
+        </div>
+      </div>
+
+      <div class="donate-hero-actions">
+        <a href="/#hero" class="btn-outline-gold">Về Trang Chủ</a>
+        <button class="btn-gold donate-hero-button" type="button" data-donate-open><%= donateSummary.ctaText || 'Đóng Góp Ngay' %></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="donate-board-section" data-donate-page>
+    <div class="section-inner section-inner--narrow donate-board-wrap">
+      <div class="section-header">
+        <p class="section-label"><%= donateSummary.rankingLabel || 'BẢNG XẾP HẠNG' %></p>
+        <h2 class="section-title"><%= donateSummary.rankingTitle || 'Danh Sách Đóng Góp' %></h2>
+        <div class="title-underline"></div>
+        <p class="section-subtitle"><%= donateSummary.rankingSubtitle || '' %></p>
+      </div>
+
+      <div class="donate-board-tabs">
+        <button class="donate-board-tab active" type="button" data-donate-board-tab="class">THEO LỚP</button>
+        <button class="donate-board-tab" type="button" data-donate-board-tab="personal">CÁ NHÂN</button>
+        <button class="donate-board-tab" type="button" data-donate-board-tab="organization">CÔNG TY / TẬP THỂ</button>
+      </div>
+
+      <div class="donate-board-panel active" data-donate-board-panel="class">
+        <% var maxClassDonate = donateSummary.classLeaderboard.length > 0 ? Math.max.apply(null, donateSummary.classLeaderboard.map(function(item) { return item.amount || 0 })) : 0 %>
+        <div class="donate-class-board">
+          <% donateSummary.classLeaderboard.forEach(function(item) { %>
+          <% var width = maxClassDonate > 0 ? Math.round((item.amount / maxClassDonate) * 100) : 0 %>
+          <div class="donate-class-row">
+            <div class="donate-class-rank"><%= item.rank === 1 && item.amount > 0 ? '🏅' : item.rank %></div>
+            <div class="donate-class-name"><%= item.name %></div>
+            <div class="donate-class-track">
+              <div class="donate-class-fill" style="width: <%= width %>%"></div>
+            </div>
+            <div class="donate-class-amount"><%= item.amountLabel %></div>
+            <div class="donate-class-count"><%= item.donorLabel %></div>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="donate-board-panel" data-donate-board-panel="personal">
+        <% if (donateSummary.personalLeaderboard.length > 0) { %>
+        <div class="donate-list-card">
+          <div class="donate-list-head donate-list-head-personal">
+            <span>Hạng</span>
+            <span>Người đóng góp</span>
+            <span>Lớp</span>
+            <span>Số tiền</span>
+            <span>Lời nhắn</span>
+          </div>
+          <% donateSummary.personalLeaderboard.forEach(function(item) { %>
+          <div class="donate-list-row donate-list-row-personal">
+            <span><%= item.rank %></span>
+            <span><%= item.displayName %></span>
+            <span><%= item.className %></span>
+            <span><%= item.amountLabel %></span>
+            <span><%= item.message || '–' %></span>
+          </div>
+          <% }) %>
+        </div>
+        <% } else { %>
+        <div class="donate-empty-state">Chưa có đóng góp cá nhân nào được ghi nhận.</div>
+        <% } %>
+      </div>
+
+      <div class="donate-board-panel" data-donate-board-panel="organization">
+        <% if (donateSummary.organizationLeaderboard.length > 0) { %>
+        <div class="donate-list-card">
+          <div class="donate-list-head donate-list-head-organization">
+            <span>Hạng</span>
+            <span>Công ty / tập thể</span>
+            <span>Người liên hệ</span>
+            <span>Số tiền</span>
+            <span>Lời nhắn</span>
+          </div>
+          <% donateSummary.organizationLeaderboard.forEach(function(item) { %>
+          <div class="donate-list-row donate-list-row-organization">
+            <span><%= item.rank %></span>
+            <span><%= item.organizationName %></span>
+            <span><%= item.contactName || '–' %></span>
+            <span><%= item.amountLabel %></span>
+            <span><%= item.message || '–' %></span>
+          </div>
+          <% }) %>
+        </div>
+        <% } else { %>
+        <div class="donate-empty-state">Chưa có đóng góp công ty / tập thể nào được ghi nhận.</div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/donate-modal', { donateSummary: donateSummary }) %>
+
+  <script src="/js/donate.js"></script>
+</body>
+</html>
