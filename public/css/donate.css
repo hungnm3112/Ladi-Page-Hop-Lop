@@ -408,7 +408,7 @@
 
 .donate-class-row {
   display: grid;
-  grid-template-columns: 44px 72px minmax(0, 1fr) 170px 90px;
+  grid-template-columns: 44px 72px minmax(0, 1fr) 150px 86px 118px;
   gap: 14px;
   align-items: center;
 }
@@ -451,6 +451,13 @@
   text-align: right;
 }
 
+.donate-class-status {
+  color: #536074;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
 .donate-list-card {
   border: 1px solid var(--border);
   background: rgba(255,255,255,0.84);
@@ -482,12 +489,36 @@
 
 .donate-list-head-personal,
 .donate-list-row-personal {
-  grid-template-columns: 60px minmax(0, 2fr) 80px 160px minmax(0, 2fr);
+  grid-template-columns: 60px minmax(0, 1.7fr) 80px 140px minmax(0, 1.6fr) 116px;
 }
 
 .donate-list-head-organization,
 .donate-list-row-organization {
-  grid-template-columns: 60px minmax(0, 1.8fr) minmax(0, 1.2fr) 160px minmax(0, 2fr);
+  grid-template-columns: 60px minmax(0, 1.6fr) minmax(0, 1.1fr) 140px minmax(0, 1.6fr) 116px;
+}
+
+.donate-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.donate-status.pending {
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+}
+
+.donate-status.received {
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
 }
 
 .donate-empty-state {
@@ -534,11 +565,13 @@
   }
 
   .donate-class-amount,
-  .donate-class-count {
+  .donate-class-count,
+  .donate-class-status {
     grid-column: 2 / 4;
   }
 
-  .donate-class-count {
+  .donate-class-count,
+  .donate-class-status {
     text-align: left;
     margin-top: -6px;
   }

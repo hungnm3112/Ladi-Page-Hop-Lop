@@ -11,7 +11,6 @@
   var donateAmountInput = document.getElementById('donate-amount-input')
   var donateKindTabs = Array.from(document.querySelectorAll('[data-donate-kind]'))
   var donatePanels = Array.from(document.querySelectorAll('[data-donate-panel]'))
-  var donatePersonalOnly = Array.from(document.querySelectorAll('[data-donate-personal-only]'))
   var amountButtons = Array.from(document.querySelectorAll('[data-donate-amount]'))
   var donateBoardRoots = Array.from(document.querySelectorAll('[data-donate-board-root]'))
   var DONATE_PAGE_SIZE = 10
@@ -65,9 +64,6 @@
       var active = panel.getAttribute('data-donate-panel') === kind
       panel.classList.toggle('active', active)
       panel.hidden = !active
-    })
-    donatePersonalOnly.forEach(function (row) {
-      row.hidden = kind !== 'personal'
     })
   }
 

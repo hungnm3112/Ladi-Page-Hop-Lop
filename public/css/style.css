@@ -254,6 +254,7 @@ img { display: block; max-width: 100%; }
 }
 .section-title {
   font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   color: var(--dark);
@@ -290,7 +291,7 @@ img { display: block; max-width: 100%; }
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(26, 26, 26, 0.5), rgba(26, 26, 26, 0.5)),
+    radial-gradient(ellipse at center, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.35) 100%),
     url('/images/background-home-PC.png');
   background-position: center;
   background-repeat: no-repeat;
@@ -301,6 +302,7 @@ img { display: block; max-width: 100%; }
   z-index: 1;
   max-width: 720px;
   width: 100%;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.72), 0 1px 3px rgba(0,0,0,0.95);
 }
 
 /* Logo ornament ring */
@@ -340,12 +342,13 @@ img { display: block; max-width: 100%; }
 }
 
 .hero-label {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: #FFF176;
   margin-bottom: 18px;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.86), 0 0 20px rgba(255,241,118,0.34);
   animation: fadeUp 0.8s ease 0.1s both;
 }
 
@@ -357,39 +360,46 @@ img { display: block; max-width: 100%; }
 }
 .hero-title-line1 {
   display: block;
-  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  font-size: clamp(3.1rem, 9.1vw, 5.5rem);
   font-weight: 700;
   color: var(--white);
+  text-shadow: 0 5px 26px rgba(0,0,0,0.88), 0 2px 5px rgba(0,0,0,0.96);
 }
 .hero-title-line2 {
   display: block;
-  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  font-size: clamp(3.1rem, 9.1vw, 5.5rem);
   font-weight: 400;
   font-style: italic;
-  color: var(--gold);
+  color: #FFF176;
+  text-shadow: 0 5px 24px rgba(0,0,0,0.86), 0 0 22px rgba(255,241,118,0.26);
 }
 
 .hero-school {
-  font-size: 16px;
+  font-size: 21px;
   color: var(--white);
   font-weight: 400;
   margin-bottom: 6px;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.86), 0 1px 3px rgba(0,0,0,0.95);
+  -webkit-text-stroke: 0.4px rgba(0,0,0,0.55);
   animation: fadeUp 0.8s ease 0.3s both;
 }
 .hero-tagline {
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: white;
+  color: #FFF176;
   margin-bottom: 20px;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.86), 0 0 18px rgba(255,241,118,0.26);
   animation: fadeUp 0.8s ease 0.35s both;
 }
 .hero-desc {
-  font-size: 15px;
-  color: #FFF176;
+  font-size: 20px;
+  color: var(--white);
   max-width: 480px;
   margin: 0 auto 36px;
   line-height: 1.75;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.86), 0 1px 3px rgba(0,0,0,0.95);
+  -webkit-text-stroke: 0.4px rgba(0,0,0,0.55);
   animation: fadeUp 0.8s ease 0.4s both;
 }
 
@@ -402,35 +412,38 @@ img { display: block; max-width: 100%; }
   animation: fadeUp 0.8s ease 0.5s both;
 }
 .btn-hero-primary {
-  padding: 13px 32px;
-  background: var(--gold);
+  padding: 17px 42px;
+  background: #FFF176;
   color: var(--dark);
   border: none;
   border-radius: 4px;
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.25s;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.28), 0 0 18px rgba(255,241,118,0.22);
+  text-shadow: none;
 }
-.btn-hero-primary:hover { background: #b8904f; }
+.btn-hero-primary:hover { background: #fff59d; }
 .btn-hero-secondary {
-  padding: 13px 32px;
+  padding: 17px 42px;
   background: transparent;
   color: var(--white);
   border: 1.5px solid rgba(255,255,255,0.45);
   border-radius: 4px;
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
   transition: all 0.25s;
+  text-shadow: 0 3px 12px rgba(0,0,0,0.82);
 }
 .btn-hero-secondary:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
 
@@ -445,7 +458,7 @@ img { display: block; max-width: 100%; }
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--gold);
+  background: #FFF176;
   opacity: 0.55;
 }
 
@@ -464,24 +477,27 @@ img { display: block; max-width: 100%; }
 }
 .cd-num {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.6rem, 7vw, 3.8rem);
+  font-size: clamp(3.4rem, 9.1vw, 5rem);
   font-weight: 700;
-  color: var(--gold);
+  color: #FFF176;
   line-height: 1;
+  text-shadow: 0 5px 22px rgba(0,0,0,0.86), 0 0 20px rgba(255,241,118,0.22);
 }
 .cd-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: var(--white);
   margin-top: 6px;
+  text-shadow: 0 3px 12px rgba(0,0,0,0.82);
 }
 .cd-sep {
-  font-size: 2.2rem;
-  color: rgba(255,255,255,0.18);
+  font-size: 2.9rem;
+  color: var(--white);
   font-weight: 300;
   padding-top: 4px;
+  text-shadow: 0 4px 16px rgba(0,0,0,0.84);
 }
 .cd-done {
   display: inline-flex;
@@ -489,20 +505,31 @@ img { display: block; max-width: 100%; }
   gap: 10px;
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.5rem;
-  color: var(--gold);
+  color: #FFF176;
   padding: 12px 24px;
-  border: 1px solid rgba(201,169,110,0.4);
+  border: 1px solid rgba(255,241,118,0.4);
   border-radius: 8px;
 }
 .cd-done i { font-size: 1.2rem; }
 
 @media (max-width: 600px) {
   .hero { padding: 60px 16px; }
+  .hero-title-line1,
+  .hero-title-line2 {
+    font-size: clamp(2.8rem, 15vw, 4rem);
+  }
+  .hero-label { font-size: 14px; }
+  .hero-school { font-size: 19px; }
+  .hero-tagline { font-size: 13px; }
+  .hero-desc {
+    font-size: 18px;
+    line-height: 1.6;
+  }
   .countdown { gap: 14px; }
-  .cd-num { font-size: 2.2rem; }
-  .cd-sep { font-size: 1.8rem; }
+  .cd-num { font-size: 2.9rem; }
+  .cd-sep { font-size: 2.3rem; }
   .hero-buttons { gap: 10px; }
-  .btn-hero-primary, .btn-hero-secondary { padding: 12px 20px; font-size: 11px; }
+  .btn-hero-primary, .btn-hero-secondary { padding: 14px 24px; font-size: 14px; }
 }
 
 /* ══ INTRO SECTION (Thư ngỏ) ══════════════════════════════ */

@@ -30,6 +30,7 @@
     <a class="tab-item" data-panel="about">Giới thiệu</a>
     <a class="tab-item" data-panel="registered">Đăng ký</a>
     <a class="tab-item" data-panel="attendees">Người đăng ký</a>
+    <a class="tab-item" data-panel="donations">Ủng hộ</a>
     <a class="tab-item" data-panel="gallery">Gallery</a>
     <a class="tab-item" data-panel="cta">Nút đăng ký</a>
     <a class="tab-item" data-panel="footer">Footer</a>
@@ -254,6 +255,63 @@
       </div>
 
       <div class="attendees-pagination" id="attendees-pagination"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-donations">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></div>
+        <h2>Danh Sách Ủng Hộ (<span id="donations-total-count">0</span>)</h2>
+      </div>
+
+      <div class="attendees-stats" id="donations-stats">
+        <div class="attendees-stat">
+          <span class="attendees-stat-label">Tổng bản ghi</span>
+          <strong id="donations-stat-total">0</strong>
+        </div>
+        <div class="attendees-stat">
+          <span class="attendees-stat-label">Đã nhận</span>
+          <strong id="donations-stat-received">0</strong>
+        </div>
+        <div class="attendees-stat">
+          <span class="attendees-stat-label">Chờ nhận</span>
+          <strong id="donations-stat-pending">0</strong>
+        </div>
+      </div>
+
+      <div class="attendees-toolbar donations-toolbar">
+        <input type="search" id="donations-search" class="form-control attendees-search" placeholder="Tìm theo tên, lớp, công ty, lời nhắn..." autocomplete="off">
+        <select id="donations-filter-type" class="form-control attendees-filter">
+          <option value="all">Tất cả loại</option>
+          <option value="personal">Cá nhân</option>
+          <option value="organization">Công ty / tập thể</option>
+        </select>
+        <select id="donations-filter-status" class="form-control attendees-filter">
+          <option value="all">Tất cả trạng thái</option>
+          <option value="Đã ủng hộ">Đã ủng hộ</option>
+          <option value="Đã nhận">Đã nhận</option>
+        </select>
+        <button type="button" class="btn btn-ghost btn-sm" id="donations-export">Xuất CSV</button>
+      </div>
+
+      <div class="donations-table-wrap">
+        <div class="donations-table-head">
+          <span>#</span>
+          <span>Người / tổ chức</span>
+          <span>Loại</span>
+          <span>Lớp</span>
+          <span>Số tiền</span>
+          <span>Lời nhắn</span>
+          <span>Ẩn danh</span>
+          <span>Ngày</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
+        </div>
+        <div id="donations-list"></div>
+      </div>
+
+      <div class="attendees-pagination" id="donations-pagination"></div>
     </div>
   </div>
 
@@ -482,6 +540,26 @@
         <button class="btn btn-ghost" type="button" id="editor-modal-cancel">Đóng</button>
         <button class="btn btn-primary" type="button" id="editor-modal-save">Lưu và cập nhật preview</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="icon-picker-modal" id="icon-picker-modal" hidden>
+  <div class="icon-picker-backdrop" id="icon-picker-backdrop"></div>
+  <div class="icon-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="icon-picker-title">
+    <div class="icon-picker-head">
+      <div>
+        <p class="icon-picker-eyebrow">Thư viện icon</p>
+        <h2 class="icon-picker-title" id="icon-picker-title">Chọn icon Font Awesome</h2>
+        <p class="icon-picker-subtitle">Bấm vào icon muốn dùng cho hoạt động này.</p>
+      </div>
+      <button class="icon-picker-close" type="button" id="icon-picker-close" aria-label="Đóng">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="icon-picker-body">
+      <div class="icon-picker-grid" id="icon-picker-grid"></div>
     </div>
   </div>
 </div>

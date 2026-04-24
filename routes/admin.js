@@ -8,6 +8,8 @@ const DATA_FILE = path.join(__dirname, '../data/content.json')
 const GALLERY_DIR = path.join(__dirname, '../public/images/gallery')
 const IMAGES_DIR = path.join(__dirname, '../public/images')
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
+const DONATE_STATUS_PENDING = 'Đã ủng hộ'
+const DONATE_STATUS_RECEIVED = 'Đã nhận'
 const SCHEDULE_ACTIVITY_ICON_OPTIONS = [
   { value: 'fa-solid fa-futbol', label: 'Bóng đá' },
   { value: 'fa-solid fa-people-pulling', label: 'Kéo co / kéo cờ' },
@@ -112,6 +114,11 @@ function parseClassOptionsText(text) {
       .map(item => item.trim())
       .filter(Boolean)
   ))
+}
+
+function normalizeDonateStatus(status) {
+  const value = String(status || '').trim()
+  return value === DONATE_STATUS_RECEIVED ? DONATE_STATUS_RECEIVED : DONATE_STATUS_PENDING
 }
 
 function sanitizeScheduleIcon(icon) {
@@ -294,6 +301,28 @@ router.post('/attendees/:id/status', requireAdmin, (req, res) => {
     return res.json({ ok: true, message: 'Đã cập nhật trạng thái.', attendee })
   } catch (err) {
     return res.json({ ok: false, message: 'Không thể cập nhật: ' + err.message })
+  }
+})
+
+router.post('/donations/:id/status', requireAdmin, (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim()
+    const status = normalizeDonateStatus(req.body?.status)
+    if (!id) return res.json({ ok: false, message: 'ID không hợp lệ.' })
+
+    const content = getContent()
+    if (!content.donate || !Array.isArray(content.donate.entries)) {
+      return res.json({ ok: false, message: 'Chưa có danh sách ủng hộ.' })
+    }
+
+    const entry = content.donate.entries.find(item => String(item?.id || '') === id)
+    if (!entry) return res.json({ ok: false, message: 'Không tìm thấy khoản ủng hộ.' })
+
+    entry.status = status
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã cập nhật trạng thái ủng hộ.', entry })
+  } catch (err) {
+    return res.json({ ok: false, message: 'Không thể cập nhật trạng thái ủng hộ: ' + err.message })
   }
 })
 

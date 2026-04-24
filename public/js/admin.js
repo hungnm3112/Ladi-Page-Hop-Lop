@@ -26,6 +26,7 @@
   var dragSrc = null
   var dragSourceThumb = null
   var scheduleActivityIconOptions = []
+  var iconPickerState = { onPick: null, currentValue: '', trigger: null }
 
   function esc(str) {
     return String(str)
@@ -226,11 +227,81 @@
     }
   }
 
-  function buildScheduleActivityIconOptions(selectedValue) {
-    return scheduleActivityIconOptions.map(function (item) {
-      var selected = item.value === selectedValue ? ' selected' : ''
-      return '<option value="' + esc(item.value) + '"' + selected + '>' + esc(item.label) + '</option>'
-    }).join('')
+  function getScheduleActivityIconOption(value) {
+    var normalizedValue = String(value || '').trim()
+    var found = scheduleActivityIconOptions.find(function (item) { return item.value === normalizedValue })
+    return found || scheduleActivityIconOptions[0] || { value: 'fa-solid fa-star', label: 'Khác' }
+  }
+
+  function updateIconTriggerButton(button, value) {
+    if (!button) return
+    var option = getScheduleActivityIconOption(value)
+    button.dataset.iconValue = option.value
+    button.innerHTML =
+      '<span class="icon-picker-trigger-main">' +
+        '<span class="icon-picker-trigger-preview"><i class="' + esc(option.value) + '" aria-hidden="true"></i></span>' +
+        '<span class="icon-picker-trigger-copy">' +
+          '<span class="icon-picker-trigger-title">' + esc(option.label) + '</span>' +
+          '<span class="icon-picker-trigger-value">' + esc(option.value) + '</span>' +
+        '</span>' +
+      '</span>' +
+      '<span class="icon-picker-trigger-action">Chọn icon</span>'
+  }
+
+  function syncIconPickerSelection() {
+    var modal = document.getElementById('icon-picker-modal')
+    if (!modal) return
+    modal.querySelectorAll('[data-icon-picker-value]').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.iconPickerValue === iconPickerState.currentValue)
+    })
+  }
+
+  function closeIconPicker() {
+    var modal = document.getElementById('icon-picker-modal')
+    if (!modal || modal.hidden) return false
+    modal.hidden = true
+    iconPickerState.onPick = null
+    iconPickerState.trigger = null
+    return true
+  }
+
+  function openIconPicker(currentValue, onPick, trigger) {
+    var modal = document.getElementById('icon-picker-modal')
+    if (!modal || !scheduleActivityIconOptions.length) return
+    iconPickerState.currentValue = String(currentValue || scheduleActivityIconOptions[0].value || 'fa-solid fa-star')
+    iconPickerState.onPick = onPick
+    iconPickerState.trigger = trigger || null
+    modal.hidden = false
+    syncIconPickerSelection()
+  }
+
+  function initIconPickerModal() {
+    var modal = document.getElementById('icon-picker-modal')
+    var grid = document.getElementById('icon-picker-grid')
+    var closeBtn = document.getElementById('icon-picker-close')
+    var backdrop = document.getElementById('icon-picker-backdrop')
+    if (!modal || !grid) return
+    if (!scheduleActivityIconOptions.length) {
+      scheduleActivityIconOptions = parseJsonScript('schedule-activity-icons-data', [])
+    }
+
+    grid.innerHTML = ''
+    scheduleActivityIconOptions.forEach(function (option) {
+      var btn = createEl('button', 'icon-picker-option')
+      btn.type = 'button'
+      btn.dataset.iconPickerValue = option.value
+      btn.innerHTML =
+        '<span class="icon-picker-option-preview"><i class="' + esc(option.value) + '" aria-hidden="true"></i></span>' +
+        '<span class="icon-picker-option-label">' + esc(option.label) + '</span>'
+      btn.addEventListener('click', function () {
+        if (typeof iconPickerState.onPick === 'function') iconPickerState.onPick(option.value)
+        closeIconPicker()
+      })
+      grid.appendChild(btn)
+    })
+
+    if (closeBtn) closeBtn.addEventListener('click', closeIconPicker)
+    if (backdrop) backdrop.addEventListener('click', closeIconPicker)
   }
 
   function createScheduleActivityRow(activity) {
@@ -239,18 +310,26 @@
     row.className = 'schedule-activity-item'
     row.innerHTML =
       '<div class="schedule-activity-preview" data-schedule-activity-preview><i class="' + esc(item.icon) + '" aria-hidden="true"></i></div>' +
-      '<select class="form-control" data-schedule-activity-icon>' + buildScheduleActivityIconOptions(item.icon) + '</select>' +
+      '<input type="hidden" data-schedule-activity-icon value="' + esc(item.icon) + '">' +
+      '<button class="icon-picker-trigger schedule-activity-icon-trigger" type="button" data-schedule-activity-icon-button></button>' +
       '<input class="form-control" type="text" maxlength="40" placeholder="VD: Bóng đá" data-schedule-activity-label value="' + esc(item.label) + '">' +
       '<div class="schedule-activity-actions"><button class="btn btn-danger btn-sm" type="button" data-schedule-activity-remove>Xóa</button></div>'
 
-    var iconSelect = row.querySelector('[data-schedule-activity-icon]')
+    var iconInput = row.querySelector('[data-schedule-activity-icon]')
+    var iconButton = row.querySelector('[data-schedule-activity-icon-button]')
     var labelInput = row.querySelector('[data-schedule-activity-label]')
     var removeBtn = row.querySelector('[data-schedule-activity-remove]')
     var preview = row.querySelector('[data-schedule-activity-preview]')
 
-    iconSelect.addEventListener('change', function () {
-      preview.innerHTML = '<i class="' + esc(iconSelect.value) + '" aria-hidden="true"></i>'
-      markDirty()
+    updateIconTriggerButton(iconButton, item.icon)
+
+    iconButton.addEventListener('click', function () {
+      openIconPicker(iconInput.value, function (nextValue) {
+        iconInput.value = nextValue
+        updateIconTriggerButton(iconButton, nextValue)
+        preview.innerHTML = '<i class="' + esc(nextValue) + '" aria-hidden="true"></i>'
+        markDirty()
+      }, iconButton)
     })
 
     labelInput.addEventListener('input', markDirty)
@@ -956,6 +1035,257 @@
     renderAttendeesAll()
   }
 
+  // Donate manager
+  var donationsState = {
+    list: [],
+    search: '',
+    typeFilter: 'all',
+    statusFilter: 'all',
+    page: 1,
+    pageSize: 20
+  }
+
+  function getDonationsFromState() {
+    if (fullContentState && fullContentState.donate && Array.isArray(fullContentState.donate.entries)) {
+      return fullContentState.donate.entries
+    }
+    return []
+  }
+
+  function normalizeDonationStatus(status) {
+    return String(status || '').trim() === 'Đã nhận' ? 'Đã nhận' : 'Đã ủng hộ'
+  }
+
+  function formatAdminMoney(amount) {
+    var num = Number(amount || 0)
+    if (!isFinite(num)) num = 0
+    return num.toLocaleString('vi-VN') + ' VND'
+  }
+
+  function getDonationDisplayName(item) {
+    if (item.type === 'organization') return item.organizationName || 'Tập thể'
+    return item.name || 'Cựu học sinh'
+  }
+
+  function filterDonations() {
+    var term = donationsState.search.trim().toLowerCase()
+    return donationsState.list.filter(function (item) {
+      var type = item.type === 'organization' ? 'organization' : 'personal'
+      var status = normalizeDonationStatus(item.status)
+      if (donationsState.typeFilter !== 'all' && type !== donationsState.typeFilter) return false
+      if (donationsState.statusFilter !== 'all' && status !== donationsState.statusFilter) return false
+      if (!term) return true
+      var haystack = [
+        item.name,
+        item.className,
+        item.contactName,
+        item.organizationName,
+        item.message,
+        status
+      ].join(' ').toLowerCase()
+      return haystack.indexOf(term) !== -1
+    })
+  }
+
+  function renderDonationsStats() {
+    var list = donationsState.list
+    var total = list.length
+    var received = list.filter(function (item) { return normalizeDonationStatus(item.status) === 'Đã nhận' }).length
+    var pending = total - received
+    var totalEl = document.getElementById('donations-stat-total')
+    var receivedEl = document.getElementById('donations-stat-received')
+    var pendingEl = document.getElementById('donations-stat-pending')
+    var countEl = document.getElementById('donations-total-count')
+    if (totalEl) totalEl.textContent = String(total)
+    if (receivedEl) receivedEl.textContent = String(received)
+    if (pendingEl) pendingEl.textContent = String(pending)
+    if (countEl) countEl.textContent = String(total)
+  }
+
+  function renderDonationsPagination(totalPages) {
+    var pag = document.getElementById('donations-pagination')
+    if (!pag) return
+    pag.innerHTML = ''
+    if (totalPages <= 1) return
+    for (var i = 1; i <= totalPages; i++) {
+      var btn = document.createElement('button')
+      btn.type = 'button'
+      btn.textContent = String(i)
+      if (i === donationsState.page) btn.className = 'active'
+      btn.dataset.page = String(i)
+      btn.addEventListener('click', function () {
+        donationsState.page = parseInt(this.dataset.page, 10) || 1
+        renderDonationsList()
+      })
+      pag.appendChild(btn)
+    }
+  }
+
+  function renderDonationsList() {
+    var listEl = document.getElementById('donations-list')
+    if (!listEl) return
+    var filtered = filterDonations()
+    var totalPages = Math.max(1, Math.ceil(filtered.length / donationsState.pageSize))
+    if (donationsState.page > totalPages) donationsState.page = totalPages
+    var start = (donationsState.page - 1) * donationsState.pageSize
+    var slice = filtered.slice(start, start + donationsState.pageSize)
+
+    if (slice.length === 0) {
+      listEl.innerHTML = '<div class="attendees-empty">Không có khoản ủng hộ nào khớp bộ lọc.</div>'
+      renderDonationsPagination(totalPages)
+      return
+    }
+
+    listEl.innerHTML = slice.map(function (item, idx) {
+      var status = normalizeDonationStatus(item.status)
+      var statusClass = status === 'Đã nhận' ? 'confirmed' : 'pending'
+      var id = esc(item.id || '')
+      var type = item.type === 'organization' ? 'organization' : 'personal'
+      var typeLabel = type === 'organization' ? 'Công ty / tập thể' : 'Cá nhân'
+      var nextStatus = status === 'Đã nhận' ? 'Đã ủng hộ' : 'Đã nhận'
+      var toggleLabel = status === 'Đã nhận' ? 'Chuyển về đã ủng hộ' : 'Đã nhận tiền'
+      var dateLabel = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '–'
+
+      return '<div class="donations-row" data-donation-id="' + id + '">' +
+        '<span data-label="#">' + (start + idx + 1) + '</span>' +
+        '<span data-label="Người / tổ chức"><strong>' + esc(getDonationDisplayName(item)) + '</strong>' + (type === 'organization' && item.contactName ? '<small>Liên hệ: ' + esc(item.contactName) + '</small>' : '') + '</span>' +
+        '<span data-label="Loại">' + esc(typeLabel) + '</span>' +
+        '<span data-label="Lớp">' + esc(type === 'personal' ? (item.className || '–') : '–') + '</span>' +
+        '<span data-label="Số tiền"><strong>' + esc(formatAdminMoney(item.amount)) + '</strong></span>' +
+        '<span data-label="Lời nhắn" class="attendees-note">' + (item.message ? esc(item.message) : '–') + '</span>' +
+        '<span data-label="Ẩn danh">' + (item.anonymous ? 'Có' : 'Không') + '</span>' +
+        '<span data-label="Ngày">' + esc(dateLabel) + '</span>' +
+        '<span data-label="Trạng thái"><span class="attendees-status ' + statusClass + '">' + esc(status) + '</span></span>' +
+        '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
+          '<button type="button" class="' + (status === 'Đã nhận' ? 'btn-unconfirm' : 'btn-confirm') + '" data-donation-action="toggle" data-donation-status="' + esc(nextStatus) + '">' + esc(toggleLabel) + '</button>' +
+        '</div></span>' +
+      '</div>'
+    }).join('')
+
+    renderDonationsPagination(totalPages)
+  }
+
+  function renderDonationsAll() {
+    donationsState.list = getDonationsFromState().map(function (item) {
+      if (!item.status) item.status = 'Đã ủng hộ'
+      return item
+    })
+    renderDonationsStats()
+    renderDonationsList()
+  }
+
+  async function updateDonationStatus(id, status) {
+    try {
+      var res = await fetch('/admin/donations/' + encodeURIComponent(id) + '/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: status }),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể cập nhật.')
+
+      var donations = getDonationsFromState()
+      var match = donations.find(function (item) { return String(item.id) === String(id) })
+      if (match) match.status = status
+      fullContentInitial = deepClone(fullContentState)
+      renderDonationsAll()
+      showToast(result.message || 'Đã cập nhật trạng thái ủng hộ.', 'success')
+      reloadPreview('donate')
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error')
+    }
+  }
+
+  function exportDonationsCSV() {
+    var rows = filterDonations()
+    if (rows.length === 0) {
+      showToast('Không có dữ liệu để xuất.', 'error')
+      return
+    }
+    var headers = ['STT', 'Ten hien thi', 'Loai', 'Lop', 'So tien', 'Loi nhan', 'An danh', 'Trang thai', 'Ngay']
+    var csv = [headers.join(',')]
+    rows.forEach(function (item, i) {
+      var type = item.type === 'organization' ? 'organization' : 'personal'
+      var cells = [
+        String(i + 1),
+        getDonationDisplayName(item),
+        type === 'organization' ? 'Cong ty / tap the' : 'Ca nhan',
+        type === 'personal' ? (item.className || '') : '',
+        String(item.amount || 0),
+        item.message || '',
+        item.anonymous ? 'Co' : 'Khong',
+        normalizeDonationStatus(item.status),
+        item.createdAt || ''
+      ].map(function (v) {
+        var s = String(v).replace(/"/g, '""')
+        return '"' + s + '"'
+      })
+      csv.push(cells.join(','))
+    })
+    var blob = new Blob(['\ufeff' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    var url = URL.createObjectURL(blob)
+    var link = document.createElement('a')
+    link.href = url
+    link.download = 'danh-sach-ung-ho-' + new Date().toISOString().slice(0, 10) + '.csv'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  function initDonationsManager() {
+    var searchEl = document.getElementById('donations-search')
+    var typeEl = document.getElementById('donations-filter-type')
+    var statusEl = document.getElementById('donations-filter-status')
+    var exportBtn = document.getElementById('donations-export')
+    var listEl = document.getElementById('donations-list')
+
+    if (!listEl) return
+
+    if (searchEl) {
+      var searchTimer = null
+      searchEl.addEventListener('input', function () {
+        if (searchTimer) clearTimeout(searchTimer)
+        searchTimer = setTimeout(function () {
+          donationsState.search = searchEl.value
+          donationsState.page = 1
+          renderDonationsList()
+        }, 180)
+      })
+    }
+
+    if (typeEl) {
+      typeEl.addEventListener('change', function () {
+        donationsState.typeFilter = typeEl.value
+        donationsState.page = 1
+        renderDonationsList()
+      })
+    }
+
+    if (statusEl) {
+      statusEl.addEventListener('change', function () {
+        donationsState.statusFilter = statusEl.value
+        donationsState.page = 1
+        renderDonationsList()
+      })
+    }
+
+    if (exportBtn) exportBtn.addEventListener('click', exportDonationsCSV)
+
+    listEl.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-donation-action]')
+      if (!btn) return
+      var row = btn.closest('[data-donation-id]')
+      if (!row) return
+      if (btn.dataset.donationAction === 'toggle') {
+        updateDonationStatus(row.dataset.donationId, btn.dataset.donationStatus)
+      }
+    })
+
+    renderDonationsAll()
+  }
+
   function bindSaveButtons() {
     document.querySelectorAll('[data-save-section]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1085,7 +1415,7 @@
       'registered.classOptions': '',
       'registered.attendees': { name: '', className: '', phone: '', note: '', status: 'Chờ xác nhận', registeredAt: '' },
       'donate.quickAmounts': 0,
-      'donate.entries': { type: 'personal', name: '', className: '', contactName: '', organizationName: '', amount: 0, message: '', anonymous: false, createdAt: '' },
+      'donate.entries': { type: 'personal', name: '', className: '', contactName: '', organizationName: '', amount: 0, message: '', anonymous: false, status: 'Đã ủng hộ', createdAt: '' },
       'schedule.activities': { icon: 'fa-solid fa-star', label: '' },
       'schedule.days': { label: '', date: '', items: [{ time: '', endTime: '', title: '', desc: '' }] },
       'schedule.days.[].items': { time: '', endTime: '', title: '', desc: '' },
@@ -1097,6 +1427,10 @@
   }
 
   function renderPrimitiveEditor(options) {
+    if (canonicalPath(options.path || []) === 'schedule.activities.[].icon' && scheduleActivityIconOptions.length) {
+      return renderIconPickerField(options)
+    }
+
     var wrapper = createEl('div', 'content-field')
     var label = createEl('label', 'form-label', options.label || 'Giá trị')
     var input
@@ -1138,6 +1472,26 @@
 
     wrapper.appendChild(label)
     wrapper.appendChild(input)
+    return wrapper
+  }
+
+  function renderIconPickerField(options) {
+    var wrapper = createEl('div', 'content-field')
+    var label = createEl('label', 'form-label', options.label || 'Icon')
+    var button = createEl('button', 'icon-picker-trigger')
+    var currentValue = String(options.value || 'fa-solid fa-star').trim() || 'fa-solid fa-star'
+    button.type = 'button'
+    updateIconTriggerButton(button, currentValue)
+    button.addEventListener('click', function () {
+      openIconPicker(currentValue, function (nextValue) {
+        currentValue = nextValue
+        updateIconTriggerButton(button, nextValue)
+        options.onChange(nextValue)
+        markDirty()
+      }, button)
+    })
+    wrapper.appendChild(label)
+    wrapper.appendChild(button)
     return wrapper
   }
 
@@ -1196,6 +1550,7 @@
 
     container.appendChild(renderPrimitiveEditor({
       label: key,
+      path: path,
       value: node,
       onChange: function (nextValue) {
         setNodeValue(path, nextValue)
@@ -1388,6 +1743,7 @@
   function closeEditor() {
     var modal = document.getElementById('editor-modal')
     if (!modal) return
+    closeIconPicker()
     modal.hidden = true
     document.body.style.overflow = ''
   }
@@ -1444,7 +1800,12 @@
     if (saveBtn) saveBtn.addEventListener('click', saveFullContent)
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeEditor()
+      if (e.key !== 'Escape') return
+      if (closeIconPicker()) {
+        e.preventDefault()
+        return
+      }
+      closeEditor()
     })
   }
 
@@ -1488,6 +1849,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     initState()
     initTabs()
+    initIconPickerModal()
     initLogoUpload()
     initGalleryUpload()
     initExistingThumbs()
@@ -1499,6 +1861,7 @@
     initLiveEditorModal()
     initPreviewMessaging()
     initAttendeesManager()
+    initDonationsManager()
     updatePreviewDevice('desktop')
   })
 })()

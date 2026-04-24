@@ -25,6 +25,7 @@
         </div>
         <div class="donate-class-amount"><%= item.amountLabel %></div>
         <div class="donate-class-count"><%= item.donorLabel %></div>
+        <div class="donate-class-status"><%= item.statusLabel %></div>
       </div>
       <% }) %>
     </div>
@@ -40,6 +41,7 @@
         <span>Lớp</span>
         <span>Số tiền</span>
         <span>Lời nhắn</span>
+        <span>Trạng thái</span>
       </div>
       <% donateSummary.personalLeaderboard.forEach(function(item) { %>
       <div class="donate-list-row donate-list-row-personal" data-donate-page-item>
@@ -48,6 +50,7 @@
         <span><%= item.className %></span>
         <span><%= item.amountLabel %></span>
         <span><%= item.message || '–' %></span>
+        <span><span class="donate-status <%= item.status === 'Đã nhận' ? 'received' : 'pending' %>"><%= item.status %></span></span>
       </div>
       <% }) %>
     </div>
@@ -66,6 +69,7 @@
         <span>Người liên hệ</span>
         <span>Số tiền</span>
         <span>Lời nhắn</span>
+        <span>Trạng thái</span>
       </div>
       <% donateSummary.organizationLeaderboard.forEach(function(item) { %>
       <div class="donate-list-row donate-list-row-organization" data-donate-page-item>
@@ -74,6 +78,7 @@
         <span><%= item.contactName || '–' %></span>
         <span><%= item.amountLabel %></span>
         <span><%= item.message || '–' %></span>
+        <span><span class="donate-status <%= item.status === 'Đã nhận' ? 'received' : 'pending' %>"><%= item.status %></span></span>
       </div>
       <% }) %>
     </div>

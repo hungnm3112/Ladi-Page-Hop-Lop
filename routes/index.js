@@ -17,6 +17,13 @@ const DONATE_DEFAULTS = {
   quickAmounts: [200000, 500000, 1000000, 2000000, 5000000, 10000000],
   entries: []
 }
+const DONATE_STATUS_PENDING = 'Đã ủng hộ'
+const DONATE_STATUS_RECEIVED = 'Đã nhận'
+
+function normalizeDonateStatus(status) {
+  const value = String(status || '').trim()
+  return value === DONATE_STATUS_RECEIVED ? DONATE_STATUS_RECEIVED : DONATE_STATUS_PENDING
+}
 
 const SCHEDULE_ACTIVITY_ICON_OPTIONS = [
   'fa-solid fa-futbol',
@@ -230,11 +237,13 @@ function normalizeDonate(content) {
             amount,
             message: String(item?.message || '').trim(),
             anonymous: Boolean(item?.anonymous),
+            status: normalizeDonateStatus(item?.status),
             createdAt: String(item?.createdAt || '').trim()
           }
         })
         .filter(item => item.amount > 0)
     : []
+  const receivedEntries = entries.filter(item => item.status === DONATE_STATUS_RECEIVED)
 
   const classMap = new Map()
   classOptions.forEach((name, index) => {
@@ -250,7 +259,9 @@ function normalizeDonate(content) {
       }
       const row = classMap.get(key)
       row.amount += item.amount
+      row.receivedAmount = (row.receivedAmount || 0) + (item.status === DONATE_STATUS_RECEIVED ? item.amount : 0)
       row.donorCount += 1
+      row.receivedCount = (row.receivedCount || 0) + (item.status === DONATE_STATUS_RECEIVED ? 1 : 0)
     })
 
   const classLeaderboard = Array.from(classMap.values())
@@ -262,9 +273,14 @@ function normalizeDonate(content) {
       rank: index + 1,
       name: item.name,
       amount: item.amount,
+      receivedAmount: item.receivedAmount || 0,
       donorCount: item.donorCount,
+      receivedCount: item.receivedCount || 0,
       amountLabel: item.amount > 0 ? formatMoney(item.amount) : '–',
-      donorLabel: item.donorCount > 0 ? `${item.donorCount} người` : '–'
+      donorLabel: item.donorCount > 0 ? `${item.donorCount} người` : '–',
+      statusLabel: item.donorCount > 0
+        ? ((item.receivedCount || 0) === item.donorCount ? DONATE_STATUS_RECEIVED : ((item.receivedCount || 0) > 0 ? `${item.receivedCount} / ${item.donorCount} đã nhận` : DONATE_STATUS_PENDING))
+        : '–'
     }))
 
   const personalLeaderboard = entries
@@ -280,6 +296,7 @@ function normalizeDonate(content) {
       amount: item.amount,
       amountLabel: formatMoney(item.amount),
       message: item.message || '',
+      status: item.status,
       createdAtLabel: item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : ''
     }))
 
@@ -291,15 +308,16 @@ function normalizeDonate(content) {
     })
     .map((item, index) => ({
       rank: index + 1,
-      organizationName: item.organizationName || 'Tập thể',
-      contactName: item.contactName || '',
+      organizationName: item.anonymous ? 'Ẩn danh' : (item.organizationName || 'Tập thể'),
+      contactName: item.anonymous ? '' : (item.contactName || ''),
       amount: item.amount,
       amountLabel: formatMoney(item.amount),
       message: item.message || '',
+      status: item.status,
       createdAtLabel: item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : ''
     }))
 
-  const totalAmount = entries.reduce((sum, item) => sum + item.amount, 0)
+  const totalAmount = receivedEntries.reduce((sum, item) => sum + item.amount, 0)
 
   return {
     ...DONATE_DEFAULTS,
@@ -309,7 +327,7 @@ function normalizeDonate(content) {
     classOptions,
     totalAmount,
     totalAmountLabel: formatMoney(totalAmount),
-    donorCount: entries.length,
+    donorCount: receivedEntries.length,
     classLeaderboard,
     personalLeaderboard,
     organizationLeaderboard
@@ -490,7 +508,8 @@ router.post('/donate', (req, res) => {
       organizationName,
       amount,
       message,
-      anonymous: type === 'personal' ? anonymous : false,
+      anonymous,
+      status: DONATE_STATUS_PENDING,
       createdAt: now.toISOString()
     }
 
