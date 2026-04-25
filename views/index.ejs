@@ -379,12 +379,12 @@
 
       <div class="donate-hero-actions donate-home-actions">
         <button class="btn-gold donate-hero-button" type="button" data-donate-open><%= donateSummary.ctaText || 'Đóng Góp Ngay' %></button>
-        <a href="/donate" class="btn-outline-gold">Xem bảng xếp hạng</a>
+        <a href="#donate-board" class="btn-outline-gold">Xem bảng xếp hạng</a>
       </div>
     </div>
   </div>
 
-  <div class="donate-board-section donate-home-board-section">
+  <div class="donate-board-section donate-home-board-section" id="donate-board">
     <%- include('partials/donate-board', { donateSummary: donateSummary }) %>
   </div>
 </section>
@@ -484,10 +484,54 @@
     <% } %>
     <% } %>
 
-    <a class="gallery-upload-cta" aria-label="Gửi ảnh kỷ niệm">← GỬI ẢNH KỶ NIỆM CỦA BẠN →</a>
+    <button class="gallery-upload-cta" type="button" id="open-gallery-upload-modal" aria-label="Gửi ảnh kỷ niệm">← GỬI ẢNH KỶ NIỆM CỦA BẠN →</button>
 
   </div>
 </section>
+
+<div class="gallery-upload-modal" id="gallery-upload-modal" aria-hidden="true" aria-modal="true" role="dialog">
+  <div class="modal-bg" id="gallery-upload-modal-bg"></div>
+  <div class="gallery-upload-modal-box">
+    <button class="gallery-upload-modal-close" id="close-gallery-upload-modal" aria-label="Đóng"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <div class="gallery-upload-modal-header">
+      <p class="gallery-upload-modal-label">ALBUM</p>
+      <h3 class="gallery-upload-modal-title">Gửi Ảnh Kỷ Niệm</h3>
+      <p class="gallery-upload-modal-subtitle">Tối đa 3 ảnh, mỗi ảnh 5MB</p>
+    </div>
+
+    <form id="gallery-upload-form" novalidate>
+      <label class="gallery-file-zone" for="gallery-memory-images">
+        <input type="file" id="gallery-memory-images" name="images" accept="image/jpeg,image/png,image/webp,image/gif" multiple required>
+        <span class="gallery-file-zone-title">Bấm để chọn ảnh</span>
+        <span class="gallery-file-zone-subtitle" id="gallery-file-summary">JPG, PNG, WebP</span>
+      </label>
+
+      <div class="register-form-row">
+        <div class="register-form-group">
+          <label class="register-form-label" for="gallery-memory-name">HỌ TÊN *</label>
+          <input class="register-form-input" type="text" id="gallery-memory-name" name="name" placeholder="Tên của bạn" maxlength="80" required>
+        </div>
+        <div class="register-form-group">
+          <label class="register-form-label" for="gallery-memory-class">LỚP *</label>
+          <select class="register-form-input" id="gallery-memory-class" name="className" required>
+            <option value="">-- Chọn lớp --</option>
+            <% registerClassOptions.forEach(function(className) { %>
+            <option value="<%= className %>"><%= className %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div class="register-form-group">
+        <label class="register-form-label" for="gallery-memory-description">MÔ TẢ *</label>
+        <input class="register-form-input" type="text" id="gallery-memory-description" name="description" placeholder="VD: Ngày tốt nghiệp..." maxlength="160" required>
+      </div>
+
+      <div class="register-form-message" id="gallery-upload-form-message" hidden></div>
+      <button type="submit" class="register-submit" id="gallery-upload-submit">GỬI ẢNH</button>
+    </form>
+  </div>
+</div>
 
 <!-- ══ SECTION 6 — SỔ LƯU BÚT ════════════════════════════ -->
 <section class="section guestbook-section" id="luu-but"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="guestbook" data-admin-label="Luu but"<% } %>>
@@ -744,7 +788,7 @@
     var visibleBottom = vp ? vp.height : window.innerHeight
     var margin = 24
     if (rect.bottom > visibleBottom - margin || rect.top < margin) {
-      var container = el.closest('.register-modal, .guestbook-modal')
+      var container = el.closest('.register-modal, .gallery-upload-modal, .guestbook-modal')
       if (container) {
         container.scrollTop += rect.bottom - visibleBottom + margin + 40
       } else {
@@ -753,7 +797,7 @@
     }
   }
 
-  document.querySelectorAll('#register-form input, #register-form textarea, #register-form select, #guestbook-form input, #guestbook-form textarea').forEach(function(el) {
+  document.querySelectorAll('#register-form input, #register-form textarea, #register-form select, #gallery-upload-form input, #gallery-upload-form select, #guestbook-form input, #guestbook-form textarea').forEach(function(el) {
     el.addEventListener('focus', function() {
       window.setTimeout(function() { scrollFocusedIntoView(el) }, 320)
     })
@@ -954,6 +998,18 @@
     var autoSlideTimer = null
     var autoSlideDelay = 1800
 
+    slides.forEach(function(slide) {
+      var img = slide.querySelector('img')
+      if (!img) return
+
+      function markOrientation() {
+        slide.classList.toggle('is-portrait', img.naturalHeight > img.naturalWidth)
+      }
+
+      if (img.complete) markOrientation()
+      else img.addEventListener('load', markOrientation, { once: true })
+    })
+
     function stopAutoSlide() {
       if (autoSlideTimer) {
         window.clearInterval(autoSlideTimer)
@@ -1029,6 +1085,121 @@
     startAutoSlide()
   }
 
+  // ── Gallery upload modal ───────────────────────────────
+  var galleryUploadModal = document.getElementById('gallery-upload-modal')
+  var galleryUploadOpen = document.getElementById('open-gallery-upload-modal')
+  var galleryUploadClose = document.getElementById('close-gallery-upload-modal')
+  var galleryUploadBg = document.getElementById('gallery-upload-modal-bg')
+  var galleryUploadForm = document.getElementById('gallery-upload-form')
+  var galleryUploadSubmit = document.getElementById('gallery-upload-submit')
+  var galleryUploadMessage = document.getElementById('gallery-upload-form-message')
+  var galleryFileInput = document.getElementById('gallery-memory-images')
+  var galleryFileSummary = document.getElementById('gallery-file-summary')
+
+  function setGalleryUploadMessage(message, type) {
+    if (!galleryUploadMessage) return
+    if (!message) {
+      galleryUploadMessage.hidden = true
+      galleryUploadMessage.textContent = ''
+      galleryUploadMessage.className = 'register-form-message'
+      return
+    }
+    galleryUploadMessage.hidden = false
+    galleryUploadMessage.textContent = message
+    galleryUploadMessage.className = 'register-form-message ' + (type || 'info')
+  }
+
+  function openGalleryUploadModal() {
+    if (!galleryUploadModal) return
+    galleryUploadModal.classList.add('active')
+    galleryUploadModal.setAttribute('aria-hidden', 'false')
+    document.body.style.overflow = 'hidden'
+    setGalleryUploadMessage('')
+  }
+
+  function closeGalleryUploadModal() {
+    if (!galleryUploadModal) return
+    galleryUploadModal.classList.remove('active')
+    galleryUploadModal.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = ''
+  }
+
+  if (galleryUploadOpen) {
+    galleryUploadOpen.addEventListener('click', function() {
+      openGalleryUploadModal()
+    })
+  }
+  if (galleryUploadClose) galleryUploadClose.addEventListener('click', closeGalleryUploadModal)
+  if (galleryUploadBg) galleryUploadBg.addEventListener('click', closeGalleryUploadModal)
+
+  if (galleryFileInput) {
+    galleryFileInput.addEventListener('change', function() {
+      var files = Array.from(galleryFileInput.files || [])
+      if (files.length > 3) {
+        galleryFileInput.value = ''
+        if (galleryFileSummary) galleryFileSummary.textContent = 'JPG, PNG, WebP'
+        setGalleryUploadMessage('Chỉ được chọn tối đa 3 ảnh mỗi lần.', 'error')
+        return
+      }
+      if (galleryFileSummary) {
+        galleryFileSummary.textContent = files.length ? files.map(function(file) { return file.name }).join(', ') : 'JPG, PNG, WebP'
+      }
+      setGalleryUploadMessage('')
+    })
+  }
+
+  if (galleryUploadForm) {
+    galleryUploadForm.addEventListener('submit', function(e) {
+      e.preventDefault()
+      var files = galleryFileInput ? Array.from(galleryFileInput.files || []) : []
+      var name = galleryUploadForm.querySelector('[name="name"]').value.trim()
+      var className = galleryUploadForm.querySelector('[name="className"]').value.trim()
+      var description = galleryUploadForm.querySelector('[name="description"]').value.trim()
+
+      if (!files.length) {
+        setGalleryUploadMessage('Vui lòng chọn ít nhất 1 ảnh.', 'error')
+        return
+      }
+      if (files.length > 3) {
+        setGalleryUploadMessage('Chỉ được chọn tối đa 3 ảnh mỗi lần.', 'error')
+        return
+      }
+      if (!name || !className || !description) {
+        setGalleryUploadMessage('Vui lòng nhập họ tên, lớp và mô tả.', 'error')
+        return
+      }
+
+      var formData = new FormData(galleryUploadForm)
+      galleryUploadSubmit.disabled = true
+      galleryUploadSubmit.textContent = 'ĐANG GỬI...'
+      setGalleryUploadMessage('')
+
+      fetch('/gallery-memory', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(r) { return r.json() })
+      .then(function(result) {
+        if (!result.ok) {
+          setGalleryUploadMessage(result.message || 'Không thể gửi ảnh lúc này.', 'error')
+          return
+        }
+        setGalleryUploadMessage('Đã gửi ảnh thành công. Đang cập nhật thư viện...', 'success')
+        galleryUploadForm.reset()
+        if (galleryFileSummary) galleryFileSummary.textContent = 'JPG, PNG, WebP'
+        window.location.hash = 'thu-vien-anh'
+        window.setTimeout(function() { window.location.reload() }, 700)
+      })
+      .catch(function() {
+        setGalleryUploadMessage('Lỗi kết nối. Vui lòng thử lại.', 'error')
+      })
+      .finally(function() {
+        galleryUploadSubmit.disabled = false
+        galleryUploadSubmit.textContent = 'GỬI ẢNH'
+      })
+    })
+  }
+
   // ── Guestbook modal ────────────────────────────────────
   var modal    = document.getElementById('guestbook-modal')
   var openBtn  = document.getElementById('open-guestbook-modal')
@@ -1053,6 +1224,7 @@
   if (modalBg)  modalBg.addEventListener('click', closeModal)
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && registerModal && registerModal.classList.contains('active')) closeRegisterModal()
+    if (e.key === 'Escape' && galleryUploadModal && galleryUploadModal.classList.contains('active')) closeGalleryUploadModal()
     if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeModal()
   })
 

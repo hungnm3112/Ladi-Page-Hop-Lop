@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const path = require('path')
+const multer = require('multer')
 
 const DATA_FILE = path.join(__dirname, '../data/content.json')
 const GALLERY_DIR = path.join(__dirname, '../public/images/gallery')
@@ -19,6 +20,29 @@ const DONATE_DEFAULTS = {
 }
 const DONATE_STATUS_PENDING = 'Đã ủng hộ'
 const DONATE_STATUS_RECEIVED = 'Đã nhận'
+
+const galleryStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    fs.mkdirSync(GALLERY_DIR, { recursive: true })
+    cb(null, GALLERY_DIR)
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase()
+    cb(null, `${Date.now()}_${Math.random().toString(36).slice(2, 7)}${ext}`)
+  }
+})
+
+const galleryUpload = multer({
+  storage: galleryStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+    files: 3
+  },
+  fileFilter: (req, file, cb) => {
+    if (/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype)) cb(null, true)
+    else cb(new Error('Chỉ chấp nhận ảnh JPG, PNG, WebP hoặc GIF.'))
+  }
+})
 
 function normalizeDonateStatus(status) {
   const value = String(status || '').trim()
@@ -46,6 +70,13 @@ function getContent() {
 
 function saveContent(content) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(content, null, 2), 'utf8')
+}
+
+function removeUploadedFiles(files) {
+  if (!Array.isArray(files)) return
+  files.forEach(file => {
+    if (file?.path && fs.existsSync(file.path)) fs.unlinkSync(file.path)
+  })
 }
 
 function sanitizeScheduleIcon(icon) {
@@ -524,6 +555,89 @@ router.post('/donate', (req, res) => {
   } catch (error) {
     return res.status(500).json({ ok: false, message: 'Không thể lưu thông tin đóng góp lúc này.' })
   }
+})
+
+router.post('/gallery-memory', galleryUpload.array('images', 3), (req, res) => {
+  try {
+    const name = String(req.body?.name || '').trim()
+    const className = String(req.body?.className || '').trim()
+    const description = String(req.body?.description || '').trim()
+
+    if (!name || !className || !description) {
+      removeUploadedFiles(req.files)
+      return res.status(400).json({ ok: false, message: 'Vui lòng nhập họ tên, lớp và mô tả.' })
+    }
+
+    if (!req.files?.length) {
+      return res.status(400).json({ ok: false, message: 'Vui lòng chọn ít nhất 1 ảnh.' })
+    }
+
+    if (name.length > 80 || className.length > 30 || description.length > 160) {
+      removeUploadedFiles(req.files)
+      return res.status(400).json({ ok: false, message: 'Thông tin ảnh vượt quá giới hạn cho phép.' })
+    }
+
+    const content = getContent()
+    if (!content.gallery) content.gallery = {}
+    if (!Array.isArray(content.gallery.order)) content.gallery.order = []
+    if (!Array.isArray(content.gallery.captions)) content.gallery.captions = []
+
+    const now = new Date()
+    const label = `${name} - ${className} - ${description}`
+    const items = req.files.map(file => ({
+      filename: file.filename,
+      title: label,
+      subtitle: '',
+      name,
+      className,
+      description,
+      originalName: file.originalname,
+      size: file.size,
+      mimeType: file.mimetype,
+      source: 'public-upload',
+      uploadedAt: now.toISOString()
+    }))
+
+    content.gallery.order = [...items.map(item => item.filename), ...content.gallery.order]
+    content.gallery.captions = [
+      ...items,
+      ...content.gallery.captions.filter(item => !items.some(uploaded => uploaded.filename === item?.filename))
+    ]
+
+    saveContent(content)
+
+    return res.json({
+      ok: true,
+      message: 'Đã gửi ảnh kỷ niệm thành công.',
+      items: items.map(item => ({
+        filename: item.filename,
+        src: `/images/gallery/${item.filename}`,
+        captionTitle: item.title,
+        captionSubtitle: item.subtitle
+      }))
+    })
+  } catch (error) {
+    removeUploadedFiles(req.files)
+    return res.status(500).json({ ok: false, message: 'Không thể lưu ảnh kỷ niệm lúc này.' })
+  }
+})
+
+router.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ ok: false, message: 'Mỗi ảnh tối đa 5MB.' })
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ ok: false, message: 'Chỉ được gửi tối đa 3 ảnh mỗi lần.' })
+    }
+    return res.status(400).json({ ok: false, message: 'Không thể upload ảnh. Vui lòng thử lại.' })
+  }
+
+  if (err) {
+    return res.status(400).json({ ok: false, message: err.message || 'File ảnh không hợp lệ.' })
+  }
+
+  return next()
 })
 
 module.exports = router

@@ -895,6 +895,7 @@ img { display: block; max-width: 100%; }
 .carousel-slide {
   flex: 0 0 100%;
   position: relative;
+  background: #000;
 }
 .carousel-slide img {
   width: 100%;
@@ -903,11 +904,14 @@ img { display: block; max-width: 100%; }
   display: block;
   pointer-events: none;
 }
+.carousel-slide.is-portrait img {
+  object-fit: contain;
+}
 .carousel-caption {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 18px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
   z-index: 4;
   padding: 12px 14px;
   color: var(--white);
@@ -980,9 +984,11 @@ img { display: block; max-width: 100%; }
 .gallery-upload-cta {
   display: block;
   max-width: 720px;
+  width: 100%;
   margin: 0 auto;
   padding: 16px;
   text-align: center;
+  background: transparent;
   border: 1px dashed var(--gold);
   border-radius: 6px;
   font-size: 12px;
@@ -992,9 +998,101 @@ img { display: block; max-width: 100%; }
   color: var(--gold);
   text-decoration: none;
   transition: background 0.2s;
-  cursor: default;
+  cursor: pointer;
 }
 .gallery-upload-cta:hover { background: var(--cream); }
+
+.gallery-upload-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9300;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.gallery-upload-modal.active { display: flex; }
+.gallery-upload-modal-box {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 420px);
+  max-height: calc(100vh - 48px);
+  background: var(--white);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  overflow-y: auto;
+}
+.gallery-upload-modal-header {
+  background: var(--dark);
+  color: var(--white);
+  padding: 28px 28px 22px;
+  text-align: center;
+}
+.gallery-upload-modal-label {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.gallery-upload-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+.gallery-upload-modal-subtitle {
+  color: rgba(255,255,255,0.72);
+  font-size: 14px;
+}
+.gallery-upload-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,0.24);
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#gallery-upload-form {
+  padding: 24px 28px 28px;
+}
+.gallery-file-zone {
+  display: flex;
+  min-height: 88px;
+  margin-bottom: 16px;
+  border: 1px dashed #cfcfcf;
+  background: #fbfbfb;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #9ca3af;
+  cursor: pointer;
+  text-align: center;
+}
+.gallery-file-zone input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.gallery-file-zone-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.gallery-file-zone-subtitle {
+  font-size: 12px;
+}
 
 /* ══ GUESTBOOK SECTION ════════════════════════════════════ */
 .guestbook-section { background: var(--cream); }
@@ -1502,11 +1600,14 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   .info-cards { gap: 12px; }
   .contact-grid { gap: 24px; }
   .register-form-row { grid-template-columns: 1fr; gap: 0; }
-  .register-modal-header { padding: 24px 22px 20px; }
-  #register-form { padding: 22px; }
+  .register-modal-header,
+  .gallery-upload-modal-header { padding: 24px 22px 20px; }
+  #register-form,
+  #gallery-upload-form { padding: 22px; }
 
   /* Cho phép modal scroll khi bàn phím ảo bật lên che mất input/textarea */
   .register-modal,
+  .gallery-upload-modal,
   .guestbook-modal {
     align-items: flex-start;
     overflow-y: auto;
