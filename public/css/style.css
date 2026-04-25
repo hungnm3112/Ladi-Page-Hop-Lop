@@ -344,8 +344,8 @@ img { display: block; max-width: 100%; }
   position: absolute;
   top: 50%;
   left: 50%;
-  width: clamp(120px, 12vw, 240px);
-  height: clamp(120px, 12vw, 240px);
+  width: clamp(160px, 12vw, 240px);
+  height: clamp(160px, 12vw, 240px);
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 3;
@@ -496,6 +496,19 @@ img { display: block; max-width: 100%; }
   color: #FFF176;
   text-shadow: 0 5px 24px rgba(0,0,0,0.86), 0 0 22px rgba(255,241,118,0.26);
 }
+.hero-title-number {
+  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.15em;
+  color: #FFEB3B;
+  margin: 0 0.05em;
+  text-shadow:
+    0 0 28px rgba(255,235,59,0.6),
+    0 0 12px rgba(255,235,59,0.45),
+    0 5px 26px rgba(0,0,0,0.88),
+    0 2px 5px rgba(0,0,0,0.96);
+}
 
 .hero-school {
   font-size: 21px;
@@ -639,7 +652,7 @@ img { display: block; max-width: 100%; }
   .hero { padding: 60px 16px; }
   .hero-title-line1,
   .hero-title-line2 {
-    font-size: clamp(2.8rem, 15vw, 4rem);
+    font-size: clamp(1.8rem, 12vw, 4rem);
   }
   .hero-label { font-size: 14px; }
   .hero-school { font-size: 19px; }

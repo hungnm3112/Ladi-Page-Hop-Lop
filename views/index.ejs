@@ -6,7 +6,7 @@
   <title><%= content.hero.titleLine1 %> <%= content.hero.titleLine2 %> – <%= content.hero.school %></title>
   <meta name="description" content="<%= content.hero.description %>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/donate.css">
@@ -155,9 +155,17 @@
 
     <p class="hero-label"><%= content.hero.label || 'HẸN ƯỚC THANH XUÂN' %></p>
 
+    <%
+      function wrapHeroNumbers(text) {
+        var escaped = String(text).replace(/[&<>"']/g, function(c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+        })
+        return escaped.replace(/(\d+)/g, '<span class="hero-title-number">$1</span>')
+      }
+    %>
     <h1 class="hero-title">
-      <span class="hero-title-line1"><%= content.hero.titleLine1 || 'Kỷ Niệm 20 Năm' %></span>
-      <span class="hero-title-line2"><%= content.hero.titleLine2 || 'Ngày Ra Trường' %></span>
+      <span class="hero-title-line1"><%- wrapHeroNumbers(content.hero.titleLine1 || 'Kỷ Niệm 20 Năm') %></span>
+      <span class="hero-title-line2"><%- wrapHeroNumbers(content.hero.titleLine2 || 'Ngày Ra Trường') %></span>
     </h1>
 
     <p class="hero-school"><%= content.hero.school || '' %></p>
