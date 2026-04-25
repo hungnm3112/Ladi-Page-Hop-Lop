@@ -319,9 +319,7 @@ img { display: block; max-width: 100%; }
   top: 50%; left: 50%;
   width: calc(100% + 56px);
   height: calc(100% + 56px);
-  transform: translate(-50%, -50%);
-  border: 1px dotted rgba(201,169,110,0.55);
-  border-radius: 50%;
+  transform: translate(-50%, -50%);  
 }
 .hero-logo-wrap::after {
   content: '';
@@ -329,9 +327,7 @@ img { display: block; max-width: 100%; }
   top: 50%; left: 50%;
   width: calc(100% + 88px);
   height: calc(100% + 88px);
-  transform: translate(-50%, -50%);
-  border: 1px dotted rgba(201,169,110,0.22);
-  border-radius: 50%;
+  transform: translate(-50%, -50%);  
 }
 .hero-logo {
   width: 100%;
@@ -339,6 +335,133 @@ img { display: block; max-width: 100%; }
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 20px 20px rgba(0,0,0,0.3));
+  position: relative;
+  z-index: 2;
+}
+
+/* Hero constellation — vòng người đăng ký quay quanh logo */
+.hero-constellation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(120px, 12vw, 240px);
+  height: clamp(120px, 12vw, 240px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.hero-constellation-spinner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: ringRotate 120s linear infinite;
+}
+.hero-constellation-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 95.83%;
+  height: 95.83%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(201,169,110,0.4);
+}
+.hero-constellation-node {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  animation: nodeAppear 0.6s ease-out both;
+  z-index: 1;
+}
+.hero-constellation-counter {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ringRotateReverse 120s linear infinite;
+}
+.hero-constellation-pulse {
+  width: 10px;
+  height: 10px;
+  animation: nodePulse 3s ease-in-out infinite;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.hero-constellation-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0.9;
+  box-shadow: 0 0 6px rgba(0,0,0,0.45);
+}
+.hero-constellation-label {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.62);
+  color: #E8D5A8;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+  text-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.hero-constellation-node.is-spotlight { z-index: 50; }
+.hero-constellation-node.is-spotlight .hero-constellation-pulse {
+  animation: none;
+  transform: scale(2);
+  filter: drop-shadow(0 0 8px rgba(201,169,110,0.65));
+}
+.hero-constellation-node.is-spotlight .hero-constellation-dot {
+  opacity: 0.95;
+}
+.hero-constellation-node.is-spotlight .hero-constellation-label {
+  opacity: 1;
+  animation: labelFadeIn 0.3s ease-out;
+}
+.hero-constellation-node:hover { z-index: 50; }
+.hero-constellation-node:hover .hero-constellation-label { opacity: 1; }
+
+@keyframes ringRotate {
+  to { transform: rotate(360deg); }
+}
+@keyframes ringRotateReverse {
+  to { transform: rotate(-360deg); }
+}
+@keyframes nodeAppear {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.4); }
+}
+@keyframes labelFadeIn {
+  from { opacity: 0; transform: translate(-50%, 4px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-constellation-spinner,
+  .hero-constellation-counter,
+  .hero-constellation-pulse,
+  .hero-constellation-node {
+    animation: none !important;
+  }
 }
 
 .hero-label {

@@ -104,6 +104,52 @@
   <div class="hero-content"<% if (previewMode) { %> data-admin-editable="true" data-admin-target="hero" data-admin-label="Hero"<% } %>>
 
     <div class="hero-logo-wrap">
+      <%
+        var heroAttendees = (registeredSummary && registeredSummary.attendees) ? registeredSummary.attendees : []
+        var HERO_RING_NODES = 30
+        var HERO_RING_SIZE = 480
+        var HERO_DOT_SIZE = 8
+        var HERO_RING_RADIUS = (HERO_RING_SIZE / 2) - HERO_DOT_SIZE
+        var HERO_RING_PALETTE = [
+          'rgb(201,169,110)', 'rgb(232,213,168)', 'rgb(139,115,85)', 'rgb(212,184,150)',
+          'rgb(166,139,91)',  'rgb(191,167,111)', 'rgb(158,138,106)', 'rgb(205,185,144)'
+        ]
+        var heroRingItems = []
+        if (heroAttendees.length > 0) {
+          for (var hri = 0; hri < HERO_RING_NODES; hri++) {
+            heroRingItems.push(heroAttendees[hri % heroAttendees.length])
+          }
+        }
+      %>
+      <div class="hero-constellation" data-hero-constellation aria-hidden="true">
+        <div class="hero-constellation-spinner">
+          <div class="hero-constellation-circle"></div>
+          <% for (var hi = 0; hi < HERO_RING_NODES; hi++) {
+               var hAngle = (hi * (360 / HERO_RING_NODES)) - 90
+               var hRad = hAngle * Math.PI / 180
+               var hLeftPct = (50 + (HERO_RING_RADIUS / HERO_RING_SIZE) * 100 * Math.cos(hRad)).toFixed(4)
+               var hTopPct  = (50 + (HERO_RING_RADIUS / HERO_RING_SIZE) * 100 * Math.sin(hRad)).toFixed(4)
+               var hPerson = heroRingItems[hi] || null
+               var hColor = HERO_RING_PALETTE[hi % HERO_RING_PALETTE.length]
+               var hPulseDelay = (hi % 2 === 0) ? '0s' : '1.5s'
+               var hAppearDelay = (hi * 0.04).toFixed(2) + 's'
+               var hLabel = hPerson ? (hPerson.name + (hPerson.className ? '  – ' + hPerson.className : '')) : ''
+          %>
+          <div class="hero-constellation-node"
+               data-constellation-node
+               style="left: <%= hLeftPct %>%; top: <%= hTopPct %>%; animation-delay: <%= hAppearDelay %>;">
+            <div class="hero-constellation-counter">
+              <div class="hero-constellation-pulse" style="animation-delay: <%= hPulseDelay %>;">
+                <span class="hero-constellation-dot" style="background: <%= hColor %>;"></span>
+              </div>
+              <% if (hLabel) { %>
+              <span class="hero-constellation-label"><%= hLabel %></span>
+              <% } %>
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
       <img src="<%= content.hero.logo %>" alt="Logo" class="hero-logo" onerror="this.style.display='none'">
     </div>
 
@@ -1191,6 +1237,62 @@
         galleryUploadSubmit.textContent = 'GỬI ẢNH'
       })
     })
+  }
+
+  // ── Hero constellation spotlight ───────────────────────
+  var constellation = document.querySelector('[data-hero-constellation]')
+  if (constellation) {
+    var allNodes = Array.from(constellation.querySelectorAll('[data-constellation-node]'))
+    var labelNodes = allNodes.filter(function(n) {
+      return n.querySelector('.hero-constellation-label')
+    })
+
+    if (labelNodes.length > 0) {
+      var spotlightIdx = 0
+      var spotlightPaused = false
+      var spotlightTimer = null
+
+      var setSpotlight = function(idx) {
+        labelNodes.forEach(function(n, i) {
+          n.classList.toggle('is-spotlight', i === idx)
+        })
+      }
+
+      var nextSpotlight = function() {
+        if (spotlightPaused) return
+        spotlightIdx = (spotlightIdx + 1) % labelNodes.length
+        setSpotlight(spotlightIdx)
+      }
+
+      labelNodes.forEach(function(n, i) {
+        n.addEventListener('mouseenter', function() {
+          spotlightPaused = true
+          spotlightIdx = i
+          setSpotlight(i)
+        })
+        n.addEventListener('mouseleave', function() {
+          spotlightPaused = false
+        })
+      })
+
+      var startSpotlight = function() {
+        if (spotlightTimer) return
+        spotlightTimer = setInterval(nextSpotlight, 2800)
+      }
+      var stopSpotlight = function() {
+        if (!spotlightTimer) return
+        clearInterval(spotlightTimer)
+        spotlightTimer = null
+      }
+
+      setSpotlight(0)
+      startSpotlight()
+
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) stopSpotlight()
+        else startSpotlight()
+      })
+    }
   }
 
   // ── Guestbook modal ────────────────────────────────────
