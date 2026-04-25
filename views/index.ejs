@@ -262,7 +262,7 @@
       <p class="section-label"><%= registeredSummary.label || 'DANH SÁCH' %></p>
       <h2 class="section-title"><%= registeredSummary.title || 'Đã Đăng Ký Tham Gia' %></h2>
       <div class="title-underline"></div>
-      <p class="section-subtitle"><%= registeredSummary.subtitle || '' %> <button class="registered-refresh" type="button" id="registered-refresh">♻ Tải lại</button></p>
+      <p class="section-subtitle"><%= registeredSummary.subtitle || '' %></p>
     </div>
 
     <div class="registered-tabs reveal">
@@ -964,13 +964,6 @@
     barWidth = Math.max(0, Math.min(100, barWidth))
     bar.style.width = barWidth + '%'
   })
-
-  var registeredRefresh = document.getElementById('registered-refresh')
-  if (registeredRefresh) {
-    registeredRefresh.addEventListener('click', function() {
-      window.location.reload()
-    })
-  }
 
   // ── Scroll reveal ──────────────────────────────────────
   if ('IntersectionObserver' in window) {

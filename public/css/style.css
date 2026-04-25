@@ -704,15 +704,6 @@ img { display: block; max-width: 100%; }
 }
 .registered-sub { font-size: 14px; color: var(--muted); margin-top: 8px; }
 .registered-sub-gold { font-size: 13px; color: var(--gold); margin-top: 6px; font-weight: 600; }
-.registered-refresh {
-  border: none;
-  background: none;
-  color: var(--gold);
-  font: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
 .registered-tabs {
   display: flex;
   gap: 10px;
