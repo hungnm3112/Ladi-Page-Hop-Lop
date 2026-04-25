@@ -1052,8 +1052,13 @@
     return []
   }
 
+  var DONATE_STATUS_PENDING = 'Đăng ký ủng hộ'
+  var DONATE_STATUS_RECEIVED = 'Đã nhận chuyển khoản'
+
   function normalizeDonationStatus(status) {
-    return String(status || '').trim() === 'Đã nhận' ? 'Đã nhận' : 'Đã ủng hộ'
+    var v = String(status || '').trim()
+    if (v === DONATE_STATUS_RECEIVED || v === 'Đã nhận') return DONATE_STATUS_RECEIVED
+    return DONATE_STATUS_PENDING
   }
 
   function formatAdminMoney(amount) {
@@ -1090,7 +1095,7 @@
   function renderDonationsStats() {
     var list = donationsState.list
     var total = list.length
-    var received = list.filter(function (item) { return normalizeDonationStatus(item.status) === 'Đã nhận' }).length
+    var received = list.filter(function (item) { return normalizeDonationStatus(item.status) === DONATE_STATUS_RECEIVED }).length
     var pending = total - received
     var totalEl = document.getElementById('donations-stat-total')
     var receivedEl = document.getElementById('donations-stat-received')
@@ -1138,12 +1143,12 @@
 
     listEl.innerHTML = slice.map(function (item, idx) {
       var status = normalizeDonationStatus(item.status)
-      var statusClass = status === 'Đã nhận' ? 'confirmed' : 'pending'
+      var statusClass = status === DONATE_STATUS_RECEIVED ? 'confirmed' : 'pending'
       var id = esc(item.id || '')
       var type = item.type === 'organization' ? 'organization' : 'personal'
       var typeLabel = type === 'organization' ? 'Công ty / tập thể' : 'Cá nhân'
-      var nextStatus = status === 'Đã nhận' ? 'Đã ủng hộ' : 'Đã nhận'
-      var toggleLabel = status === 'Đã nhận' ? 'Chuyển về đã ủng hộ' : 'Đã nhận tiền'
+      var nextStatus = status === DONATE_STATUS_RECEIVED ? DONATE_STATUS_PENDING : DONATE_STATUS_RECEIVED
+      var toggleLabel = status === DONATE_STATUS_RECEIVED ? 'Chuyển về đăng ký ủng hộ' : 'Đã nhận chuyển khoản'
       var dateLabel = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '–'
 
       return '<div class="donations-row" data-donation-id="' + id + '">' +
@@ -1157,7 +1162,7 @@
         '<span data-label="Ngày">' + esc(dateLabel) + '</span>' +
         '<span data-label="Trạng thái"><span class="attendees-status ' + statusClass + '">' + esc(status) + '</span></span>' +
         '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
-          '<button type="button" class="' + (status === 'Đã nhận' ? 'btn-unconfirm' : 'btn-confirm') + '" data-donation-action="toggle" data-donation-status="' + esc(nextStatus) + '">' + esc(toggleLabel) + '</button>' +
+          '<button type="button" class="' + (status === DONATE_STATUS_RECEIVED ? 'btn-unconfirm' : 'btn-confirm') + '" data-donation-action="toggle" data-donation-status="' + esc(nextStatus) + '">' + esc(toggleLabel) + '</button>' +
         '</div></span>' +
       '</div>'
     }).join('')
@@ -1167,7 +1172,7 @@
 
   function renderDonationsAll() {
     donationsState.list = getDonationsFromState().map(function (item) {
-      if (!item.status) item.status = 'Đã ủng hộ'
+      if (!item.status) item.status = DONATE_STATUS_PENDING
       return item
     })
     renderDonationsStats()
@@ -1415,7 +1420,7 @@
       'registered.classOptions': '',
       'registered.attendees': { name: '', className: '', phone: '', note: '', status: 'Chờ xác nhận', registeredAt: '' },
       'donate.quickAmounts': 0,
-      'donate.entries': { type: 'personal', name: '', className: '', contactName: '', organizationName: '', amount: 0, message: '', anonymous: false, status: 'Đã ủng hộ', createdAt: '' },
+      'donate.entries': { type: 'personal', name: '', className: '', contactName: '', organizationName: '', amount: 0, message: '', anonymous: false, status: 'Đăng ký ủng hộ', createdAt: '' },
       'schedule.activities': { icon: 'fa-solid fa-star', label: '' },
       'schedule.days': { label: '', date: '', items: [{ time: '', endTime: '', title: '', desc: '' }] },
       'schedule.days.[].items': { time: '', endTime: '', title: '', desc: '' },

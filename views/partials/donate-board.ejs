@@ -50,7 +50,7 @@
         <span><%= item.className %></span>
         <span><%= item.amountLabel %></span>
         <span><%= item.message || '–' %></span>
-        <span><span class="donate-status <%= item.status === 'Đã nhận' ? 'received' : 'pending' %>"><%= item.status %></span></span>
+        <span><span class="donate-status <%= item.status === 'Đã nhận chuyển khoản' ? 'received' : 'pending' %>"><%= item.status %></span></span>
       </div>
       <% }) %>
     </div>
@@ -78,7 +78,7 @@
         <span><%= item.contactName || '–' %></span>
         <span><%= item.amountLabel %></span>
         <span><%= item.message || '–' %></span>
-        <span><span class="donate-status <%= item.status === 'Đã nhận' ? 'received' : 'pending' %>"><%= item.status %></span></span>
+        <span><span class="donate-status <%= item.status === 'Đã nhận chuyển khoản' ? 'received' : 'pending' %>"><%= item.status %></span></span>
       </div>
       <% }) %>
     </div>

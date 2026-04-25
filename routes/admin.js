@@ -8,8 +8,8 @@ const DATA_FILE = path.join(__dirname, '../data/content.json')
 const GALLERY_DIR = path.join(__dirname, '../public/images/gallery')
 const IMAGES_DIR = path.join(__dirname, '../public/images')
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
-const DONATE_STATUS_PENDING = 'Đã ủng hộ'
-const DONATE_STATUS_RECEIVED = 'Đã nhận'
+const DONATE_STATUS_PENDING = 'Đăng ký ủng hộ'
+const DONATE_STATUS_RECEIVED = 'Đã nhận chuyển khoản'
 const SCHEDULE_ACTIVITY_ICON_OPTIONS = [
   { value: 'fa-solid fa-futbol', label: 'Bóng đá' },
   { value: 'fa-solid fa-people-pulling', label: 'Kéo co / kéo cờ' },
@@ -118,7 +118,8 @@ function parseClassOptionsText(text) {
 
 function normalizeDonateStatus(status) {
   const value = String(status || '').trim()
-  return value === DONATE_STATUS_RECEIVED ? DONATE_STATUS_RECEIVED : DONATE_STATUS_PENDING
+  if (value === DONATE_STATUS_RECEIVED || value === 'Đã nhận') return DONATE_STATUS_RECEIVED
+  return DONATE_STATUS_PENDING
 }
 
 function sanitizeScheduleIcon(icon) {

@@ -18,8 +18,8 @@ const DONATE_DEFAULTS = {
   quickAmounts: [200000, 500000, 1000000, 2000000, 5000000, 10000000],
   entries: []
 }
-const DONATE_STATUS_PENDING = 'Đã ủng hộ'
-const DONATE_STATUS_RECEIVED = 'Đã nhận'
+const DONATE_STATUS_PENDING = 'Đăng ký ủng hộ'
+const DONATE_STATUS_RECEIVED = 'Đã nhận chuyển khoản'
 
 const galleryStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -46,7 +46,8 @@ const galleryUpload = multer({
 
 function normalizeDonateStatus(status) {
   const value = String(status || '').trim()
-  return value === DONATE_STATUS_RECEIVED ? DONATE_STATUS_RECEIVED : DONATE_STATUS_PENDING
+  if (value === DONATE_STATUS_RECEIVED || value === 'Đã nhận') return DONATE_STATUS_RECEIVED
+  return DONATE_STATUS_PENDING
 }
 
 const SCHEDULE_ACTIVITY_ICON_OPTIONS = [
@@ -310,7 +311,7 @@ function normalizeDonate(content) {
       amountLabel: item.amount > 0 ? formatMoney(item.amount) : '–',
       donorLabel: item.donorCount > 0 ? `${item.donorCount} người` : '–',
       statusLabel: item.donorCount > 0
-        ? ((item.receivedCount || 0) === item.donorCount ? DONATE_STATUS_RECEIVED : ((item.receivedCount || 0) > 0 ? `${item.receivedCount} / ${item.donorCount} đã nhận` : DONATE_STATUS_PENDING))
+        ? ((item.receivedCount || 0) === item.donorCount ? DONATE_STATUS_RECEIVED : ((item.receivedCount || 0) > 0 ? `${item.receivedCount} / ${item.donorCount} đã chuyển khoản` : DONATE_STATUS_PENDING))
         : '–'
     }))
 

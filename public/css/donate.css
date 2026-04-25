@@ -408,7 +408,7 @@
 
 .donate-class-row {
   display: grid;
-  grid-template-columns: 44px 72px minmax(0, 1fr) 150px 86px 118px;
+  grid-template-columns: 44px 72px minmax(0, 1fr) 150px 86px 148px;
   gap: 14px;
   align-items: center;
 }
@@ -489,12 +489,12 @@
 
 .donate-list-head-personal,
 .donate-list-row-personal {
-  grid-template-columns: 60px minmax(0, 1.7fr) 80px 140px minmax(0, 1.6fr) 116px;
+  grid-template-columns: 60px minmax(0, 1.7fr) 80px 140px minmax(0, 1.6fr) 146px;
 }
 
 .donate-list-head-organization,
 .donate-list-row-organization {
-  grid-template-columns: 60px minmax(0, 1.6fr) minmax(0, 1.1fr) 140px minmax(0, 1.6fr) 116px;
+  grid-template-columns: 60px minmax(0, 1.6fr) minmax(0, 1.1fr) 140px minmax(0, 1.6fr) 146px;
 }
 
 .donate-status {
