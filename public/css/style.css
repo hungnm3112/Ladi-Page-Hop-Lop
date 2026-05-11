@@ -251,6 +251,7 @@ img { display: block; max-width: 100%; }
   text-transform: uppercase;
   color: var(--gold);
   margin-bottom: 10px;
+  display: none;
 }
 .section-title {
   font-family: 'Cormorant Garamond', serif;

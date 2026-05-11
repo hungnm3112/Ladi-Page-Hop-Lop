@@ -267,7 +267,7 @@
 
 .donate-hero-title-accent {
   font-style: italic;
-  color: var(--gold);
+  color: #f3be00;
 }
 
 .donate-hero-copy {
@@ -293,7 +293,7 @@
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1;
-  color: var(--gold);
+  color: #f3be00; 
 }
 
 .donate-stat-card span {
