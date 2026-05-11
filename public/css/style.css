@@ -1,14 +1,14 @@
 /* ══════════════════════════════════════════════════════
    LANDING PAGE – Hẹn Ước Thanh Xuân
    Font: Cormorant Garamond (heading), Inter (body)
-   Palette: Dark #1A1A1A | Gold #C9A96E | Orange #FF6B35 | Cream #FAF8F5
+   Palette: Brand Blue #01148b | Brand Gold #b88633 | Cream #FAF8F5
 ══════════════════════════════════════════════════════ */
 
 :root {
-  --dark:   #1A1A1A;
+  --dark:   #01148b;
   --cream:  #FAF8F5;
-  --gold:   #C9A96E;
-  --orange: #FF6B35;
+  --gold:   #b88633;
+  --orange: #b88633;
   --muted:  #6a7282;
   --white:  #ffffff;
   --border: #e5e7eb;
@@ -121,7 +121,7 @@ img { display: block; max-width: 100%; }
   transition: all 0.2s;
   white-space: nowrap;
 }
-.btn-gold:hover { background: #b8904f; }
+.btn-gold:hover { background: #9f7228; }
 
 @media (max-width: 768px) {
   .hero::before {
@@ -135,7 +135,7 @@ img { display: block; max-width: 100%; }
   .navbar-toggle {
     width: 44px;
     height: 44px;
-    border: 1px solid rgba(201,169,110,0.4);
+    border: 1px solid rgba(184,134,51,0.4);
     border-radius: 8px;
     background: var(--white);
     display: inline-flex;
@@ -194,7 +194,7 @@ img { display: block; max-width: 100%; }
   .navbar-mobile a:hover,
   .navbar-mobile a:active,
   .navbar-mobile a.active {
-    background: rgba(201, 169, 110, 0.08);
+    background: rgba(184, 134, 51, 0.08);
     color: var(--gold);
     border-left-color: var(--gold);
   }
@@ -365,7 +365,7 @@ img { display: block; max-width: 100%; }
   height: 95.83%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid rgba(201,169,110,0.4);
+  border: 1px solid rgba(184,134,51,0.4);
 }
 .hero-constellation-node {
   position: absolute;
@@ -424,7 +424,7 @@ img { display: block; max-width: 100%; }
 .hero-constellation-node.is-spotlight .hero-constellation-pulse {
   animation: none;
   transform: scale(2);
-  filter: drop-shadow(0 0 8px rgba(201,169,110,0.65));
+  filter: drop-shadow(0 0 8px rgba(184,134,51,0.65));
 }
 .hero-constellation-node.is-spotlight .hero-constellation-dot {
   opacity: 0.95;
@@ -927,8 +927,8 @@ img { display: block; max-width: 100%; }
 }
 .registered-class-chip:hover,
 .registered-class-chip.active {
-  background: #c9a96e;
-  border-color: #c9a96e;
+  background: #b88633;
+  border-color: #b88633;
   color: var(--white);
 }
 .registered-class-chip-all {
@@ -987,7 +987,7 @@ img { display: block; max-width: 100%; }
   color: var(--white);
 }
 .registered-empty {
-  border: 1px dashed rgba(201,169,110,0.5);
+  border: 1px dashed rgba(184,134,51,0.5);
   border-radius: 14px;
   padding: 28px 24px;
   text-align: center;
@@ -1296,7 +1296,7 @@ img { display: block; max-width: 100%; }
   padding: 0;
   transition: background 0.25s ease, transform 0.25s ease;
 }
-.guestbook-page-dot:hover { background: rgba(201,169,110,0.45); }
+.guestbook-page-dot:hover { background: rgba(184,134,51,0.45); }
 .guestbook-page-dot.active { background: var(--gold); transform: scale(1.15); }
 
 .guestbook-card {

@@ -1,13 +1,13 @@
 :root {
-  --primary: #005dac;
-  --primary-light: #e8f1fb;
+  --primary: #01148b;
+  --primary-light: #eef1ff;
   --text: #191c1e;
   --muted: #6b7280;
   --surface: #f4f6f9;
   --white: #ffffff;
   --danger: #dc3545;
   --success-color: #006d3c;
-  --gold: #d6aa57;
+  --gold: #b88633;
   --radius: 8px;
   --line: #d1d9e6;
 }
@@ -80,7 +80,7 @@ body {
   border-radius: var(--radius);
   padding: 6px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 93, 172, 0.08);
+  box-shadow: 0 2px 8px rgba(1, 20, 139, 0.08);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -121,7 +121,7 @@ body {
 .card {
   background: var(--white);
   border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgba(0, 93, 172, 0.08);
+  box-shadow: 0 2px 8px rgba(1, 20, 139, 0.08);
   padding: 24px;
   margin-bottom: 0;
 }
@@ -193,7 +193,7 @@ body {
 .form-control:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 93, 172, 0.12);
+  box-shadow: 0 0 0 3px rgba(1, 20, 139, 0.12);
 }
 
 textarea.form-control {
@@ -261,7 +261,7 @@ input[type="color"] {
 }
 
 .btn-primary:hover {
-  background: #004a8f;
+  background: #000f66;
 }
 
 .btn-ghost {
@@ -536,7 +536,7 @@ input[type="color"] {
 .icon-picker-trigger:focus-visible {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(15, 95, 215, 0.12);
+  box-shadow: 0 0 0 4px rgba(1, 20, 139, 0.12);
 }
 
 .icon-picker-trigger-main {
@@ -632,7 +632,7 @@ input[type="color"] {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #b58f49;
+  color: var(--gold);
 }
 
 .icon-picker-title {
@@ -694,7 +694,7 @@ input[type="color"] {
 .icon-picker-option.active {
   border-color: var(--primary);
   background: #eef4ff;
-  box-shadow: 0 0 0 3px rgba(15, 95, 215, 0.12);
+  box-shadow: 0 0 0 3px rgba(1, 20, 139, 0.12);
 }
 
 .icon-picker-option-preview {

@@ -1372,7 +1372,7 @@
     if (!status) return
     if (editorDirty) {
       status.textContent = 'Có thay đổi chưa lưu. Bấm lưu để cập nhật preview.'
-      status.style.color = '#0f5fd7'
+      status.style.color = '#01148b'
     } else {
       status.textContent = 'Chưa có thay đổi chưa lưu.'
       status.style.color = '#667085'

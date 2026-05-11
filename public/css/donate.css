@@ -206,7 +206,7 @@
 }
 
 .donate-submit:hover {
-  background: #b8904f;
+  background: #9f7228;
 }
 
 .donate-page-topbar {
@@ -436,7 +436,7 @@
 
 .donate-class-fill {
   height: 100%;
-  background: linear-gradient(90deg, #cfb06c 0%, #d8ba79 100%);
+  background: linear-gradient(90deg, #b88633 0%, #d09d4e 100%);
 }
 
 .donate-class-amount {
@@ -523,7 +523,7 @@
 
 .donate-empty-state {
   padding: 28px 24px;
-  border: 1px dashed rgba(201,169,110,0.5);
+  border: 1px dashed rgba(184,134,51,0.5);
   background: rgba(255,255,255,0.62);
   color: var(--muted);
   text-align: center;
