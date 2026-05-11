@@ -1646,7 +1646,7 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 1.15rem;
-  color: var(--gold);
+  color: #f3be00;
   margin-bottom: 18px;
 }
 .footer-divider {
