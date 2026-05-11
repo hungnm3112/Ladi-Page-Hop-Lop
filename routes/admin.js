@@ -7,6 +7,7 @@ const multer = require('multer')
 const DATA_FILE = path.join(__dirname, '../data/content.json')
 const GALLERY_DIR = path.join(__dirname, '../public/images/gallery')
 const IMAGES_DIR = path.join(__dirname, '../public/images')
+const FONTS_DIR = path.join(__dirname, '../public/fonts')
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
 const DONATE_STATUS_PENDING = 'Đăng ký ủng hộ'
 const DONATE_STATUS_RECEIVED = 'Đã nhận chuyển khoản'
@@ -39,6 +40,31 @@ const galleryUpload = multer({
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) cb(null, true)
     else cb(new Error('Chỉ chấp nhận file ảnh'))
+  }
+})
+
+// Multer: font upload
+const FONT_ALLOWED_EXTS = ['.ttf', '.woff', '.woff2', '.otf']
+const fontStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    if (!fs.existsSync(FONTS_DIR)) fs.mkdirSync(FONTS_DIR, { recursive: true })
+    cb(null, FONTS_DIR)
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase()
+    const base = path.basename(file.originalname, ext)
+      .replace(/[^a-zA-Z0-9_-]/g, '_')
+      .slice(0, 40)
+    cb(null, `${base}_${Date.now()}${ext}`)
+  }
+})
+const fontUpload = multer({
+  storage: fontStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase()
+    if (FONT_ALLOWED_EXTS.includes(ext)) cb(null, true)
+    else cb(new Error('Chỉ chấp nhận file font (.ttf, .woff, .woff2, .otf)'))
   }
 })
 
@@ -221,6 +247,7 @@ router.post('/save', requireAdmin, (req, res) => {
   try {
     const content = getContent()
     const { section, ...fields } = req.body
+    if (section === 'appearance' && !content.appearance) content.appearance = {}
     if (!content[section]) return res.json({ ok: false, message: 'Section không hợp lệ' })
     Object.assign(content[section], fields)
     saveContent(content)
@@ -436,6 +463,38 @@ router.post('/gallery-captions', requireAdmin, (req, res) => {
     return res.json({ ok: true, message: 'Đã lưu nhãn ảnh gallery.' })
   } catch (err) {
     return res.json({ ok: false, message: err.message })
+  }
+})
+
+// ── Upload custom font ────────────────────────────────
+router.post('/upload-font', requireAdmin, fontUpload.single('font'), (req, res) => {
+  if (!req.file) return res.json({ ok: false, message: 'Không có file font nào được upload' })
+  const content = getContent()
+  if (!content.appearance) content.appearance = {}
+  const familyName = String(req.body?.fontFamily || '')
+    .trim()
+    .replace(/['"<>\\]/g, '')
+    .slice(0, 60) || path.basename(req.file.originalname, path.extname(req.file.originalname))
+  content.appearance.customFont = { family: familyName, filename: req.file.filename }
+  saveContent(content)
+  res.json({ ok: true, family: familyName, filename: req.file.filename })
+})
+
+// ── Delete custom font ────────────────────────────────
+router.delete('/fonts/:filename', requireAdmin, (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename)
+    const filepath = path.join(FONTS_DIR, filename)
+    if (fs.existsSync(filepath)) fs.unlinkSync(filepath)
+    const content = getContent()
+    if (!content.appearance) content.appearance = {}
+    if (content.appearance.customFont?.filename === filename) {
+      delete content.appearance.customFont
+    }
+    saveContent(content)
+    res.json({ ok: true })
+  } catch (err) {
+    res.json({ ok: false, message: err.message })
   }
 })
 

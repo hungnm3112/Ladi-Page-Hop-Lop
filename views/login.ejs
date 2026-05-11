@@ -8,7 +8,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Open Sans', sans-serif;
+      font-family: var(--site-font-family, 'Open Sans', sans-serif);
       background: linear-gradient(135deg, #01148b 0%, #b88633 100%);
       min-height: 100vh;
       display: flex;
@@ -20,7 +20,7 @@
     input,
     select,
     textarea {
-      font-family: 'Open Sans', sans-serif;
+      font-family: var(--site-font-family, 'Open Sans', sans-serif);
     }
     .card {
       background: white;
@@ -42,7 +42,7 @@
       border: 1.5px solid #d1d5db;
       border-radius: 8px;
       font-size: 24px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: var(--site-font-family, 'Open Sans', sans-serif);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     input[type="password"]:focus {
@@ -62,7 +62,7 @@
       cursor: pointer;
       transition: background 0.2s;
       margin-top: 8px;
-      font-family: 'Open Sans', sans-serif;
+      font-family: var(--site-font-family, 'Open Sans', sans-serif);
     }
     .btn:hover { background: #000f66; }
     .error {

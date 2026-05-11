@@ -13,6 +13,7 @@
     announcements: { label: 'Thông báo', description: 'Sửa tin từ ban tổ chức.', source: 'announcements' },
     contact: { label: 'Liên hệ', description: 'Sửa địa chỉ, số điện thoại, bản đồ và thông tin hỗ trợ.', source: 'contact' },
     footer: { label: 'Footer', description: 'Sửa nội dung chân trang.', source: 'footer' },
+    appearance: { label: 'Giao diện', description: 'Chọn font chữ hiển thị cho toàn bộ website.', source: 'appearance' },
     cta: { label: 'Dữ liệu CTA', description: 'Sửa dữ liệu CTA trong content.json.', source: 'cta' },
     'full-content': { label: 'Toàn bộ content.json', description: 'Form đầy đủ cho tất cả section.', source: null, wide: true }
   }
@@ -182,7 +183,8 @@
         credentials: 'same-origin'
       })
       var result = await parseJsonResponse(res)
-      if (result.ok && fullContentState && fullContentState[section]) {
+      if (result.ok && fullContentState) {
+        if (!fullContentState[section]) fullContentState[section] = {}
         form.querySelectorAll('[name]').forEach(function (el) {
           fullContentState[section][el.name] = el.value
         })
@@ -1291,6 +1293,101 @@
     renderDonationsAll()
   }
 
+  async function uploadFontFile(file) {
+    if (!file) return
+    var nameInput = document.getElementById('custom-font-name-input')
+    var familyName = (nameInput ? nameInput.value.trim() : '') || file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ')
+    var fd = new FormData()
+    fd.append('font', file)
+    fd.append('fontFamily', familyName)
+
+    try {
+      var res = await fetch('/admin/upload-font', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể upload font.')
+      if (fullContentState) {
+        if (!fullContentState.appearance) fullContentState.appearance = {}
+        fullContentState.appearance.customFont = { family: result.family, filename: result.filename }
+        fullContentInitial = deepClone(fullContentState)
+        clearDirty()
+      }
+      updateCustomFontDisplay(result.family, result.filename)
+      showToast('Font "' + result.family + '" đã được tải lên!', 'success')
+      reloadPreview('appearance')
+    } catch (err) {
+      showToast('Lỗi upload font: ' + err.message, 'error')
+    }
+  }
+
+  async function deleteCustomFont(filename) {
+    if (!window.confirm('Xóa font tùy chỉnh?\nTrang sẽ quay về font Google Fonts đã chọn.')) return
+    try {
+      var res = await fetch('/admin/fonts/' + encodeURIComponent(filename), {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể xóa font.')
+      if (fullContentState && fullContentState.appearance) {
+        delete fullContentState.appearance.customFont
+        fullContentInitial = deepClone(fullContentState)
+        clearDirty()
+      }
+      updateCustomFontDisplay(null, null)
+      showToast('Đã xóa font tùy chỉnh. Trang quay về dùng font Google.', 'success')
+      reloadPreview('appearance')
+    } catch (err) {
+      showToast('Lỗi xóa font: ' + err.message, 'error')
+    }
+  }
+
+  function updateCustomFontDisplay(family, filename) {
+    var current = document.getElementById('custom-font-current')
+    if (!current) return
+    if (family && filename) {
+      current.classList.remove('is-hidden')
+      var nameEl = document.getElementById('custom-font-family-name')
+      var fileEl = document.getElementById('custom-font-file-name')
+      var delBtn = document.getElementById('btn-delete-custom-font')
+      if (nameEl) nameEl.textContent = family
+      if (fileEl) fileEl.textContent = '(' + filename + ')'
+      if (delBtn) {
+        delBtn.dataset.filename = filename
+        delBtn.onclick = function () { deleteCustomFont(filename) }
+      }
+    } else {
+      current.classList.add('is-hidden')
+    }
+  }
+
+  function initFontUpload() {
+    var input = document.getElementById('font-file')
+    var zone = document.getElementById('font-upload-zone')
+    var deleteBtn = document.getElementById('btn-delete-custom-font')
+    if (!zone) return
+
+    zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('dragover') })
+    zone.addEventListener('dragleave', function () { zone.classList.remove('dragover') })
+    zone.addEventListener('drop', function (e) {
+      e.preventDefault()
+      zone.classList.remove('dragover')
+      if (e.dataTransfer.files[0]) uploadFontFile(e.dataTransfer.files[0])
+    })
+    if (input) {
+      input.addEventListener('change', function () {
+        if (input.files[0]) uploadFontFile(input.files[0])
+        input.value = ''
+      })
+    }
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', function () { deleteCustomFont(deleteBtn.dataset.filename) })
+    }
+  }
+
   function bindSaveButtons() {
     document.querySelectorAll('[data-save-section]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -1856,6 +1953,7 @@
     initTabs()
     initIconPickerModal()
     initLogoUpload()
+    initFontUpload()
     initGalleryUpload()
     initExistingThumbs()
     renderGalleryCaptionList()

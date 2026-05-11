@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Trị - Ladi Page</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <%- include('partials/font-config', { content: content }) %>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="/css/admin.css">
 </head>
@@ -33,6 +33,7 @@
     <a class="tab-item" data-panel="donations">Ủng hộ</a>
     <a class="tab-item" data-panel="gallery">Gallery</a>
     <a class="tab-item" data-panel="cta">Nút đăng ký</a>
+    <a class="tab-item" data-panel="appearance">Giao diện</a>
     <a class="tab-item" data-panel="footer">Footer</a>
     <a class="tab-item" data-panel="content">Tất cả nội dung</a>
   </nav>
@@ -448,6 +449,67 @@
     </div>
   </div>
 
+  <div class="panel" id="panel-appearance">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">G</div>
+        <h2>Giao Diện Website</h2>
+      </div>
+      <form id="form-appearance">
+        <div class="form-group">
+          <label class="form-label" for="site-font-family">Font chữ Google Fonts</label>
+          <select class="form-control" id="site-font-family" name="fontFamily">
+            <option value="Open Sans" <%= !content.appearance || content.appearance.fontFamily === 'Open Sans' ? 'selected' : '' %>>Open Sans</option>
+            <option value="Roboto" <%= content.appearance && content.appearance.fontFamily === 'Roboto' ? 'selected' : '' %>>Roboto</option>
+            <option value="Montserrat" <%= content.appearance && content.appearance.fontFamily === 'Montserrat' ? 'selected' : '' %>>Montserrat</option>
+            <option value="Lora" <%= content.appearance && content.appearance.fontFamily === 'Lora' ? 'selected' : '' %>>Lora</option>
+            <option value="Merriweather" <%= content.appearance && content.appearance.fontFamily === 'Merriweather' ? 'selected' : '' %>>Merriweather</option>
+            <option value="Cormorant Garamond" <%= content.appearance && content.appearance.fontFamily === 'Cormorant Garamond' ? 'selected' : '' %>>Cormorant Garamond</option>
+          </select>
+          <div class="form-hint">Dùng khi không có font tùy chỉnh bên dưới.</div>
+        </div>
+      </form>
+      <div class="card-footer">
+        <button class="btn btn-primary" data-save-section="appearance" data-save-form="form-appearance">Lưu font Google</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px">
+      <div class="card-head">
+        <div class="card-icon">F</div>
+        <h2>Font Chữ Tùy Chỉnh</h2>
+      </div>
+
+      <div id="custom-font-current" class="custom-font-current<%= (content.appearance && content.appearance.customFont && content.appearance.customFont.family) ? '' : ' is-hidden' %>">
+        <div class="custom-font-info">
+          <span class="custom-font-label">Đang dùng:</span>
+          <strong id="custom-font-family-name"><%= (content.appearance && content.appearance.customFont) ? content.appearance.customFont.family : '' %></strong>
+          <span class="custom-font-file" id="custom-font-file-name">(<%= (content.appearance && content.appearance.customFont) ? content.appearance.customFont.filename : '' %>)</span>
+        </div>
+        <button class="btn btn-danger btn-sm" id="btn-delete-custom-font" type="button"
+          data-filename="<%= (content.appearance && content.appearance.customFont) ? content.appearance.customFont.filename : '' %>">
+          Xóa font tùy chỉnh
+        </button>
+      </div>
+
+      <div class="form-group" style="margin-top: 12px">
+        <label class="form-label" for="custom-font-name-input">Tên font (tùy chọn)</label>
+        <input type="text" class="form-control" id="custom-font-name-input" placeholder="VD: BeautyFont" maxlength="60">
+        <div class="form-hint">Tên CSS cho font. Nếu để trống sẽ lấy tên từ file.</div>
+      </div>
+
+      <div class="upload-zone" id="font-upload-zone">
+        <input type="file" id="font-file" accept=".ttf,.woff,.woff2,.otf">
+        <div class="upload-zone-text">Nhấn hoặc kéo thả file font vào đây</div>
+        <div class="upload-zone-hint">.ttf, .woff, .woff2, .otf — tối đa 10MB</div>
+      </div>
+
+      <div class="form-hint" style="margin-top: 8px">
+        Font tự tải lên được ưu tiên hơn font Google. Xóa font tùy chỉnh để quay về dùng font Google.
+      </div>
+    </div>
+  </div>
+
   <div class="panel" id="panel-content">
     <div class="card">
       <div class="card-head">
@@ -484,6 +546,7 @@
               <button class="live-editor-section-btn" type="button" data-live-editor-target="announcements">Thông báo</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="contact">Liên hệ</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="footer">Footer</button>
+              <button class="live-editor-section-btn" type="button" data-live-editor-target="appearance">Giao diện</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="cta">CTA data</button>
               <button class="live-editor-section-btn" type="button" data-live-editor-target="full-content">Toàn bộ `content.json`</button>
             </div>

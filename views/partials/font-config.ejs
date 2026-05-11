@@ -1,0 +1,39 @@
+<%
+  const fontOptions = [
+    { value: 'Open Sans', label: 'Open Sans', google: 'Open+Sans', css: "'Open Sans', sans-serif" },
+    { value: 'Roboto', label: 'Roboto', google: 'Roboto', css: "'Roboto', sans-serif" },
+    { value: 'Montserrat', label: 'Montserrat', google: 'Montserrat', css: "'Montserrat', sans-serif" },
+    { value: 'Lora', label: 'Lora', google: 'Lora', css: "'Lora', serif" },
+    { value: 'Merriweather', label: 'Merriweather', google: 'Merriweather', css: "'Merriweather', serif" },
+    { value: 'Cormorant Garamond', label: 'Cormorant Garamond', google: 'Cormorant+Garamond', css: "'Cormorant Garamond', serif" }
+  ]
+  const customFont = content && content.appearance && content.appearance.customFont
+  const selectedFont = content && content.appearance && content.appearance.fontFamily
+    ? content.appearance.fontFamily
+    : 'Open Sans'
+  const fontConfig = fontOptions.find(item => item.value === selectedFont) || fontOptions[0]
+  function getFontFormat(filename) {
+    const ext = String(filename || '').toLowerCase().split('.').pop()
+    if (ext === 'woff2') return 'woff2'
+    if (ext === 'woff') return 'woff'
+    if (ext === 'ttf') return 'truetype'
+    return 'opentype'
+  }
+%>
+<% if (customFont && customFont.family && customFont.filename) { %>
+<style>
+  @font-face {
+    font-family: '<%= customFont.family.replace(/'/g, "\\'") %>';
+    src: url('/fonts/<%= encodeURIComponent(customFont.filename) %>') format('<%= getFontFormat(customFont.filename) %>');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  :root { --site-font-family: '<%= customFont.family.replace(/'/g, "\\'") %>', sans-serif; }
+</style>
+<% } else { %>
+<link href="https://fonts.googleapis.com/css2?family=<%= fontConfig.google %>:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --site-font-family: <%- fontConfig.css %>; }
+</style>
+<% } %>

@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════
    LANDING PAGE - Chạm ký ức - Nối thanh xuân
-   Font: Open Sans
+   Font: configurable via --site-font-family
    Palette: Brand Blue #01148b | Brand Gold #b88633 | Cream #FAF8F5
 ══════════════════════════════════════════════════════ */
 
@@ -17,7 +17,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   background: var(--cream);
   color: var(--dark);
   overflow-x: hidden;
@@ -27,7 +27,7 @@ button,
 input,
 select,
 textarea {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
 }
 img { display: block; max-width: 100%; }
 
@@ -288,7 +288,7 @@ body[data-page="home"] {
   display: none;
 }
 .section-title {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-style: normal;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
@@ -443,7 +443,7 @@ body[data-page="home"] {
   color: #E8D5A8;
   padding: 4px 10px;
   border-radius: 4px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-style: normal;
   font-size: 16.5px;
   font-weight: 500;
@@ -511,7 +511,7 @@ body[data-page="home"] {
 }
 
 .hero-title {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   line-height: 1.05;
   margin-bottom: 20px;
   animation: fadeUp 0.8s ease 0.2s both;
@@ -532,7 +532,7 @@ body[data-page="home"] {
   text-shadow: 0 5px 24px rgba(0,0,0,0.86), 0 0 22px rgba(255,241,118,0.26);
 }
 .hero-title-number {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-style: normal;
   font-weight: 700;
   font-size: 1.15em;
@@ -588,7 +588,7 @@ body[data-page="home"] {
   color: var(--dark);
   border: none;
   border-radius: 4px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 24px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -606,7 +606,7 @@ body[data-page="home"] {
   color: var(--white);
   border: 1.5px solid rgba(255,255,255,0.45);
   border-radius: 4px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 24px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -647,7 +647,7 @@ body[data-page="home"] {
   align-items: center;
 }
 .cd-num {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: clamp(3.4rem, 9.1vw, 5rem);
   font-weight: 700;
   color: #FFF176;
@@ -674,7 +674,7 @@ body[data-page="home"] {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 2.25rem;
   color: #FFF176;
   padding: 12px 24px;
@@ -721,7 +721,7 @@ body[data-page="home"] {
   white-space: pre-wrap;
 }
 .intro-signature {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-style: normal;
   font-size: 25.5px;
   color: var(--muted);
@@ -760,7 +760,7 @@ body[data-page="home"] {
   margin-bottom: 6px;
 }
 .info-card-value {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 25.5px;
   font-weight: 700;
   color: var(--dark);
@@ -867,7 +867,7 @@ body[data-page="home"] {
   margin-bottom: 36px;
 }
 .registered-number {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: clamp(4rem, 12vw, 6rem);
   font-weight: 700;
   color: var(--dark);
@@ -1198,7 +1198,7 @@ body[data-page="home"] {
   margin-bottom: 10px;
 }
 .gallery-upload-modal-title {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 3rem;
   font-weight: 600;
   line-height: 1.05;
@@ -1267,7 +1267,7 @@ body[data-page="home"] {
   color: var(--white);
   border: none;
   border-radius: 4px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1353,7 +1353,7 @@ body[data-page="home"] {
   .guestbook-card { width: calc(100vw - 56px); }
 }
 .guestbook-quote {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-style: normal;
   font-size: 22.5px;
   line-height: 1.75;
@@ -1396,7 +1396,7 @@ body[data-page="home"] {
   width: 90%;
 }
 .modal-title {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 2.25rem;
   font-weight: 700;
   color: var(--dark);
@@ -1416,7 +1416,7 @@ body[data-page="home"] {
   border: 1.5px solid var(--border);
   border-radius: 6px;
   font-size: 24px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   color: var(--dark);
   outline: none;
   transition: border-color 0.2s;
@@ -1468,7 +1468,7 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   margin-bottom: 12px;
 }
 .register-modal-title {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-size: 3rem;
   font-weight: 600;
   line-height: 1.05;
@@ -1522,7 +1522,7 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   padding: 10px 14px;
   font-size: 22.5px;
   color: var(--dark);
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   outline: none;
 }
 .register-form-input:focus {
@@ -1677,7 +1677,7 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   opacity: 0.8;
 }
 .footer-brand {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--site-font-family, 'Open Sans', sans-serif);
   font-style: normal;
   font-size: 1.725rem;
   color: #f3be00;
