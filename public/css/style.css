@@ -289,7 +289,7 @@ body[data-page="home"] {
 }
 .section-title {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
+  font-style: normal;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   color: var(--dark);
@@ -526,15 +526,15 @@ body[data-page="home"] {
 .hero-title-line2 {
   display: block;
   font-size: clamp(3.1rem, 9.1vw, 5.5rem);
-  font-weight: 400;
-  font-style: italic;
+  font-weight: 700;
+  font-style: normal;
   color: #FFF176;
   text-shadow: 0 5px 24px rgba(0,0,0,0.86), 0 0 22px rgba(255,241,118,0.26);
 }
 .hero-title-number {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-weight: 800;
+  font-style: normal;
+  font-weight: 700;
   font-size: 1.15em;
   color: #FFEB3B;
   margin: 0 0.05em;
@@ -722,7 +722,7 @@ body[data-page="home"] {
 }
 .intro-signature {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
+  font-style: normal;
   font-size: 17px;
   color: var(--muted);
   text-align: right;
@@ -1354,7 +1354,7 @@ body[data-page="home"] {
 }
 .guestbook-quote {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
+  font-style: normal;
   font-size: 15px;
   line-height: 1.75;
   color: var(--dark);
@@ -1678,7 +1678,7 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
 }
 .footer-brand {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
+  font-style: normal;
   font-size: 1.15rem;
   color: #f3be00;
   margin-bottom: 18px;

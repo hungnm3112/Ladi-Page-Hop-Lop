@@ -147,7 +147,7 @@
   border: 1px solid #d8dce5;
   background: #fff;
   color: #4b5565;
-  font: inherit;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -266,7 +266,7 @@
 }
 
 .donate-hero-title-accent {
-  font-style: italic;
+  font-style: normal;
   color: #f3be00;
 }
 
