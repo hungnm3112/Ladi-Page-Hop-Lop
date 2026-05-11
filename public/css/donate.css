@@ -38,7 +38,7 @@
 .donate-modal-label {
   margin-bottom: 10px;
   color: var(--gold);
-  font-size: 11px;
+  font-size: 16.5px;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -46,8 +46,8 @@
 
 .donate-modal-title {
   margin: 0;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2rem;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 3rem;
   font-weight: 600;
 }
 
@@ -61,7 +61,7 @@
   border: 1px solid rgba(255,255,255,0.22);
   background: transparent;
   color: rgba(255,255,255,0.85);
-  font-size: 1.5rem;
+  font-size: 2.25rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -80,7 +80,7 @@
   border: 1px solid var(--border);
   background: #fff;
   color: #8b94a7;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -112,7 +112,7 @@
   display: block;
   margin-bottom: 8px;
   color: #6b7280;
-  font-size: 11px;
+  font-size: 16.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -124,9 +124,9 @@
   border: 1px solid #d6d6d6;
   background: #fbfbfb;
   padding: 10px 14px;
-  font-size: 15px;
+  font-size: 22.5px;
   color: var(--dark);
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Open Sans', sans-serif;
   outline: none;
 }
 
@@ -147,8 +147,8 @@
   border: 1px solid #d8dce5;
   background: #fff;
   color: #4b5565;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 21px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -166,7 +166,7 @@
   gap: 10px;
   margin-bottom: 14px;
   color: #6b7280;
-  font-size: 14px;
+  font-size: 21px;
 }
 
 .donate-checkbox-row input {
@@ -178,7 +178,7 @@
 .donate-form-message {
   margin-bottom: 14px;
   padding: 10px 12px;
-  font-size: 13px;
+  font-size: 19.5px;
   border-radius: 4px;
 }
 
@@ -198,7 +198,7 @@
   border: none;
   background: var(--gold);
   color: var(--white);
-  font-size: 13px;
+  font-size: 19.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -224,7 +224,7 @@
   gap: 10px;
   color: #6b7280;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -254,7 +254,7 @@
 }
 
 .donate-hero-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: clamp(2.4rem, 6vw, 4rem);
   font-weight: 600;
   line-height: 1.05;
@@ -290,7 +290,7 @@
 
 .donate-stat-card strong {
   display: block;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1;
   color: #f3be00; 
@@ -300,7 +300,7 @@
   display: block;
   margin-top: 8px;
   color: rgba(255,255,255,0.55);
-  font-size: 11px;
+  font-size: 16.5px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -381,7 +381,7 @@
   border: 1px solid #d9dee7;
   background: #fff;
   color: #8b94a7;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -415,7 +415,7 @@
 
 .donate-class-rank {
   color: #c6c8d0;
-  font-size: 14px;
+  font-size: 21px;
   font-weight: 700;
   text-align: center;
 }
@@ -425,7 +425,7 @@
 
 .donate-class-name {
   color: #536074;
-  font-size: 14px;
+  font-size: 21px;
   font-weight: 700;
 }
 
@@ -441,19 +441,19 @@
 
 .donate-class-amount {
   color: #1f2937;
-  font-size: 14px;
+  font-size: 21px;
   font-weight: 700;
 }
 
 .donate-class-count {
   color: #9aa3b2;
-  font-size: 13px;
+  font-size: 19.5px;
   text-align: right;
 }
 
 .donate-class-status {
   color: #536074;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   text-align: right;
 }
@@ -474,14 +474,14 @@
 .donate-list-head {
   background: var(--dark);
   color: var(--white);
-  font-size: 11px;
+  font-size: 16.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .donate-list-row {
-  font-size: 14px;
+  font-size: 21px;
   color: var(--dark);
   border-top: 1px solid var(--border);
   background: rgba(255,255,255,0.94);
@@ -504,7 +504,7 @@
   min-height: 26px;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -552,7 +552,7 @@
   border: 1px solid #d9dee7;
   background: #fff;
   color: #8b94a7;
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
 }
