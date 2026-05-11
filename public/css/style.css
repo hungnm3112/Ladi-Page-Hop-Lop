@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════
    LANDING PAGE – Hẹn Ước Thanh Xuân
-   Font: Cormorant Garamond (heading), Inter (body)
+   Font: Cormorant Garamond
    Palette: Brand Blue #01148b | Brand Gold #b88633 | Cream #FAF8F5
 ══════════════════════════════════════════════════════ */
 
@@ -17,11 +17,17 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   background: var(--cream);
   color: var(--dark);
   overflow-x: hidden;
   line-height: 1.6;
+}
+button,
+input,
+select,
+textarea {
+  font-family: 'Cormorant Garamond', serif;
 }
 img { display: block; max-width: 100%; }
 
@@ -87,8 +93,62 @@ img { display: block; max-width: 100%; }
   gap: 8px;
   flex-shrink: 0;
 }
+body[data-page="home"] {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+}
 .mobile-bottom-nav {
-  display: none;
+  position: fixed;
+  left: 50%;
+  right: auto;
+  bottom: 18px;
+  z-index: 995;
+  display: flex;
+  width: min(520px, calc(100% - 28px));
+  gap: 12px;
+  padding: 10px;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(184,134,51,0.24);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(1, 20, 139, 0.22), 0 6px 18px rgba(0,0,0,0.12);
+}
+.mobile-bottom-nav a {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.mobile-bottom-nav a:hover {
+  transform: translateY(-2px);
+}
+.mobile-bottom-nav .btn-outline-gold {
+  border-color: rgba(1, 20, 139, 0.18);
+  background: var(--dark);
+  color: var(--white);
+  box-shadow: 0 10px 24px rgba(1, 20, 139, 0.28);
+}
+.mobile-bottom-nav .btn-outline-gold:hover {
+  background: #000f66;
+  color: var(--white);
+}
+.mobile-bottom-nav .btn-gold {
+  background: linear-gradient(135deg, var(--gold), #d09d4e);
+  color: var(--white);
+  box-shadow: 0 10px 24px rgba(184, 134, 51, 0.32);
+}
+.mobile-bottom-nav .btn-gold:hover {
+  background: linear-gradient(135deg, #9f7228, var(--gold));
 }
 .btn-outline-gold {
   padding: 6px 14px;
@@ -201,32 +261,6 @@ img { display: block; max-width: 100%; }
 
   .navbar-mobile-actions {
     display: none !important;
-  }
-  body[data-page="home"] {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
-  }
-  .mobile-bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 995;
-    display: flex;
-    gap: 12px;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-    background: rgba(255,255,255,0.98);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -12px 24px -18px rgba(15, 23, 42, 0.35);
-  }
-  .mobile-bottom-nav a {
-    flex: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 0 14px;
-    border-radius: 8px;
   }
 }
 
@@ -409,7 +443,7 @@ img { display: block; max-width: 100%; }
   color: #E8D5A8;
   padding: 4px 10px;
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   font-style: normal;
   font-size: 11px;
   font-weight: 500;
@@ -498,7 +532,7 @@ img { display: block; max-width: 100%; }
   text-shadow: 0 5px 24px rgba(0,0,0,0.86), 0 0 22px rgba(255,241,118,0.26);
 }
 .hero-title-number {
-  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-weight: 800;
   font-size: 1.15em;
@@ -554,7 +588,7 @@ img { display: block; max-width: 100%; }
   color: var(--dark);
   border: none;
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -572,7 +606,7 @@ img { display: block; max-width: 100%; }
   color: var(--white);
   border: 1.5px solid rgba(255,255,255,0.45);
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -1233,7 +1267,7 @@ img { display: block; max-width: 100%; }
   color: var(--white);
   border: none;
   border-radius: 4px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1382,7 +1416,7 @@ img { display: block; max-width: 100%; }
   border: 1.5px solid var(--border);
   border-radius: 6px;
   font-size: 16px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   color: var(--dark);
   outline: none;
   transition: border-color 0.2s;
@@ -1488,7 +1522,7 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   padding: 10px 14px;
   font-size: 15px;
   color: var(--dark);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Cormorant Garamond', serif;
   outline: none;
 }
 .register-form-input:focus {
@@ -1718,12 +1752,15 @@ textarea.modal-input { resize: vertical; min-height: 100px; }
   }
   .mobile-bottom-nav {
     gap: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
+    bottom: 10px;
+    width: calc(100% - 20px);
+    padding: 8px;
+    border-radius: 16px;
   }
   .mobile-bottom-nav a {
-    min-height: 44px;
-    font-size: 11px;
+    min-height: 48px;
+    padding: 0 10px;
+    font-size: 12px;
   }
   .info-cards { gap: 12px; }
   .contact-grid { gap: 24px; }
