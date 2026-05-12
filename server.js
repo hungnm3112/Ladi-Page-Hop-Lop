@@ -2,9 +2,11 @@ require('dotenv').config()
 const express = require('express')
 const session = require('express-session')
 const path = require('path')
+const { startJsonBackupCron } = require('./services/backup.service')
 
 const app = express()
 const PORT = process.env.PORT || 3000
+const DATA_FILE = path.join(__dirname, 'data/content.json')
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
@@ -22,6 +24,11 @@ app.use(session({
 
 app.use('/', require('./routes/index'))
 app.use('/admin', require('./routes/admin'))
+
+startJsonBackupCron({
+  sourceFile: DATA_FILE,
+  backupDir: path.join(__dirname, 'data/backups')
+})
 
 app.listen(PORT, () => {
   console.log(`\n🚀 Server chạy tại: http://localhost:${PORT}`)
