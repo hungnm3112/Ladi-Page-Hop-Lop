@@ -858,6 +858,22 @@ input[type="color"] {
   line-height: 1.4;
 }
 
+.attendees-row-editing {
+  background: #f8fafc;
+}
+
+.attendees-edit-input {
+  width: 100%;
+  min-height: 36px;
+  font-size: 18px;
+  padding: 7px 8px;
+}
+
+.attendees-edit-note {
+  min-height: 58px;
+  resize: vertical;
+}
+
 .donations-toolbar {
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
 }
@@ -973,6 +989,26 @@ input[type="color"] {
 
 .attendees-actions .btn-unconfirm:hover {
   background: #f59e0b;
+  color: #fff;
+}
+
+.attendees-actions .btn-edit {
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.attendees-actions .btn-edit:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.attendees-actions .btn-cancel {
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.attendees-actions .btn-cancel:hover {
+  background: #64748b;
   color: #fff;
 }
 

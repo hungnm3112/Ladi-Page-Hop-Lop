@@ -307,6 +307,59 @@ router.post('/schedule-activities', requireAdmin, (req, res) => {
   }
 })
 
+router.post('/attendees/:id', requireAdmin, (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim()
+    const name = String(req.body?.name || '').trim()
+    const className = String(req.body?.className || '').trim()
+    const phone = String(req.body?.phone || '').trim()
+    const note = String(req.body?.note || '').trim()
+    const status = String(req.body?.status || '').trim()
+
+    if (!id) return res.json({ ok: false, message: 'ID không hợp lệ.' })
+    if (!name || !className || !phone) {
+      return res.json({ ok: false, message: 'Vui lòng nhập đủ họ tên, lớp và số điện thoại.' })
+    }
+
+    if (name.length > 80 || className.length > 20 || phone.length > 20 || note.length > 300 || status.length > 40) {
+      return res.json({ ok: false, message: 'Thông tin đăng ký vượt quá giới hạn cho phép.' })
+    }
+
+    const content = getContent()
+    if (!content.registered || !Array.isArray(content.registered.attendees)) {
+      return res.json({ ok: false, message: 'Chưa có danh sách đăng ký.' })
+    }
+
+    const attendee = content.registered.attendees.find(item => String(item?.id || '') === id)
+    if (!attendee) return res.json({ ok: false, message: 'Không tìm thấy người đăng ký.' })
+
+    const classOptions = getRegisteredClassOptions(content.registered)
+    if (classOptions.length > 0 && !classOptions.includes(className)) {
+      return res.json({ ok: false, message: 'Lớp đã chọn không hợp lệ.' })
+    }
+
+    const normalizedPhone = phone.replace(/\s+/g, '')
+    const isDuplicate = content.registered.attendees.some(item => {
+      return String(item?.id || '') !== id && String(item?.phone || '').replace(/\s+/g, '') === normalizedPhone
+    })
+    if (isDuplicate) {
+      return res.json({ ok: false, message: 'Số điện thoại này đã được đăng ký bởi người khác.' })
+    }
+
+    attendee.name = name
+    attendee.className = className
+    attendee.phone = phone
+    attendee.note = note
+    attendee.status = status || attendee.status || 'Chờ xác nhận'
+    attendee.updatedAt = new Date().toISOString()
+
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã cập nhật người đăng ký.', attendee })
+  } catch (err) {
+    return res.json({ ok: false, message: 'Không thể cập nhật người đăng ký: ' + err.message })
+  }
+})
+
 router.post('/attendees/:id/status', requireAdmin, (req, res) => {
   try {
     const id = String(req.params.id || '').trim()

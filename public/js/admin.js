@@ -765,7 +765,8 @@
     classFilter: 'all',
     statusFilter: 'all',
     page: 1,
-    pageSize: 20
+    pageSize: 20,
+    editingId: null
   }
 
   function getAttendeesFromState() {
@@ -786,6 +787,28 @@
   function normalizeStatus(s) {
     var v = String(s || '').trim()
     return v || 'Chờ xác nhận'
+  }
+
+  function findAttendeeById(id) {
+    return getAttendeesFromState().find(function (a) {
+      return String(a.id || '') === String(id || '')
+    })
+  }
+
+  function renderAttendeeClassOptions(currentValue) {
+    var classOptions = getClassOptionsFromState().slice()
+    if (currentValue && classOptions.indexOf(currentValue) === -1) classOptions.unshift(currentValue)
+    return classOptions.map(function (className) {
+      return '<option value="' + esc(className) + '"' + (className === currentValue ? ' selected' : '') + '>' + esc(className) + '</option>'
+    }).join('')
+  }
+
+  function renderAttendeeStatusOptions(currentValue) {
+    var statusOptions = ['Chờ xác nhận', 'Đã xác nhận']
+    if (currentValue && statusOptions.indexOf(currentValue) === -1) statusOptions.unshift(currentValue)
+    return statusOptions.map(function (status) {
+      return '<option value="' + esc(status) + '"' + (status === currentValue ? ' selected' : '') + '>' + esc(status) + '</option>'
+    }).join('')
   }
 
   function filterAttendees() {
@@ -869,9 +892,26 @@
       var status = normalizeStatus(a.status)
       var statusClass = status === 'Đã xác nhận' ? 'confirmed' : 'pending'
       var id = esc(a.id || '')
+      var isEditing = attendeesState.editingId && String(attendeesState.editingId) === String(a.id || '')
       var toggleLabel = status === 'Đã xác nhận' ? 'Hủy xác nhận' : 'Xác nhận'
       var toggleClass = status === 'Đã xác nhận' ? 'btn-unconfirm' : 'btn-confirm'
       var nextStatus = status === 'Đã xác nhận' ? 'Chờ xác nhận' : 'Đã xác nhận'
+
+      if (isEditing) {
+        return '<div class="attendees-row attendees-row-editing" data-attendee-id="' + id + '">' +
+          '<span data-label="#">' + (start + idx + 1) + '</span>' +
+          '<span data-label="Họ tên"><input class="form-control attendees-edit-input" name="name" value="' + esc(a.name || '') + '" maxlength="80"></span>' +
+          '<span data-label="Lớp"><select class="form-control attendees-edit-input" name="className">' + renderAttendeeClassOptions(a.className || '') + '</select></span>' +
+          '<span data-label="SĐT"><input class="form-control attendees-edit-input" name="phone" value="' + esc(a.phone || '') + '" maxlength="20"></span>' +
+          '<span data-label="Ghi chú" class="attendees-note"><textarea class="form-control attendees-edit-input attendees-edit-note" name="note" maxlength="300" rows="2">' + esc(a.note || '') + '</textarea></span>' +
+          '<span data-label="Trạng thái"><select class="form-control attendees-edit-input" name="status">' + renderAttendeeStatusOptions(status) + '</select></span>' +
+          '<span data-label="Ngày">' + esc(a.registeredAt || '–') + '</span>' +
+          '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
+            '<button type="button" class="btn-confirm" data-attendee-action="save">Lưu</button>' +
+            '<button type="button" class="btn-cancel" data-attendee-action="cancel">Hủy</button>' +
+          '</div></span>' +
+        '</div>'
+      }
 
       return '<div class="attendees-row" data-attendee-id="' + id + '">' +
         '<span data-label="#">' + (start + idx + 1) + '</span>' +
@@ -883,6 +923,7 @@
         '<span data-label="Ngày">' + esc(a.registeredAt || '–') + '</span>' +
         '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
           '<button type="button" class="' + toggleClass + '" data-attendee-action="toggle" data-attendee-status="' + esc(nextStatus) + '">' + toggleLabel + '</button>' +
+          '<button type="button" class="btn-edit" data-attendee-action="edit">Sửa</button>' +
           '<button type="button" class="btn-delete" data-attendee-action="delete">Xóa</button>' +
         '</div></span>' +
       '</div>'
@@ -915,6 +956,48 @@
       fullContentInitial = deepClone(fullContentState)
       renderAttendeesAll()
       showToast(result.message || 'Đã cập nhật.', 'success')
+      reloadPreview('registered')
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error')
+    }
+  }
+
+  async function saveAttendee(id, row) {
+    try {
+      var payload = {
+        name: (row.querySelector('[name="name"]') || {}).value || '',
+        className: (row.querySelector('[name="className"]') || {}).value || '',
+        phone: (row.querySelector('[name="phone"]') || {}).value || '',
+        note: (row.querySelector('[name="note"]') || {}).value || '',
+        status: (row.querySelector('[name="status"]') || {}).value || ''
+      }
+
+      payload.name = payload.name.trim()
+      payload.className = payload.className.trim()
+      payload.phone = payload.phone.trim()
+      payload.note = payload.note.trim()
+      payload.status = payload.status.trim()
+
+      if (!payload.name || !payload.className || !payload.phone) {
+        showToast('Vui lòng nhập đủ họ tên, lớp và số điện thoại.', 'error')
+        return
+      }
+
+      var res = await fetch('/admin/attendees/' + encodeURIComponent(id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể cập nhật.')
+
+      var match = findAttendeeById(id)
+      if (match && result.attendee) Object.assign(match, result.attendee)
+      attendeesState.editingId = null
+      fullContentInitial = deepClone(fullContentState)
+      renderAttendeesAll()
+      showToast(result.message || 'Đã cập nhật người đăng ký.', 'success')
       reloadPreview('registered')
     } catch (err) {
       showToast('Lỗi: ' + err.message, 'error')
@@ -1031,6 +1114,14 @@
         deleteAttendee(id)
       } else if (action === 'toggle') {
         updateAttendeeStatus(id, btn.dataset.attendeeStatus)
+      } else if (action === 'edit') {
+        attendeesState.editingId = id
+        renderAttendeesList()
+      } else if (action === 'cancel') {
+        attendeesState.editingId = null
+        renderAttendeesList()
+      } else if (action === 'save') {
+        saveAttendee(id, row)
       }
     })
 
