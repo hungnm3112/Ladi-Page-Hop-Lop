@@ -12,7 +12,8 @@
       <button class="donate-kind-tab" type="button" data-donate-kind="organization">CÔNG TY / TẬP THỂ</button>
     </div>
 
-    <form class="donate-form" id="donate-form" novalidate>
+    <div class="donate-modal-content">
+      <form class="donate-form" id="donate-form" novalidate>
       <input type="hidden" name="type" id="donate-type" value="personal">
 
       <div class="donate-kind-panel active" data-donate-panel="personal">
@@ -66,6 +67,12 @@
 
       <div class="donate-form-message" id="donate-form-message" hidden></div>
       <button type="submit" class="donate-submit" id="donate-submit">XÁC NHẬN ĐÓNG GÓP</button>
-    </form>
+      </form>
+
+      <div class="donate-qr-col">
+        <img class="donate-qr-image" src="/images/QR.png" alt="QR donate">
+        <a class="donate-qr-download" href="/images/QR.png" download="QR.png">TẢI XUỐNG ĐỂ QUÉT MÃ</a>
+      </div>
+    </div>
   </div>
 </div>
