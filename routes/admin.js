@@ -407,6 +407,77 @@ router.post('/donations/:id/status', requireAdmin, (req, res) => {
   }
 })
 
+router.post('/donations/:id', requireAdmin, (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim()
+    const type = req.body?.type === 'organization' ? 'organization' : 'personal'
+    const name = String(req.body?.name || '').trim()
+    const className = String(req.body?.className || '').trim()
+    const contactName = String(req.body?.contactName || '').trim()
+    const organizationName = String(req.body?.organizationName || '').trim()
+    const message = String(req.body?.message || '').trim()
+    const anonymous = req.body?.anonymous === true || req.body?.anonymous === 'true' || req.body?.anonymous === 'on' || req.body?.anonymous === '1'
+    const status = normalizeDonateStatus(req.body?.status)
+    const amount = parseInt(String(req.body?.amount || '').replace(/[^\d]/g, ''), 10) || 0
+
+    if (!id) return res.json({ ok: false, message: 'ID không hợp lệ.' })
+    if (amount <= 0) {
+      return res.json({ ok: false, message: 'Vui lòng nhập số tiền đóng góp hợp lệ.' })
+    }
+    if (amount > 1000000000) {
+      return res.json({ ok: false, message: 'Số tiền đóng góp vượt quá giới hạn cho phép.' })
+    }
+    if (message.length > 300) {
+      return res.json({ ok: false, message: 'Lời nhắn vượt quá giới hạn cho phép.' })
+    }
+
+    const content = getContent()
+    if (!content.donate || !Array.isArray(content.donate.entries)) {
+      return res.json({ ok: false, message: 'Chưa có danh sách ủng hộ.' })
+    }
+
+    const entry = content.donate.entries.find(item => String(item?.id || '') === id)
+    if (!entry) return res.json({ ok: false, message: 'Không tìm thấy khoản ủng hộ.' })
+
+    if (type === 'personal') {
+      if (!name || !className) {
+        return res.json({ ok: false, message: 'Vui lòng nhập tên cá nhân và lớp.' })
+      }
+      if (name.length > 80 || className.length > 20) {
+        return res.json({ ok: false, message: 'Thông tin cá nhân vượt quá giới hạn cho phép.' })
+      }
+
+      const classOptions = getRegisteredClassOptions(content.registered)
+      if (classOptions.length > 0 && !classOptions.includes(className)) {
+        return res.json({ ok: false, message: 'Lớp đã chọn không hợp lệ.' })
+      }
+    } else {
+      if (!contactName || !organizationName) {
+        return res.json({ ok: false, message: 'Vui lòng nhập người liên hệ và tên công ty / tập thể.' })
+      }
+      if (contactName.length > 80 || organizationName.length > 120) {
+        return res.json({ ok: false, message: 'Thông tin công ty / tập thể vượt quá giới hạn cho phép.' })
+      }
+    }
+
+    entry.type = type
+    entry.name = type === 'personal' ? name : ''
+    entry.className = type === 'personal' ? className : ''
+    entry.contactName = type === 'organization' ? contactName : ''
+    entry.organizationName = type === 'organization' ? organizationName : ''
+    entry.amount = amount
+    entry.message = message
+    entry.anonymous = anonymous
+    entry.status = status
+    entry.updatedAt = new Date().toISOString()
+
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã cập nhật khoản ủng hộ.', entry })
+  } catch (err) {
+    return res.json({ ok: false, message: 'Không thể cập nhật khoản ủng hộ: ' + err.message })
+  }
+})
+
 router.delete('/attendees/:id', requireAdmin, (req, res) => {
   try {
     const id = String(req.params.id || '').trim()

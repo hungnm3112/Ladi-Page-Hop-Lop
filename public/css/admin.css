@@ -887,7 +887,7 @@ input[type="color"] {
 .donations-table-head,
 .donations-row {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1.4fr) 110px 70px 120px minmax(0, 1.3fr) 80px 100px 110px 130px;
+  grid-template-columns: 40px minmax(0, 1.35fr) 110px 70px 120px minmax(0, 1.25fr) 80px 100px 110px 150px;
   gap: 10px;
   padding: 12px 14px;
   align-items: center;
@@ -912,9 +912,19 @@ input[type="color"] {
   background: #f9fafb;
 }
 
+.donations-row-editing {
+  background: #f8fafc;
+  align-items: start;
+}
+
 .donations-row > span {
   word-break: break-word;
   overflow-wrap: break-word;
+}
+
+.donation-edit-stack {
+  display: grid;
+  gap: 6px;
 }
 
 .donations-row small {

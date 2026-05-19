@@ -1135,7 +1135,8 @@
     typeFilter: 'all',
     statusFilter: 'all',
     page: 1,
-    pageSize: 20
+    pageSize: 20,
+    editingId: null
   }
 
   function getDonationsFromState() {
@@ -1163,6 +1164,27 @@
   function getDonationDisplayName(item) {
     if (item.type === 'organization') return item.organizationName || 'Tập thể'
     return item.name || 'Cựu học sinh'
+  }
+
+  function findDonationById(id) {
+    return getDonationsFromState().find(function (item) {
+      return String(item.id || '') === String(id || '')
+    })
+  }
+
+  function renderDonationTypeOptions(currentValue) {
+    var type = currentValue === 'organization' ? 'organization' : 'personal'
+    return [
+      '<option value="personal"' + (type === 'personal' ? ' selected' : '') + '>Cá nhân</option>',
+      '<option value="organization"' + (type === 'organization' ? ' selected' : '') + '>Công ty / tập thể</option>'
+    ].join('')
+  }
+
+  function renderDonationStatusOptions(currentValue) {
+    var current = normalizeDonationStatus(currentValue)
+    return [DONATE_STATUS_PENDING, DONATE_STATUS_RECEIVED].map(function (status) {
+      return '<option value="' + esc(status) + '"' + (status === current ? ' selected' : '') + '>' + esc(status) + '</option>'
+    }).join('')
   }
 
   function filterDonations() {
@@ -1243,6 +1265,32 @@
       var nextStatus = status === DONATE_STATUS_RECEIVED ? DONATE_STATUS_PENDING : DONATE_STATUS_RECEIVED
       var toggleLabel = status === DONATE_STATUS_RECEIVED ? 'Chuyển về đăng ký ủng hộ' : 'Đã nhận chuyển khoản'
       var dateLabel = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '–'
+      var isEditing = donationsState.editingId && String(donationsState.editingId) === String(item.id || '')
+
+      if (isEditing) {
+        return '<div class="donations-row donations-row-editing" data-donation-id="' + id + '">' +
+          '<span data-label="#">' + (start + idx + 1) + '</span>' +
+          '<span data-label="Người / tổ chức"><div class="donation-edit-stack">' +
+            '<input class="form-control attendees-edit-input" name="name" value="' + esc(item.name || '') + '" maxlength="80" placeholder="Tên cá nhân">' +
+            '<input class="form-control attendees-edit-input" name="organizationName" value="' + esc(item.organizationName || '') + '" maxlength="120" placeholder="Tên công ty / tập thể">' +
+            '<input class="form-control attendees-edit-input" name="contactName" value="' + esc(item.contactName || '') + '" maxlength="80" placeholder="Người liên hệ">' +
+          '</div></span>' +
+          '<span data-label="Loại"><select class="form-control attendees-edit-input" name="type">' + renderDonationTypeOptions(type) + '</select></span>' +
+          '<span data-label="Lớp"><select class="form-control attendees-edit-input" name="className">' + renderAttendeeClassOptions(item.className || '') + '</select></span>' +
+          '<span data-label="Số tiền"><input class="form-control attendees-edit-input" name="amount" inputmode="numeric" value="' + esc(item.amount || '') + '" maxlength="20"></span>' +
+          '<span data-label="Lời nhắn" class="attendees-note"><textarea class="form-control attendees-edit-input attendees-edit-note" name="message" maxlength="300" rows="2">' + esc(item.message || '') + '</textarea></span>' +
+          '<span data-label="Ẩn danh"><select class="form-control attendees-edit-input" name="anonymous">' +
+            '<option value="false"' + (!item.anonymous ? ' selected' : '') + '>Không</option>' +
+            '<option value="true"' + (item.anonymous ? ' selected' : '') + '>Có</option>' +
+          '</select></span>' +
+          '<span data-label="Ngày">' + esc(dateLabel) + '</span>' +
+          '<span data-label="Trạng thái"><select class="form-control attendees-edit-input" name="status">' + renderDonationStatusOptions(status) + '</select></span>' +
+          '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
+            '<button type="button" class="btn-confirm" data-donation-action="save">Lưu</button>' +
+            '<button type="button" class="btn-cancel" data-donation-action="cancel">Hủy</button>' +
+          '</div></span>' +
+        '</div>'
+      }
 
       return '<div class="donations-row" data-donation-id="' + id + '">' +
         '<span data-label="#">' + (start + idx + 1) + '</span>' +
@@ -1256,6 +1304,7 @@
         '<span data-label="Trạng thái"><span class="attendees-status ' + statusClass + '">' + esc(status) + '</span></span>' +
         '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
           '<button type="button" class="' + (status === DONATE_STATUS_RECEIVED ? 'btn-unconfirm' : 'btn-confirm') + '" data-donation-action="toggle" data-donation-status="' + esc(nextStatus) + '">' + esc(toggleLabel) + '</button>' +
+          '<button type="button" class="btn-edit" data-donation-action="edit">Sửa</button>' +
         '</div></span>' +
       '</div>'
     }).join('')
@@ -1289,6 +1338,65 @@
       fullContentInitial = deepClone(fullContentState)
       renderDonationsAll()
       showToast(result.message || 'Đã cập nhật trạng thái ủng hộ.', 'success')
+      reloadPreview('donate')
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error')
+    }
+  }
+
+  async function saveDonation(id, row) {
+    try {
+      var payload = {
+        type: (row.querySelector('[name="type"]') || {}).value || 'personal',
+        name: (row.querySelector('[name="name"]') || {}).value || '',
+        className: (row.querySelector('[name="className"]') || {}).value || '',
+        contactName: (row.querySelector('[name="contactName"]') || {}).value || '',
+        organizationName: (row.querySelector('[name="organizationName"]') || {}).value || '',
+        amount: (row.querySelector('[name="amount"]') || {}).value || '',
+        message: (row.querySelector('[name="message"]') || {}).value || '',
+        anonymous: ((row.querySelector('[name="anonymous"]') || {}).value || 'false') === 'true',
+        status: (row.querySelector('[name="status"]') || {}).value || ''
+      }
+
+      payload.type = payload.type === 'organization' ? 'organization' : 'personal'
+      payload.name = payload.name.trim()
+      payload.className = payload.className.trim()
+      payload.contactName = payload.contactName.trim()
+      payload.organizationName = payload.organizationName.trim()
+      payload.amount = String(payload.amount).replace(/[^\d]/g, '')
+      payload.message = payload.message.trim()
+      payload.status = payload.status.trim()
+
+      if (!payload.amount || Number(payload.amount) <= 0) {
+        showToast('Vui lòng nhập số tiền đóng góp hợp lệ.', 'error')
+        return
+      }
+
+      if (payload.type === 'personal' && (!payload.name || !payload.className)) {
+        showToast('Vui lòng nhập tên cá nhân và lớp.', 'error')
+        return
+      }
+
+      if (payload.type === 'organization' && (!payload.contactName || !payload.organizationName)) {
+        showToast('Vui lòng nhập người liên hệ và tên công ty / tập thể.', 'error')
+        return
+      }
+
+      var res = await fetch('/admin/donations/' + encodeURIComponent(id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể cập nhật.')
+
+      var match = findDonationById(id)
+      if (match && result.entry) Object.assign(match, result.entry)
+      donationsState.editingId = null
+      fullContentInitial = deepClone(fullContentState)
+      renderDonationsAll()
+      showToast(result.message || 'Đã cập nhật khoản ủng hộ.', 'success')
       reloadPreview('donate')
     } catch (err) {
       showToast('Lỗi: ' + err.message, 'error')
@@ -1378,6 +1486,14 @@
       if (!row) return
       if (btn.dataset.donationAction === 'toggle') {
         updateDonationStatus(row.dataset.donationId, btn.dataset.donationStatus)
+      } else if (btn.dataset.donationAction === 'edit') {
+        donationsState.editingId = row.dataset.donationId
+        renderDonationsList()
+      } else if (btn.dataset.donationAction === 'cancel') {
+        donationsState.editingId = null
+        renderDonationsList()
+      } else if (btn.dataset.donationAction === 'save') {
+        saveDonation(row.dataset.donationId, row)
       }
     })
 
