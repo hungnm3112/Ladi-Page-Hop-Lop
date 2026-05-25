@@ -450,15 +450,6 @@ router.post('/register', (req, res) => {
       return res.status(400).json({ ok: false, message: 'Lớp đã chọn không hợp lệ. Vui lòng tải lại trang.' })
     }
 
-    const normalizedPhone = phone.replace(/\s+/g, '')
-    const isDuplicate = content.registered.attendees.some(item => {
-      return String(item?.phone || '').replace(/\s+/g, '') === normalizedPhone
-    })
-
-    if (isDuplicate) {
-      return res.status(409).json({ ok: false, message: 'Số điện thoại này đã được đăng ký trước đó.' })
-    }
-
     const now = new Date()
     const attendee = {
       id: `${now.getTime()}`,

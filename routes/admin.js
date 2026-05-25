@@ -338,14 +338,6 @@ router.post('/attendees/:id', requireAdmin, (req, res) => {
       return res.json({ ok: false, message: 'Lớp đã chọn không hợp lệ.' })
     }
 
-    const normalizedPhone = phone.replace(/\s+/g, '')
-    const isDuplicate = content.registered.attendees.some(item => {
-      return String(item?.id || '') !== id && String(item?.phone || '').replace(/\s+/g, '') === normalizedPhone
-    })
-    if (isDuplicate) {
-      return res.json({ ok: false, message: 'Số điện thoại này đã được đăng ký bởi người khác.' })
-    }
-
     attendee.name = name
     attendee.className = className
     attendee.phone = phone
