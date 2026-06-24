@@ -1028,38 +1028,8 @@
     }
   }
 
-  function exportAttendeesCSV() {
-    var rows = filterAttendees()
-    if (rows.length === 0) {
-      showToast('Không có dữ liệu để xuất.', 'error')
-      return
-    }
-    var headers = ['STT', 'Họ tên', 'Lớp', 'SĐT', 'Ghi chú', 'Trạng thái', 'Ngày đăng ký']
-    var csv = [headers.join(',')]
-    rows.forEach(function (a, i) {
-      var cells = [
-        String(i + 1),
-        a.name || '',
-        a.className || '',
-        a.phone || '',
-        a.note || '',
-        normalizeStatus(a.status),
-        a.registeredAt || ''
-      ].map(function (v) {
-        var s = String(v).replace(/"/g, '""')
-        return '"' + s + '"'
-      })
-      csv.push(cells.join(','))
-    })
-    var blob = new Blob(['﻿' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' })
-    var url = URL.createObjectURL(blob)
-    var link = document.createElement('a')
-    link.href = url
-    link.download = 'danh-sach-dang-ky-' + new Date().toISOString().slice(0, 10) + '.csv'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+  function exportAttendeesExcel() {
+    window.location.href = '/admin/export/attendees/excel'
   }
 
   function initAttendeesManager() {
@@ -1100,7 +1070,7 @@
     }
 
     if (exportBtn) {
-      exportBtn.addEventListener('click', exportAttendeesCSV)
+      exportBtn.addEventListener('click', exportAttendeesExcel)
     }
 
     listEl.addEventListener('click', function (e) {

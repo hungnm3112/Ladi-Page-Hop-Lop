@@ -3,6 +3,7 @@ const router = express.Router()
 const fs = require('fs')
 const path = require('path')
 const multer = require('multer')
+const xlsx = require('xlsx')
 
 const DATA_FILE = path.join(__dirname, '../data/content.json')
 const GALLERY_DIR = path.join(__dirname, '../public/images/gallery')
@@ -505,6 +506,65 @@ router.post('/save-full-content', requireAdmin, (req, res) => {
     return res.json({ ok: true, message: 'Da luu toan bo noi dung content.json.' })
   } catch (error) {
     return res.json({ ok: false, message: 'Khong the luu content day du: ' + error.message })
+  }
+})
+
+// ── Export Excel ──────────────────────────────────────
+router.get('/export/attendees/excel', requireAdmin, (req, res) => {
+  try {
+    const content = getContent()
+    if (!content.registered || !Array.isArray(content.registered.attendees)) {
+      return res.status(400).send('Chưa có danh sách đăng ký.')
+    }
+
+    const attendees = content.registered.attendees
+    
+    const grouped = {}
+    const allData = []
+
+    attendees.forEach(item => {
+      const className = item.className || 'Khác'
+      const row = {
+        'Họ tên': item.name || '',
+        'Lớp': item.className || '',
+        'Size áo': item.shirtSize || '',
+        'SĐT': item.phone || '',
+        'Ghi chú': item.note || '',
+        'Trạng thái': item.status || 'Chờ xác nhận',
+        'Ngày đăng ký': item.registeredAt || (item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '')
+      }
+
+      if (!grouped[className]) grouped[className] = []
+      grouped[className].push(row)
+      allData.push(row)
+    })
+
+    const wb = xlsx.utils.book_new()
+    
+    if (allData.length > 0) {
+      const wsAll = xlsx.utils.json_to_sheet(allData)
+      xlsx.utils.book_append_sheet(wb, wsAll, 'Tổng hợp')
+    }
+
+    for (const className in grouped) {
+      const safeName = className.replace(/[?*\/\[\]\\]/g, '').slice(0, 31) || 'Sheet'
+      const ws = xlsx.utils.json_to_sheet(grouped[className])
+      xlsx.utils.book_append_sheet(wb, ws, safeName)
+    }
+
+    if (Object.keys(grouped).length === 0) {
+      const ws = xlsx.utils.json_to_sheet([{ 'Thông báo': 'Chưa có người đăng ký nào' }])
+      xlsx.utils.book_append_sheet(wb, ws, 'Danh sách')
+    }
+
+    const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' })
+    
+    res.setHeader('Content-Disposition', 'attachment; filename="Danh_sach_dang_ky.xlsx"')
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return res.send(buffer)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).send('Không thể xuất file: ' + err.message)
   }
 })
 
