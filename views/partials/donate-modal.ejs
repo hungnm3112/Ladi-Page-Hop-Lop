@@ -40,6 +40,16 @@
         </div>
 
         <div class="donate-form-group">
+          <label class="donate-form-label" for="donate-org-class">LỚP</label>
+          <select class="donate-form-input" id="donate-org-class" name="orgClassName">
+            <option value="">-- Chọn lớp (nếu có) --</option>
+            <% (donateSummary.classOptions || []).forEach(function(className) { %>
+            <option value="<%= className %>"><%= className %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="donate-form-group">
           <label class="donate-form-label" for="donate-organization-name">TÊN TỔ CHỨC *</label>
           <input class="donate-form-input" type="text" id="donate-organization-name" name="organizationName" placeholder="Tên công ty / tập thể" maxlength="120">
         </div>

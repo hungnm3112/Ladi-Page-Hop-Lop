@@ -436,13 +436,8 @@ router.post('/donations/:id', requireAdmin, (req, res) => {
       if (!name || !className) {
         return res.json({ ok: false, message: 'Vui lòng nhập tên cá nhân và lớp.' })
       }
-      if (name.length > 80 || className.length > 20) {
+      if (name.length > 80) {
         return res.json({ ok: false, message: 'Thông tin cá nhân vượt quá giới hạn cho phép.' })
-      }
-
-      const classOptions = getRegisteredClassOptions(content.registered)
-      if (classOptions.length > 0 && !classOptions.includes(className)) {
-        return res.json({ ok: false, message: 'Lớp đã chọn không hợp lệ.' })
       }
     } else {
       if (!contactName || !organizationName) {
@@ -453,9 +448,20 @@ router.post('/donations/:id', requireAdmin, (req, res) => {
       }
     }
 
+    if (className.length > 20) {
+      return res.json({ ok: false, message: 'Tên lớp vượt quá giới hạn cho phép.' })
+    }
+
+    if (className) {
+      const classOptions = getRegisteredClassOptions(content.registered)
+      if (classOptions.length > 0 && !classOptions.includes(className)) {
+        return res.json({ ok: false, message: 'Lớp đã chọn không hợp lệ.' })
+      }
+    }
+
     entry.type = type
     entry.name = type === 'personal' ? name : ''
-    entry.className = type === 'personal' ? className : ''
+    entry.className = className
     entry.contactName = type === 'organization' ? contactName : ''
     entry.organizationName = type === 'organization' ? organizationName : ''
     entry.amount = amount

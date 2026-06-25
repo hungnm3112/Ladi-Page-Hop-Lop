@@ -283,7 +283,6 @@ function normalizeDonate(content) {
   })
 
   entries
-    .filter(item => item.type === 'personal')
     .forEach(item => {
       const key = item.className || 'Khác'
       if (!classMap.has(key)) {
@@ -503,13 +502,8 @@ router.post('/donate', (req, res) => {
         return res.status(400).json({ ok: false, message: 'Vui lòng nhập họ tên và lớp.' })
       }
 
-      if (name.length > 80 || className.length > 20) {
+      if (name.length > 80) {
         return res.status(400).json({ ok: false, message: 'Thông tin cá nhân vượt quá giới hạn cho phép.' })
-      }
-
-      const classOptions = getRegisteredClassOptions(content.registered)
-      if (classOptions.length > 0 && !classOptions.includes(className)) {
-        return res.status(400).json({ ok: false, message: 'Lớp đã chọn không hợp lệ. Vui lòng tải lại trang.' })
       }
     } else {
       if (!contactName || !organizationName) {
@@ -518,6 +512,17 @@ router.post('/donate', (req, res) => {
 
       if (contactName.length > 80 || organizationName.length > 120) {
         return res.status(400).json({ ok: false, message: 'Thông tin công ty / tập thể vượt quá giới hạn cho phép.' })
+      }
+    }
+
+    if (className.length > 20) {
+      return res.status(400).json({ ok: false, message: 'Tên lớp vượt quá giới hạn cho phép.' })
+    }
+
+    if (className) {
+      const classOptions = getRegisteredClassOptions(content.registered)
+      if (classOptions.length > 0 && !classOptions.includes(className)) {
+        return res.status(400).json({ ok: false, message: 'Lớp đã chọn không hợp lệ. Vui lòng tải lại trang.' })
       }
     }
 

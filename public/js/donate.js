@@ -190,7 +190,7 @@
       var payload = {
         type: donateType ? donateType.value : 'personal',
         name: donateForm.querySelector('[name="name"]') ? donateForm.querySelector('[name="name"]').value.trim() : '',
-        className: donateForm.querySelector('[name="className"]') ? donateForm.querySelector('[name="className"]').value.trim() : '',
+        className: (donateType && donateType.value === 'organization') ? (donateForm.querySelector('[name="orgClassName"]') ? donateForm.querySelector('[name="orgClassName"]').value.trim() : '') : (donateForm.querySelector('[name="className"]') ? donateForm.querySelector('[name="className"]').value.trim() : ''),
         contactName: donateForm.querySelector('[name="contactName"]') ? donateForm.querySelector('[name="contactName"]').value.trim() : '',
         organizationName: donateForm.querySelector('[name="organizationName"]') ? donateForm.querySelector('[name="organizationName"]').value.trim() : '',
         amount: normalizeAmount(donateAmountInput ? donateAmountInput.value : ''),

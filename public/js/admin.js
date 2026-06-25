@@ -1266,7 +1266,7 @@
         '<span data-label="#">' + (start + idx + 1) + '</span>' +
         '<span data-label="Người / tổ chức"><strong>' + esc(getDonationDisplayName(item)) + '</strong>' + (type === 'organization' && item.contactName ? '<small>Liên hệ: ' + esc(item.contactName) + '</small>' : '') + '</span>' +
         '<span data-label="Loại">' + esc(typeLabel) + '</span>' +
-        '<span data-label="Lớp">' + esc(type === 'personal' ? (item.className || '–') : '–') + '</span>' +
+        '<span data-label="Lớp">' + esc(item.className || '–') + '</span>' +
         '<span data-label="Số tiền"><strong>' + esc(formatAdminMoney(item.amount)) + '</strong></span>' +
         '<span data-label="Lời nhắn" class="attendees-note">' + (item.message ? esc(item.message) : '–') + '</span>' +
         '<span data-label="Ẩn danh">' + (item.anonymous ? 'Có' : 'Không') + '</span>' +
@@ -1387,7 +1387,7 @@
         String(i + 1),
         getDonationDisplayName(item),
         type === 'organization' ? 'Cong ty / tap the' : 'Ca nhan',
-        type === 'personal' ? (item.className || '') : '',
+        item.className || '',
         String(item.amount || 0),
         item.message || '',
         item.anonymous ? 'Co' : 'Khong',
