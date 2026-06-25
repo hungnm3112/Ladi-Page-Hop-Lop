@@ -477,6 +477,29 @@ router.post('/donations/:id', requireAdmin, (req, res) => {
   }
 })
 
+router.delete('/donations/:id', requireAdmin, (req, res) => {
+  try {
+    const id = String(req.params.id || '').trim()
+    if (!id) return res.json({ ok: false, message: 'ID không hợp lệ.' })
+
+    const content = getContent()
+    if (!content.donate || !Array.isArray(content.donate.entries)) {
+      return res.json({ ok: false, message: 'Chưa có danh sách ủng hộ.' })
+    }
+
+    const before = content.donate.entries.length
+    content.donate.entries = content.donate.entries.filter(item => String(item?.id || '') !== id)
+    if (content.donate.entries.length === before) {
+      return res.json({ ok: false, message: 'Không tìm thấy khoản ủng hộ.' })
+    }
+
+    saveContent(content)
+    return res.json({ ok: true, message: 'Đã xóa khoản ủng hộ.' })
+  } catch (err) {
+    return res.json({ ok: false, message: 'Không thể xóa: ' + err.message })
+  }
+})
+
 router.delete('/attendees/:id', requireAdmin, (req, res) => {
   try {
     const id = String(req.params.id || '').trim()

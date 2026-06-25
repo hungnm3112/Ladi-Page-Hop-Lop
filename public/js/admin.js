@@ -1275,6 +1275,7 @@
         '<span class="attendees-cell-actions" data-label="Thao tác"><div class="attendees-actions">' +
           '<button type="button" class="' + (status === DONATE_STATUS_RECEIVED ? 'btn-unconfirm' : 'btn-confirm') + '" data-donation-action="toggle" data-donation-status="' + esc(nextStatus) + '">' + esc(toggleLabel) + '</button>' +
           '<button type="button" class="btn-edit" data-donation-action="edit">Sửa</button>' +
+          '<button type="button" class="btn-delete" data-donation-action="delete">Xóa</button>' +
         '</div></span>' +
       '</div>'
     }).join('')
@@ -1373,6 +1374,31 @@
     }
   }
 
+  async function deleteDonation(id) {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa khoản ủng hộ này?')) return
+    try {
+      var res = await fetch('/admin/donations/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        credentials: 'same-origin'
+      })
+      var result = await parseJsonResponse(res)
+      if (!result.ok) throw new Error(result.message || 'Không thể xóa khoản ủng hộ.')
+
+      var donations = getDonationsFromState()
+      var newDonations = donations.filter(function (item) { return String(item.id) !== String(id) })
+      if (fullContentState && fullContentState.donate && fullContentState.donate.entries) {
+        fullContentState.donate.entries = newDonations
+      }
+      donationsState.list = newDonations
+      fullContentInitial = deepClone(fullContentState)
+      renderDonationsAll()
+      showToast(result.message || 'Đã xóa khoản ủng hộ.', 'success')
+      reloadPreview('donate')
+    } catch (err) {
+      showToast('Lỗi: ' + err.message, 'error')
+    }
+  }
+
   function exportDonationsCSV() {
     var rows = filterDonations()
     if (rows.length === 0) {
@@ -1464,6 +1490,8 @@
         renderDonationsList()
       } else if (btn.dataset.donationAction === 'save') {
         saveDonation(row.dataset.donationId, row)
+      } else if (btn.dataset.donationAction === 'delete') {
+        deleteDonation(row.dataset.donationId)
       }
     })
 
